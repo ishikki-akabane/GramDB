@@ -8,13 +8,38 @@ token = '6191819669:AAH-BrQM5FiaBSdZBOo8TaXv90GyO1rmljE'
 
 app = Client("bluebot", api_id=api_id, api_hash=api_hash, bot_token=token)
 
-
-@app.on_message(filters.command("ffilter"))
-async def filter_message(client, message):
-    filter_msg = message.text.split(None, 1)[1]
-    save_filter()
-    await message.reply_text("filter set successfully!!")
+db_channel = -100
 
 
+db_dict = {}
+
+unique_client_id = 6969696969
+
+async def save_bio(client, client_id, user_id, bio_msg):
+    db_text = f"{user_id}:{bio_msg}"
+    msg = await client.send_message(
+        db_channel,
+        db_text
+    )
+    db_dict[client_id] = {user}
+    return
+
+async def get_bio(unique_client_id, user_id)
+
+
+@app.on_message(filters.command("setbio"))
+async def setbio_message(client, message):
+    user_id = message.from_user.id
+    bio_msg = message.text.split(None, 1)[1]
+    await save_bio(client, unique_client_id, user_id, bio_msg)
+    await message.reply_text("bio set successfully!!")
+
+
+@app.on_message(filters.command("bio"))
+async def bio_watcher(client, message):
+    user_id = message.from_user.id
+    bio_msg = await get_bio(unique_client_id, user_id)
+    await message.reply_text(bio_msg)
+        
 
 app.run()
