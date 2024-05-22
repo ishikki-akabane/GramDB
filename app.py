@@ -8,12 +8,16 @@ token = '6191819669:AAH-BrQM5FiaBSdZBOo8TaXv90GyO1rmljE'
 
 app = Client("bluebot", api_id=api_id, api_hash=api_hash, bot_token=token)
 
-db_channel = -100
 
+db_channel = -1002091888299
+admin_db = -1002095211836
 
-db_dict = {}
+db_dict = {
+    6969696969: [4] # channel id : msg id for all tables info
+}
 
 unique_client_id = 6969696969
+
 
 async def save_bio(client, client_id, user_id, bio_msg):
     db_text = f"{user_id}:{bio_msg}"
@@ -21,8 +25,15 @@ async def save_bio(client, client_id, user_id, bio_msg):
         db_channel,
         db_text
     )
-    db_dict[client_id] = {user}
+    
+    table_info = db_dict[client_id][0]
+    msg_texts = await client.get_messages(admin_db, table_info)
+    new_msg = f""
+    await client.edit_message(
+        
+    )
     return
+
 
 async def get_bio(unique_client_id, user_id)
 
