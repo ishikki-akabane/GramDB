@@ -19,7 +19,7 @@ db_dict = {
 unique_client_id = 6969696969
 
 
-async def save_bio(client, client_id, user_id, bio_msg):
+async def save_bio(client, client_id, user_id, bio_msg, table_name):
     db_text = f"{user_id}:{bio_msg}"
     msg = await client.send_message(
         db_channel,
