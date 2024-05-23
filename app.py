@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-
+import json
 
 api_id = 14681826
 api_hash = 'add59ab14dbbccf3c92c65ca4477f2fa'
@@ -12,12 +12,19 @@ app = Client("bluebot", api_id=api_id, api_hash=api_hash, bot_token=token)
 db_channel = -1002091888299
 admin_db = -1002095211836
 
-db_dict = {
-    6969696969: [4] # channel id : msg id for all tables info
-}
-
 unique_client_id = 6969696969
 
+
+#----------------------------------------------
+CACHE_TABLE_DICT = {
+    1112223334: {                # client id
+        "bio_table": [5,87,65]   # table name : [msg ids] | table name : rows
+    } 
+}
+
+CACHE_ROW_DICT = {
+    5: [82938373, "I'm alpha male"] # msg id : [user id, bio msg]
+}
 #----------------------------------------------
 
 async def append_table_value(data, list_key, value):
@@ -47,12 +54,32 @@ async def append_table_value(data, list_key, value):
     return final_str
 
 
+async def check_user_bio(user_id, table_name):
+    all_rows = CACHE_TABLE_DICT[6969696969][table_name]
+    for i in all_rows:
+        if user_id in CACHE_ROW_DICT[i][0]:
+            return CACHE_ROW_DICT[i][1], i
+    return None, None
+
+
+
 async def save_bio(client, client_id, user_id, bio_msg, table_name):
-    db_text = f"{user_id}:{bio_msg}"
-    msg = await client.send_message(
-        db_channel,
-        db_text
-    )
+    db_text = f"[{user_id}, {bio_msg}]"
+    
+    result, msg_id = await check_user_bio(user_id, table_name)    
+    if result:
+        reply_text = f"Your bio has been updated from **{result}** to **{bio_msg}**"
+        msg = await client.edit_message_text(
+            db_channel,
+            msg_id,
+            db_text
+        )
+    else:
+        reply_text = f"Your new bio **{bio_msg}** set successfully!!"
+        msg = await client.send_message(
+            db_channel,
+            db_text
+        )
     
     table_info = db_dict[client_id][0]
     msg_texts = await client.get_messages(admin_db, table_info)
@@ -70,8 +97,8 @@ async def get_bio(unique_client_id, user_id)
 async def setbio_message(client, message):
     user_id = message.from_user.id
     bio_msg = message.text.split(None, 1)[1]
-    await save_bio(client, unique_client_id, user_id, bio_msg, "bio_table")
-    await message.reply_text("bio set successfully!!")
+    response = await save_bio(client, unique_client_id, user_id, bio_msg, "bio_table")
+    await message.reply_text(response)
 
 
 @app.on_message(filters.command("bio"))
