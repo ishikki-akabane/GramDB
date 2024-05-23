@@ -82,5 +82,5 @@ async def bio_watcher(client, message):
     bio_msg = await get_bio(unique_client_id, user_id, "bio_table")
     await message.reply_text(bio_msg)
         
-
+print("started...")
 app.run()
