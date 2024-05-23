@@ -32,7 +32,7 @@ async def check_user_bio(user_id, table_name):
     all_rows = CACHE_TABLE_DICT[6969696969][table_name]
     for i in all_rows:
         dict_data = CACHE_ROW_DICT[i]
-        if user_id in dict_data[0]:
+        if user_id == dict_data[0]:
             return dict_data[1], i
     return None, None
 
