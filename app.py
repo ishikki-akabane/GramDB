@@ -31,8 +31,9 @@ CACHE_ROW_DICT = {
 async def check_user_bio(user_id, table_name):
     all_rows = CACHE_TABLE_DICT[6969696969][table_name]
     for i in all_rows:
-        if user_id in CACHE_ROW_DICT[i][0]:
-            return CACHE_ROW_DICT[i][1], i
+        dict_data = CACHE_ROW_DICT[i]
+        if user_id in dict_data[0]:
+            return dict_data[1], i
     return None, None
 
 async def save_bio(client, client_id, user_id, bio_msg, table_name):
