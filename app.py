@@ -17,41 +17,15 @@ unique_client_id = 6969696969
 
 #----------------------------------------------
 CACHE_TABLE_DICT = {
-    1112223334: {                # client id
-        "bio_table": [5,87,65]   # table name : [msg ids] | table name : rows
-    } 
+    6969696969: {             # client id
+        "bio_table": [7]      # table name : [msg ids] | table name : rows
+    }
 }
 
 CACHE_ROW_DICT = {
-    5: [82938373, "I'm alpha male"] # msg id : [user id, bio msg]
+    7: [5030730429, "I'm ishikki"] # msg id : [user id, bio msg]
 }
 #----------------------------------------------
-
-async def append_table_value(data, list_key, value):
-    final_str = ""
-    key_found = False
-    
-    a = data.strip().split("\n")
-    final_str = f"{a[0]}\n"
-    for i in a:
-        try:
-            b = i.split(":")[0].split("-")[1]
-            if list_key == b:
-                key_found = True
-                new_str = f"-{b}:"
-                new_str += i.split(":")[1]
-                new_str += f"{value},"
-            else:
-                if i != "":
-                    final_str += f"\n{i}"
-        except:
-            pass
-            
-    if key_found == False:
-        new_str = f"-{list_key}: {value},"
-        
-    final_str += f"\n{new_str}"
-    return final_str
 
 
 async def check_user_bio(user_id, table_name):
@@ -60,8 +34,6 @@ async def check_user_bio(user_id, table_name):
         if user_id in CACHE_ROW_DICT[i][0]:
             return CACHE_ROW_DICT[i][1], i
     return None, None
-
-
 
 async def save_bio(client, client_id, user_id, bio_msg, table_name):
     db_text = f"[{user_id}, {bio_msg}]"
@@ -74,23 +46,26 @@ async def save_bio(client, client_id, user_id, bio_msg, table_name):
             msg_id,
             db_text
         )
+        CACHE_ROW_DICT[msg_id] = [user_id, bio_msg]
     else:
         reply_text = f"Your new bio **{bio_msg}** set successfully!!"
         msg = await client.send_message(
             db_channel,
             db_text
         )
-    
-    table_info = db_dict[client_id][0]
-    msg_texts = await client.get_messages(admin_db, table_info)
-    new_msg = f""
-    await client.edit_message(
+        CACHE_ROW_DICT[msg.id] = [user_id, bio_msg]
+        msg_list = CACHE_TABLE_DICT[client_id][table_name]
+        msg_list.append(msg.id)
         
-    )
-    return
+    return reply_text
 
 
-async def get_bio(unique_client_id, user_id)
+async def get_bio(unique_client_id, user_id, table_name):
+    result, msg_id = await check_user_bio(user_id, table_name)
+    if result:
+        return result
+    else:
+        return "Null"
 
 
 @app.on_message(filters.command("setbio"))
@@ -104,7 +79,7 @@ async def setbio_message(client, message):
 @app.on_message(filters.command("bio"))
 async def bio_watcher(client, message):
     user_id = message.from_user.id
-    bio_msg = await get_bio(unique_client_id, user_id)
+    bio_msg = await get_bio(unique_client_id, user_id, "bio_table")
     await message.reply_text(bio_msg)
         
 
