@@ -2,11 +2,17 @@ import aiohttp
 
 
 class GramDB:
-    def __init__(self, db_url: str):
-        self.db_url = db_url
+    db_url = None
+    
+    def __init__(self, api_key: str):
+        self.api_key = api_key
         self.session = aiohttp.ClientSession()
         self.CACHE_TABLE = {}
         self.CACHE_DATA = {}
+
+    async def _initialize(self):
+        # send api key request here
+        pass
 
     async def create(self, table_name: str):
         pass
