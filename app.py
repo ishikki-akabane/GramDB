@@ -18,6 +18,34 @@ db_dict = {
 
 unique_client_id = 6969696969
 
+#----------------------------------------------
+
+async def append_table_value(data, list_key, value):
+    final_str = ""
+    key_found = False
+    
+    a = data.strip().split("\n")
+    final_str = f"{a[0]}\n"
+    for i in a:
+        try:
+            b = i.split(":")[0].split("-")[1]
+            if list_key == b:
+                key_found = True
+                new_str = f"-{b}:"
+                new_str += i.split(":")[1]
+                new_str += f"{value},"
+            else:
+                if i != "":
+                    final_str += f"\n{i}"
+        except:
+            pass
+            
+    if key_found == False:
+        new_str = f"-{list_key}: {value},"
+        
+    final_str += f"\n{new_str}"
+    return final_str
+
 
 async def save_bio(client, client_id, user_id, bio_msg, table_name):
     db_text = f"{user_id}:{bio_msg}"
