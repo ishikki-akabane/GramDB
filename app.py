@@ -42,7 +42,7 @@ async def get_bio(unique_client_id, user_id)
 async def setbio_message(client, message):
     user_id = message.from_user.id
     bio_msg = message.text.split(None, 1)[1]
-    await save_bio(client, unique_client_id, user_id, bio_msg)
+    await save_bio(client, unique_client_id, user_id, bio_msg, "bio_table")
     await message.reply_text("bio set successfully!!")
 
 
