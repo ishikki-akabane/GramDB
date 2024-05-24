@@ -9,7 +9,9 @@ class GramDB:
         self.session = aiohttp.ClientSession()
         self.CACHE_TABLE = {}
         self.CACHE_DATA = {}
-        auth = requests.get
+        auth = requests.get(db_url,headers={'api-key':self.api_key})
+        if not auth:
+            raise GramDBError("Text")
 
     async def create(self, table_name: str):
         pass
