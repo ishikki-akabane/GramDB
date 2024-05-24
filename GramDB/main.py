@@ -2,16 +2,12 @@ import aiohttp,requests
 
 
 class GramDB:
-    db_url = None
-    
-    def __init__(self, api_key: str):
-        self.api_key = api_key
+    def __init__(self, db_url: str):
+        self.db_url = db_url
         self.session = aiohttp.ClientSession()
         self.CACHE_TABLE = {}
         self.CACHE_DATA = {}
-        auth = requests.get(db_url,headers={'api-key':self.api_key})
-        if not auth:
-            raise GramDBError("Text")
+        auth = requests.get(self.db_url)
 
     async def create(self, table_name: str):
         pass
