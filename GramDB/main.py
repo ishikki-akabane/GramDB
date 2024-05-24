@@ -1,4 +1,4 @@
-import aiohttp
+import aiohttp,requests
 
 
 class GramDB:
@@ -9,10 +9,7 @@ class GramDB:
         self.session = aiohttp.ClientSession()
         self.CACHE_TABLE = {}
         self.CACHE_DATA = {}
-
-    async def _initialize(self):
-        # send api key request here
-        pass
+        auth = requests.get
 
     async def create(self, table_name: str):
         pass
