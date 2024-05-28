@@ -1,11 +1,13 @@
 import requests
+import aiohttp
 
 
 class GramDB:
     def __init__(self, db_url: str):
         self.db_url = db_url
         self.CACHE_TABLE = {}
-        self.CACHE_DATA = {}     
+        self.CACHE_DATA = {}
+        self.session = aiohttp.ClientSession()
         self.authenticate()
 
     def authenticate(self):
@@ -38,6 +40,6 @@ class GramDB:
         pass
 
     async def close(self):
-        pass
+        await self.session.close()
   
 
