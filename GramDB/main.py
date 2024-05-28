@@ -17,7 +17,7 @@ class GramDB:
             
         # Proceed if authentication is successful
         self.auth = response.json()
-        self_token = response.json()['client_id']
+        self.token = response.json()['client_id']
 
     async def create(self, table_name: str):
         pass
