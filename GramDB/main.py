@@ -5,8 +5,18 @@ class GramDB:
     def __init__(self, db_url: str):
         self.db_url = db_url
         self.CACHE_TABLE = {}
-        self.CACHE_DATA = {}
-        auth = requests.get(self.db_url)
+        self.CACHE_DATA = {}     
+        self.authenticate()
+
+    def authenticate(self):
+        response = requests.get(self.db_url)
+        if response.status == 400:
+            raise ValueError("Authentication failed: Invalid credentials or URL.")
+        elif response.status != 200:
+            raise ValueError(f"Authentication failed: Unexpected status code {response.status}.")
+            
+        # Proceed if authentication is successful
+        self.auth = response.json()           
 
     async def create(self, table_name: str):
         pass
