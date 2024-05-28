@@ -24,19 +24,19 @@ class GramDB:
     async def create(self, table_name: str):
         pass
 
-    async def delete(self, table_name: str):
+    async def delete_table(self, table_name: str):
         pass
 
-    async def insert_data(self, table_name: str):
+    async def insert(self, table_name: str, data):
         pass
 
-    async def update_data(self, table_name: str):
+    async def update(self, table_name: str, data_id, data):
         pass
 
-    async def delete_data(self, table_name: str):
+    async def delete(self, table_name: str, data_id):
         pass
 
-    async def fetch_data(self, table_name: str):
+    async def fetch(self, table_name: str, data_id):
         pass
 
     async def close(self):
