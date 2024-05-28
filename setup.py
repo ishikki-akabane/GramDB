@@ -1,6 +1,6 @@
 from setuptools import setup
 
-requirements = ['requests']
+requirements = ['aiohttp', 'requests']
 readme = ''
 with open("README.md", encoding="utf-8") as f:
     readme = f.read()
