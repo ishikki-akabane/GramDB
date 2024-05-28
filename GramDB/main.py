@@ -16,7 +16,8 @@ class GramDB:
             raise ValueError(f"Authentication failed: Unexpected status code {response.status}.")
             
         # Proceed if authentication is successful
-        self.auth = response.json()           
+        self.auth = response.json()
+        self_token = response.json()['client_id']
 
     async def create(self, table_name: str):
         pass
