@@ -2,15 +2,14 @@
 
 async def fetch_func(session, base_url, token, data_id):
     url = base_url + "/fetch"
-    params = {
-        "data_id": data_id
-    }
     headers = {
         "Content-Type": "application/json",
         "Authorization": token
     }
-
-    response = await session.get(url, headers=headers, params=params)
+    payload = {
+        "data_id": data_id
+    }
+    response = await session.post(url, headers=headers, json=payload)
     if response.status == 200:
         result = await response.json()
         return True, result
@@ -27,7 +26,6 @@ async def insert_func(session, base_url, token, data):
     payload = {
         "data": data
     }
-
     response = await session.post(url, headers=headers, json=payload)
     if response.status == 200:
         result = await response.json()
