@@ -1,5 +1,6 @@
 import requests
 import aiohttp
+from GramDB.method import *
 
 
 class GramDB:
@@ -19,7 +20,8 @@ class GramDB:
             
         # Proceed if authentication is successful
         self.auth = response.json()
-        self.token = response.json()['client_id']
+        self.token = self.auth['client_id']
+        self.url = self.auth['url']
 
     async def create(self, table_name: str):
         pass
@@ -28,7 +30,9 @@ class GramDB:
         pass
 
     async def insert(self, table_name: str, data):
-        pass
+        data = str(data)
+        await insert_func(self.session, self.url, self.token, data)
+        
 
     async def update(self, table_name: str, data_id, data):
         pass
