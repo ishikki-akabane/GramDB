@@ -1,4 +1,6 @@
 # methods
+import requests
+
 
 async def fetch_func(session, base_url, token, data_id):
     url = base_url + "/fetch"
@@ -86,15 +88,15 @@ async def git_func(session, base_url, token, data):
         return False, response.status
 
 
-async def extract_func(session, base_url, token):
+def extract_func(base_url, token):
     url = base_url + f"/extract?token={token}"
     headers = {
         "Content-Type": "application/json",
     }
-    response = await session.get(url, headers=headers)
-    if response.status == 200:
-        result = await response.json()
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        result = response.json()
         return True, result
     else:
-        return False, response.status
+        return False, response.status_code
     
