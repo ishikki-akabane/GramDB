@@ -110,9 +110,9 @@ def fetchall_func(base_url, token, data_ids):
     payload = {
         "data_id": data_ids
     }
-    response = await requests.post(url, headers=headers, json=payload)
+    response = requests.post(url, headers=headers, json=payload)
     if response.status_code == 200:
-        result = await response.json()
+        result = response.json()
         return True, result
     else:
         return False, response.status_code
