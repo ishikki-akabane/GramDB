@@ -29,9 +29,8 @@ class GramDB:
         result, data = extract_func(self.url, self.token)
         if result:
             self.CACHE_TABLE = data
-        else:
-            print(self.token)
             print(data)
+        else:
             raise ValueError("Authentication failed: token expired or outdated!")
 
         self.db = EfficientDictQuery(self.CACHE_DATA)
