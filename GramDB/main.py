@@ -14,9 +14,9 @@ class GramDB:
 
     def authenticate(self):
         response = requests.get(self.db_url)
-        if response.status == 400:
+        if response.status_code == 400:
             raise ValueError("Authentication failed: Invalid credentials or URL.")
-        elif response.status != 200:
+        elif response.status_code != 200:
             raise ValueError(f"Authentication failed: Unexpected status code {response.status}.")
             
         # Proceed if authentication is successful
