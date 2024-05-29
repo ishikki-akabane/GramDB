@@ -1,5 +1,5 @@
 from collections import defaultdict
-import asyncio
+
 
 class EfficientDictQuery:
     def __init__(self, data):
