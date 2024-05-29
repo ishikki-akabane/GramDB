@@ -67,3 +67,34 @@ async def update_func(session, base_url, token, data_id, data):
         return True, result
     else:
         return False, response.status
+
+
+async def git_func(session, base_url, token, data):
+    url = base_url + "/git"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": token
+    }
+    payload = {
+        "data" : data
+    }
+    response = await session.post(url, headers=headers, json=payload)
+    if response.status == 200:
+        result = await response.json()
+        return True, result
+    else:
+        return False, response.status
+
+
+async def extract_func(session, base_url, token):
+    url = base_url + f"/extract?token={token}"
+    headers = {
+        "Content-Type": "application/json",
+    }
+    response = await session.get(url, headers=headers)
+    if response.status == 200:
+        result = await response.json()
+        return True, result
+    else:
+        return False, response.status
+    
