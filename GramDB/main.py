@@ -30,7 +30,7 @@ class GramDB:
         if result:
             self.CACHE_TABLE = data
         else:
-            raise
+            raise ValueError("wrong token!")
 
         self.db = EfficientDictQuery(self.CACHE_DATA)
         self.db.create_all_indexes()
