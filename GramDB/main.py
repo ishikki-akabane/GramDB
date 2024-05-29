@@ -30,7 +30,9 @@ class GramDB:
         if result:
             self.CACHE_TABLE = data
         else:
-            raise ValueError("wrong token!")
+            print(self.token)
+            print(data)
+            raise ValueError("Authentication failed: token expired or outdated!")
 
         self.db = EfficientDictQuery(self.CACHE_DATA)
         self.db.create_all_indexes()
