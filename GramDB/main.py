@@ -1,6 +1,7 @@
 import requests
 import aiohttp
 from GramDB.method import *
+from GramDB.helper import EfficientDictQuery
 
 
 class GramDB:
@@ -30,6 +31,10 @@ class GramDB:
             self.CACHE_TABLE = data
         else:
             raise
+
+        self.db = EfficientDictQuery(self.CACHE_DATA)
+        self.db.create_all_indexes()
+        
         
     async def create(self, table_name: str):
         pass
