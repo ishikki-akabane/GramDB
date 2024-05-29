@@ -100,3 +100,20 @@ def extract_func(base_url, token):
     else:
         return False, response.status_code
     
+
+def fetchall_func(base_url, token, data_ids):
+    url = base_url + "/fetchall"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": token
+    }
+    payload = {
+        "data_id": data_ids
+    }
+    response = await requests.post(url, headers=headers, json=payload)
+    if response.status_code == 200:
+        result = await response.json()
+        return True, result
+    else:
+        return False, response.status_code
+        
