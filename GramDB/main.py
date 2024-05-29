@@ -7,8 +7,6 @@ from GramDB.helper import EfficientDictQuery
 class GramDB:
     def __init__(self, db_url: str):
         self.db_url = db_url
-        self.CACHE_TABLE = {}
-        self.CACHE_DATA = {}
         self.session = aiohttp.ClientSession()
         self.authenticate()
 
@@ -33,6 +31,16 @@ class GramDB:
         else:
             raise ValueError("Authentication failed: token expired or outdated!")
 
+        self.CACHE_DATA = {}
+        for tablename, table in self.CACHE_TABLE.items():
+            if tablename=="info_gramdb":
+                pass
+            self.CACHE_DATA[tablename] = {}
+            result, all_rows = fetchall(self.url, self.token, table)
+            for row_id, row in all_rows.items():
+                self.CACHE_DATA[tablename][row_id] = row
+
+        print(self.CACHE_DATA)
         self.db = EfficientDictQuery(self.CACHE_DATA)
         self.db.create_all_indexes()
         
@@ -57,7 +65,7 @@ class GramDB:
     async def fetch(self, table_name: str, data_id):
         pass
 
-    async def close(self):
-        await self.session.close()
+    def close(self):
+        self.session.close()
   
 
