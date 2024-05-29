@@ -22,7 +22,15 @@ class GramDB:
         self.auth = response.json()
         self.token = self.auth['client_id']
         self.url = self.auth['url']
+        self.import_cache()
 
+    def import_cache(self):
+        result, data = extract_func(self.url, self.token)
+        if result:
+            self.CACHE_TABLE = data
+        else:
+            raise
+        
     async def create(self, table_name: str):
         pass
 
