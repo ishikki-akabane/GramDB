@@ -1,6 +1,8 @@
 # yoii - ishikki
 
 from GramDB import GramDB
+import asyncio
+
 
 CACHE_TABLE = {
   "info_gramdb": {
@@ -16,6 +18,21 @@ CACHE_DATA = {
   '22': {'_m_id': '22', '_table_': 'bio_table', 'id': 1234567892, 'bio': "I'm cat"}
 }
 
+sample_efficitiantdb = {
+  'bio_table': {
+    '1234567891': {
+      '_id': 1234567891, '_m_id': '21', 'bio': "I'm alpha"
+    },
+    '1234567892': {
+      '_id': 1234567892, '_m_id': '22', 'bio': "I'm cat"
+    }
+  },
+  'test_table': {
+    '638928387': {
+      '_id': 638928387, '_m_id': '20', 'bio': "I'm natsu dragneel", 'username': 'ishikki_akabane'
+    }
+  }
+}
 
 
 db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
