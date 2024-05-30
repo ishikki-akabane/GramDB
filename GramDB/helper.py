@@ -73,20 +73,51 @@ class EfficientDictQuery:
                     self.indexes[field][value].remove((table, record_id))
                     if not self.indexes[field][value]:
                         del self.indexes[field][value]
-                        
-    async def insert(self, record):
-        if '_id' not in record or '_table_' not in record or '_m_id' not in record:
-            raise ValueError("Record must contain '_id', '_table_', and '_m_id' fields.")
+
+    async def _validate_record(self, table, record):
+        if table not in self.schemas:
+            return True  # No schema defined, so everything is valid
+
+        schema = self.schemas[table]
+        for field in schema:
+            if field not in record:
+                raise ValueError(f"Missing required field '{field}' in record for table '{table}'.")
+
+    async def create(self, table, schema):
+        if table in self.data:
+            raise ValueError(f"Table '{table}' already exists.")
+
+        self.schemas[table] = schema
+
+        sample_record = {field: "test" for field in schema}
+        sample_record['_id'] = "6829298293"
+        sample_record['_table_'] = table
+
+        self.data[table] = {"6829298293": sample_record}
+        await self._update_index_for_record(table, sample_record, "6829298293", operation='add')
+
+    async def _generate_random_id(self):
+        return ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+                               
+    async def insert(self, table, record, **kwargs):
+        _m_id = kwargs.get('_m_id')
+        if not _m_id:
+            raise ValueError("Record must contain '_m_id' as a keyword argument.")
+
+        if '_id' not in record:
+            record['_id'] = await self._generate_random_id()
         
-        table = record['_table_']
         _id = str(record['_id'])
-        
+        record['_table_'] = table
+        record['_m_id'] = _m_id
+
+        await self._validate_record(table, record)
+
         if _id in self.data[table]:
             raise ValueError(f"Record with _id '{_id}' already exists in table '{table}'.")
-        
-        structured_record = {k: v for k, v in record.items() if k not in ['_table_']}
-        self.data[table][_id] = structured_record
-        await self._update_index_for_record(table, structured_record, _id, operation='add')
+
+        self.data[table][_id] = record
+        await self._update_index_for_record(table, record, _id, operation='add')
 
     async def update(self, table, _id, update_fields):
         _id = str(_id)
