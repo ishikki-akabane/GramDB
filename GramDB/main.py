@@ -46,13 +46,14 @@ class GramDB:
                 # row = {'_m_id': '21', '_table_': 'test_table', 'id': 1234567891, 'name': "ishikki"},
                 self.CACHE_DATA[row['_m_id']] = row
         else:
-            raise ValueError(f"{all_rows}")
-            
-        
+            raise ValueError(f"{all_rows}")        
                     
         print(self.CACHE_DATA)
         self.db = EfficientDictQuery(self.CACHE_DATA)
-        
+
+    
+    async def fetch(self, table_name: str, query: dict):
+        return await self.db.fetch(table_name, query)
         
     async def create_table(self, table_name: str):
         pass
@@ -71,8 +72,6 @@ class GramDB:
     async def delete(self, table_name: str, data_id):
         pass
 
-    async def fetch(self, table_name: str, data_id):
-        pass
 
     def close(self):
         asyncio.run(self.session.close())
