@@ -36,7 +36,7 @@ class GramDB:
             if tablename=="info_gramdb":
                 pass
             self.CACHE_DATA[tablename] = {}
-            result, all_rows = fetchall(self.url, self.token, table)
+            result, all_rows = fetchall_func(self.url, self.token, table)
             for row_id, row in all_rows.items():
                 self.CACHE_DATA[tablename][row_id] = row
 
