@@ -6,6 +6,7 @@ class EfficientDictQuery:
         self.data = self._structure_data(data)
         self.indexes = defaultdict(dict)
         self.create_all_indexes()
+        print(self.data)
 
     def _structure_data(self, data):
         structured_data = defaultdict(dict)
