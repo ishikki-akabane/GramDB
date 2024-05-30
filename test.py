@@ -38,7 +38,7 @@ sample_efficitiantdb = {
 db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
 
 async def aa():
-  a = await db.fetch("bio_table", {'bio': "I'm cat")
+  a = await db.fetch("bio_table", {'bio': "I'm cat"})
   print(a)
   
 asyncio.run(aa())
