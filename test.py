@@ -6,6 +6,7 @@ CACHE_TABLE = {
   {
     "info_gramdb": {
       "name": "ishikki", "password": "v_143", "telegram_id": 6282920
+    }
   },
   {
     "test_table": [20],
