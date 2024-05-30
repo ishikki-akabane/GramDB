@@ -56,7 +56,8 @@ class EfficientDictQuery:
         results = []
 
         for record_id, record in self.data.get(table, {}).items():
-            if all(record.get(key) == value for key, value in query.items()):
+            flattened_record = self._flatten_dict(record)
+            if all(flattened_record.get(key) == value for key, value in query.items()):
                 results.append(record)
 
         return results
