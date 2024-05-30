@@ -51,12 +51,12 @@ class EfficientDictQuery:
                 items.append((new_key, v))
         return dict(items)
 
+    
     async def fetch(self, table, query):
         results = []
 
         for record_id, record in self.data.get(table, {}).items():
-            flattened_record = self._flatten_dict(record)
-            if all(flattened_record.get(key) == value for key, value in query.items()):
+            if all(record.get(key) == value for key, value in query.items()):
                 results.append(record)
 
         return results
