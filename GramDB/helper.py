@@ -53,15 +53,14 @@ class EfficientDictQuery:
         return dict(items)
 
     
-    async def fetch(self, table, field, value):
-        if field == '_id':
-            return [self.data.get(table, {}).get(value, {})]
-        
-        if field not in self.indexes:
-            raise ValueError(f"Index for field '{field}' does not exist. Please create it first.")
-        
-        keys = self.indexes[field].get(value, [])
-        return [{key: self.data[table][key]} for t, key in keys if t == table]
+    async def fetch(self, table, query):
+        results = []
+
+        for record_id, record in self.data.get(table, {}).items():
+            if all(record.get(key) == value for key, value in query.items()):
+                results.append(record)
+
+        return results
 
     async def _update_index_for_record(self, table, record, record_id, operation='add'):
         flattened_record = self._flatten_dict(record)
