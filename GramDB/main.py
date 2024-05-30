@@ -2,6 +2,7 @@ import requests
 import aiohttp
 from GramDB.method import *
 from GramDB.helper import EfficientDictQuery
+import asyncio
 
 
 class GramDB:
@@ -76,6 +77,6 @@ class GramDB:
         pass
 
     def close(self):
-        self.session.close()
+        asyncio.run(self.session.close())
   
 
