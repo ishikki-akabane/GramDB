@@ -54,6 +54,9 @@ class GramDB:
     
     async def fetch(self, table_name: str, query: dict):
         return await self.db.fetch(table_name, query)
+
+    async def fetch_all(self):
+        return await self.db.fetch_all()
         
     async def create_table(self, table_name: str):
         pass
