@@ -4,11 +4,12 @@ from GramDB import GramDB
 
 CACHE_TABLE = {
   {
-  "info_gramdb": {
-    "name": "ishikki", "password": "v_143", "telegram_id": 6282920
+    "info_gramdb": {
+      "name": "ishikki", "password": "v_143", "telegram_id": 6282920
   },
-  "test_table": [20]
-  "bio_table": [21, 22]
+  {
+    "test_table": [20],
+    "bio_table": [21, 22]
   }
 }
 
