@@ -57,16 +57,15 @@ class GramDB:
 
     async def fetch_all(self):
         return await self.db.fetch_all()
+
+    async def insert(self, table_name: str, record, **keargs):
+        await self.db.insert(table_name, record, **keargs)
         
     async def create_table(self, table_name: str):
         pass
 
     async def delete_table(self, table_name: str):
         pass
-
-    async def insert(self, table_name: str, data):
-        data = str(data)
-        await insert_func(self.session, self.url, self.token, data)
         
 
     async def update(self, table_name: str, data_id, data):
