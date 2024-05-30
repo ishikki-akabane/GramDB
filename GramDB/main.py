@@ -40,7 +40,6 @@ class GramDB:
             else:
                 all_ids = all_ids + table
 
-        print(all_ids)
         result, all_rows = fetchall_func(self.url, self.token, all_ids)
         if result:
             for row in all_rows["data"]:
@@ -52,8 +51,7 @@ class GramDB:
         
                     
         print(self.CACHE_DATA)
-        #self.db = EfficientDictQuery(self.CACHE_DATA)
-        #self.db.create_all_indexes()
+        self.db = EfficientDictQuery(self.CACHE_DATA)
         
         
     async def create_table(self, table_name: str):
