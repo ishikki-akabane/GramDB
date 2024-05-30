@@ -1,10 +1,12 @@
 from collections import defaultdict
-
+import random
+import string
 
 class EfficientDictQuery:
     def __init__(self, data):
         self.data = self._structure_data(data)
-        self.indexes = defaultdict(dict)
+        self.indexes = defaultdict(lambda: defaultdict(list))
+        self.schemas = {}
         self.create_all_indexes()
 
     def _structure_data(self, data):
