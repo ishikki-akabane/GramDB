@@ -41,8 +41,8 @@ class GramDB:
                 self.CACHE_DATA[tablename][row_id] = row
 
         print(self.CACHE_DATA)
-        self.db = EfficientDictQuery(self.CACHE_DATA)
-        self.db.create_all_indexes()
+        #self.db = EfficientDictQuery(self.CACHE_DATA)
+        #self.db.create_all_indexes()
         
         
     async def create(self, table_name: str):
