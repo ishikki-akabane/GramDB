@@ -20,5 +20,9 @@ CACHE_DATA = {
 
 db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
 
+async def aa():
+  await db.fetch("test_table", {"haha": 6})
+  
+asyncio.run(aa())
 db.close()
 print("ending...")
