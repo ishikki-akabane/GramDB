@@ -51,7 +51,6 @@ class EfficientDictQuery:
                 items.append((new_key, v))
         return dict(items)
 
-    
     async def fetch(self, table, query):
         results = []
 
