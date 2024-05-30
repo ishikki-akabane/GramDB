@@ -39,10 +39,14 @@ class GramDB:
             else:
                 all_ids = all_ids + table
 
+        print(all_ids)
         result, all_rows = fetchall_func(self.url, self.token, all_ids)
-        for row in all_rows["data"]:
-            # row = {'_m_id': '21', '_table_': 'test_table', 'id': 1234567891, 'name': "ishikki"},
-            self.CACHE_DATA[row['_m_id']] = row
+        if result:
+            for row in all_rows["data"]:
+                # row = {'_m_id': '21', '_table_': 'test_table', 'id': 1234567891, 'name': "ishikki"},
+                self.CACHE_DATA[row['_m_id']] = row
+        else:
+            raise ValueError(f"{all_rows}")
             
         
                     
