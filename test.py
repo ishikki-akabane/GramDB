@@ -41,8 +41,10 @@ async def aa():
   a = await db.fetch("bio_table", {'bio': "I'm cat"})
   print(a)
   b = await db.fetch_all()
-  for i in b:
+  for i, j in b.items():
     print("\n", i)
+    for k, l in j.items():
+      print(l)
     
 asyncio.run(aa())
 db.close()
