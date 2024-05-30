@@ -32,20 +32,22 @@ class GramDB:
             raise ValueError("Authentication failed: token expired or outdated!")
 
         self.CACHE_DATA = {}
+        all_ids = []
         for tablename, table in self.CACHE_TABLE.items():
             if tablename=="info_gramdb":
                 pass
-            self.CACHE_DATA[tablename] = {}
-            result, all_rows = fetchall_func(self.url, self.token, table)
-            for row_id, row in all_rows.items():
-                self.CACHE_DATA[tablename][row_id] = row
+            else:
+                all_ids = all_ids + table
 
+        result, all_rows = fetchall_func(self.url, self.token, all_ids)
+        
+                    
         print(self.CACHE_DATA)
         #self.db = EfficientDictQuery(self.CACHE_DATA)
         #self.db.create_all_indexes()
         
         
-    async def create(self, table_name: str):
+    async def create_table(self, table_name: str):
         pass
 
     async def delete_table(self, table_name: str):
