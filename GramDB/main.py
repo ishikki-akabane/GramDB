@@ -52,6 +52,7 @@ class GramDB:
                     
         print(self.CACHE_DATA)
         self.db = EfficientDictQuery(self.CACHE_DATA)
+        print(self.db.fetch_all)
         
         
     async def create_table(self, table_name: str):
