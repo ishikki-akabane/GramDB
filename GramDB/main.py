@@ -50,7 +50,10 @@ class GramDB:
         print(self.CACHE_DATA)
         self.db = EfficientDictQuery(self.CACHE_DATA)
 
-    
+
+    async def create(self, table_name: str, schema):
+        await self.db.create(table_name, schema)
+        
     async def fetch(self, table_name: str, query: dict):
         return await self.db.fetch(table_name, query)
 
@@ -62,9 +65,7 @@ class GramDB:
 
     async def delete(self, table_name: str, query: dict):
         await self.db.delete(table_name, query)
-        
-    async def create_table(self, table_name: str):
-        pass
+       
 
     async def delete_table(self, table_name: str):
         pass
