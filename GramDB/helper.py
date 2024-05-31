@@ -90,9 +90,9 @@ class EfficientDictQuery:
         self.schemas[table] = schema
 
         sample_record = {field: "test" for field in schema}
-        sample_record['_id'] = "6829298293"
+        sample_record['_id'] = "sample1928"
 
-        self.data[table] = {"6829298293": sample_record}
+        self.data[table] = {"sample1928": sample_record}
         await self._update_index_for_record(table, sample_record, "6829298293", operation='add')
 
     async def _generate_random_id(self):
