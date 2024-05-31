@@ -128,14 +128,22 @@ class EfficientDictQuery:
         self.data[table][_id].update(update_fields)
         await self._update_index_for_record(table, self.data[table][_id], _id, operation='add')
 
-    async def delete(self, table, _id):
-        _id = str(_id)
-        if _id not in self.data[table]:
-            raise ValueError(f"Record with _id '{_id}' does not exist in table '{table}'.")
-        
-        record = self.data[table][_id]
-        await self._update_index_for_record(table, record, _id, operation='remove')
-        del self.data[table][_id]
+    async def delete(self, table, query):
+        if table not in self.data:
+            raise ValueError(f"Table '{table}' does not exist.")
+
+        records_to_delete = [
+            record_id for record_id, record in self.data[table].items()
+            if all(record.get(key) == value for key, value in query.items())
+        ]
+
+        if not records_to_delete:
+            raise ValueError(f"No records found matching query: {query}")
+
+        for record_id in records_to_delete:
+            record = self.data[table][record_id]
+            await self._update_index_for_record(table, record, record_id, operation='remove')
+            del self.data[table][record_id]
 
     async def fetch_all(self):
         return self.data
