@@ -23,6 +23,13 @@
   - It is unique for every record
 
 
+### create
+```
+await db.create("table_name")
+```
+- table_name: name of the table that you want to create 
+
+
 ### fetch_all
 ```
 result = await db.fetch_all()
