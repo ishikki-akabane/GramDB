@@ -46,7 +46,7 @@ result = await db.fetch("table_name", {"name": "akabane"})
 - returns specific records matching the query
 
 
-### Insert
+### insert
 ```
 data = {
     "name": "akabane",
@@ -58,3 +58,11 @@ await db.insert("table_name", data)
 ```
 - table_name: name of the table
 - record: your data in JSON/dict form
+
+
+### delete
+```
+await db.delete("table_name", {"name": "akabane"})
+```
+- table_name: name of the table
+- query: query for deleting matching data
