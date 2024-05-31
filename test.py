@@ -47,7 +47,7 @@ async def aa():
     for k, l in j.items():
       print(l)
 
-  await db.insert("bio_table", {"bio": "I'm horse"})
+  await db.insert("bio_table", {"bio": "I'm horse"}, _m_id="76")
   await db.create("info_table", ("name", "class"))
   print("hmm")
   d = await db.fetch_all()
