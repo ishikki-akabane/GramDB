@@ -8,6 +8,7 @@ class EfficientDictQuery:
         self.indexes = defaultdict(lambda: defaultdict(list))
         self.schemas = {}
         self.create_all_indexes()
+        self.create_all_schemas()
 
     def _structure_data(self, data):
         structured_data = defaultdict(dict)
@@ -40,6 +41,14 @@ class EfficientDictQuery:
                     index[flattened_item[field]].append((table_name, key))
         self.indexes[field] = index
 
+    def create_all_schemas(self):
+        for table_name, records in self.data.items():
+            if table_name not in self.schemas:
+                schema = set()
+                for record in records.values():
+                    schema.update(record.keys())
+                self.schemas[table_name] = tuple(schema)
+
     def _flatten_dict(self, d, parent_key='', sep='.'):
         items = []
         for k, v in d.items():
@@ -53,7 +62,6 @@ class EfficientDictQuery:
                 items.append((new_key, v))
         return dict(items)
 
-    
     async def fetch(self, table, query):
         results = []
 
@@ -76,7 +84,7 @@ class EfficientDictQuery:
 
     async def _validate_record(self, table, record):
         if table not in self.schemas:
-            return True  # No schema defined, so everything is valid
+            raise ValueError(f"Table '{table}' does not exist.")
 
         schema = self.schemas[table]
         for field in schema:
@@ -93,12 +101,15 @@ class EfficientDictQuery:
         sample_record['_id'] = "sample1928"
 
         self.data[table] = {"sample1928": sample_record}
-        await self._update_index_for_record(table, sample_record, "6829298293", operation='add')
+        await self._update_index_for_record(table, sample_record, "sample1928", operation='add')
 
     async def _generate_random_id(self):
         return ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                                
     async def insert(self, table, record, **kwargs):
+        if table not in self.data:
+            raise ValueError(f"Invalid table name '{table}'. Table does not exist.")
+
         _m_id = kwargs.get('_m_id')
         if not _m_id:
             raise ValueError("Record must contain '_m_id' as a keyword argument.")
@@ -121,10 +132,10 @@ class EfficientDictQuery:
         _id = str(_id)
         if _id not in self.data[table]:
             raise ValueError(f"Record with _id '{_id}' does not exist in table '{table}'.")
-        
+
         old_record = self.data[table][_id]
         await self._update_index_for_record(table, old_record, _id, operation='remove')
-        
+
         self.data[table][_id].update(update_fields)
         await self._update_index_for_record(table, self.data[table][_id], _id, operation='add')
 
@@ -147,4 +158,3 @@ class EfficientDictQuery:
 
     async def fetch_all(self):
         return self.data
-      
