@@ -41,7 +41,7 @@ async def aa():
   #a = await db.fetch("bio_table", {'bio': "I'm cat"})
   #print(a)
 
-  await db.insert("bio_tablee", {"_id": 6292939333, "bio": "I'm dog"}, _m_id="23")
+  await db.insert("bio_table", {"_id": 1234567892, "bio": "I'm dog"}, _m_id="23")
   b = await db.fetch_all()
   for i, j in b.items():
     print("\n", i)
