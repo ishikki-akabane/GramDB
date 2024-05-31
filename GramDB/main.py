@@ -28,7 +28,6 @@ class GramDB:
         result, data = extract_func(self.url, self.token)
         if result:
             self.CACHE_TABLE = data
-            print(data)
         else:
             raise ValueError("Authentication failed: token expired or outdated!")
 
@@ -60,6 +59,9 @@ class GramDB:
 
     async def insert(self, table_name: str, record, **keargs):
         await self.db.insert(table_name, record, **keargs)
+
+    async def delete(self, table_name: str, query: dict):
+        await self.db.delete(table_name, query)
         
     async def create_table(self, table_name: str):
         pass
@@ -71,8 +73,7 @@ class GramDB:
     async def update(self, table_name: str, data_id, data):
         pass
 
-    async def delete(self, table_name: str, data_id):
-        pass
+    
 
 
     def close(self):
