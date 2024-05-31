@@ -25,9 +25,10 @@
 
 ### create
 ```
-await db.create("table_name")
+await db.create("table_name", ("name", "rollno", "section"))
 ```
-- table_name: name of the table that you want to create 
+- table_name: name of the table that you want to create
+- schema: set of fields
 
 
 ### fetch_all
