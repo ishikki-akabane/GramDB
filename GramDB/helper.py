@@ -8,6 +8,7 @@ class EfficientDictQuery:
         self.indexes = defaultdict(lambda: defaultdict(list))
         self.schemas = {}
         self.create_all_indexes()
+        self.create_all_schemas()
 
     def _structure_data(self, data):
         structured_data = defaultdict(dict)
@@ -53,6 +54,13 @@ class EfficientDictQuery:
                 items.append((new_key, v))
         return dict(items)
 
+    def create_all_schemas(self):
+        for table_name, records in self.data.items():
+            if table_name not in self.schemas:
+                schema = set()
+                for record in records.values():
+                    schema.update(record.keys())
+                self.schemas[table_name] = tuple(schema)
     
     async def fetch(self, table, query):
         results = []
@@ -76,7 +84,7 @@ class EfficientDictQuery:
 
     async def _validate_record(self, table, record):
         if table not in self.schemas:
-            return True  # No schema defined, so everything is valid
+            raise ValueError(f"Table '{table}' does not exist.")
 
         schema = self.schemas[table]
         for field in schema:
@@ -93,7 +101,7 @@ class EfficientDictQuery:
         sample_record['_id'] = "sample1928"
 
         self.data[table] = {"sample1928": sample_record}
-        await self._update_index_for_record(table, sample_record, "6829298293", operation='add')
+        await self._update_index_for_record(table, sample_record, "sample1928", operation='add')
 
     async def _generate_random_id(self):
         return ''.join(random.choices(string.ascii_letters + string.digits, k=10))
@@ -103,6 +111,9 @@ class EfficientDictQuery:
         if not _m_id:
             raise ValueError("Record must contain '_m_id' as a keyword argument.")
 
+        if table not in self.data:
+            raise ValueError(f"Invalid table name '{table}'. Table does not exist.")
+            
         if '_id' not in record:
             record['_id'] = await self._generate_random_id()
         
