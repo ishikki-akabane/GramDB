@@ -48,12 +48,12 @@ async def aa():
       print(l)
 
   await db.delete("bio_table", {"bio": "I'm cat"})
-
+  print("hmm")
   d = await db.fetch_all()
   for m, n in d.items():
     print("\n", m)
     for o, p in n.items():
-      print(l)
+      print(p)
     
 asyncio.run(aa())
 db.close()
