@@ -47,7 +47,7 @@ async def aa():
     for k, l in j.items():
       print(l)
 
-  await db.create("info_table", ("name", "class", "section"))
+  await db.create("test_table", ("name", "class", "section"))
   print("hmm")
   d = await db.fetch_all()
   for m, n in d.items():
