@@ -47,8 +47,8 @@ async def aa():
     for k, l in j.items():
       print(l)
 
-  await db.create("info_table", ("name", "class", "section"))
   await db.insert("info_table", {"name": "rohan", "class": "6", "section": {"div": 5, "sec": 7}}, _m_id="56")
+  await db.insert("info_table", {"name": "krish", "class": "6"}, _m_id="57")
   print("hmm")
   d = await db.fetch_all()
   for m, n in d.items():
