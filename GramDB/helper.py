@@ -157,5 +157,6 @@ class EfficientDictQuery:
             del self.data[table][record_id]
 
     async def fetch_all(self):
+        print("\n------------\n", self.schemas, "\n-----------\n")
         return self.data
 
