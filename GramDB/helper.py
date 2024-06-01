@@ -141,15 +141,17 @@ class EfficientDictQuery:
             raise ValueError(f"No records found matching query: {query}")
 
         print(records_to_update)
-        for record_id, old_record in records_to_update:
-            print(record_id, "\n", old_record)
-            combined_record = {**old_record, **update_fields}
-            await self._validate_record(table, combined_record)
-            await self._update_index_for_record(table, old_record, record_id, operation='remove')
+        record_id, old_record = records_to_update[0]
+        print(record_id, "\n", old_record)
+        _m_id = old_record["_m_id"]
+        combined_record = {**old_record, **update_fields}
+        await self._validate_record(table, combined_record)
+        await self._update_index_for_record(table, old_record, record_id, operation='remove')
 
-            self.data[table][record_id].update(update_fields)
-            await self._update_index_for_record(table, self.data[table][record_id], record_id, operation='add')
-
+        self.data[table][record_id].update(update_fields)
+        await self._update_index_for_record(table, self.data[table][record_id], record_id, operation='add')
+        return _m_id
+    
     async def delete(self, table, query):
         if table not in self.data:
             raise ValueError(f"Table '{table}' does not exist.")
