@@ -35,17 +35,19 @@ sample_efficitiantdb = {
 }
 
 
-db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-
 async def aa():
-  await db.create("info_table", ("name", "class"))
+  db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
+  
+  bbbbb = await db.create("info_table", ("name", "class"))
+  print(bbbbb)
   print("hmm")
   d = await db.fetch_all()
   for m, n in d.items():
     print("\n", m)
     for o, p in n.items():
       print(p)
+  db.close()
     
 asyncio.run(aa())
-db.close()
+
 print("ending...")
