@@ -162,6 +162,7 @@ class EfficientDictQuery:
 
         for record_id in records_to_delete:
             record = self.data[table][record_id]
+            print("record:", record)
             await self._update_index_for_record(table, record, record_id, operation='remove')
             del self.data[table][record_id]
 
