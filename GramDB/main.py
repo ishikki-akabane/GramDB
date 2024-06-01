@@ -17,9 +17,8 @@ class GramDB:
         asyncio.run(self.initialize())
 
     async def initialize(self):
-        async with aiohttp.ClientSession() as session:
-            self.session = session
-            await self.authenticate()
+        self.session = aiohttp.ClientSession()
+        await self.authenticate()
 
     async def authenticate(self):
         response = requests.get(self.db_url)
