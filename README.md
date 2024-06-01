@@ -67,3 +67,29 @@ await db.delete("table_name", {"name": "akabane"})
 ```
 - table_name: name of the table
 - query: query for deleting matching data
+
+
+### delete_table
+```
+await db.delete_table("table_name)
+```
+- table_name: name of the table
+
+
+### update
+```
+query = {
+    "name": "akabane"
+}
+
+update_query = {
+    "class": 7
+}
+
+await db.update("table_name", query, update_query)
+```
+- table_name: name of the table
+- query: query for deleting matching data
+- update_query: data for inserting new data 
+
+
