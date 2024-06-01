@@ -52,7 +52,7 @@ class GramDB:
 
 
     async def create(self, table_name: str, schema):
-        await self.db.create(table_name, schema)
+        await self.db.create(table_name, schema, _m_id="69")
         
     async def fetch(self, table_name: str, query: dict):
         return await self.db.fetch(table_name, query)
@@ -60,8 +60,8 @@ class GramDB:
     async def fetch_all(self):
         return await self.db.fetch_all()
 
-    async def insert(self, table_name: str, record, **keargs):
-        await self.db.insert(table_name, record, **keargs)
+    async def insert(self, table_name: str, record):
+        await self.db.insert(table_name, record, _m_id="69")
 
     async def delete(self, table_name: str, query: dict):
         await self.db.delete(table_name, query)
