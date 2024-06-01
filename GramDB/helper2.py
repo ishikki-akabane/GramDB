@@ -41,6 +41,14 @@ class EfficientDictQuery:
                     index[flattened_item[field]].append((table_name, key))
         self.indexes[field] = index
 
+    def create_all_schemas(self):
+        for table_name, records in self.data.items():
+            if table_name not in self.schemas:
+                schema = set()
+                for record in records.values():
+                    schema.update(record.keys())
+                self.schemas[table_name] = tuple(schema)
+
     def _flatten_dict(self, d, parent_key='', sep='.'):
         items = []
         for k, v in d.items():
@@ -54,14 +62,6 @@ class EfficientDictQuery:
                 items.append((new_key, v))
         return dict(items)
 
-    def create_all_schemas(self):
-        for table_name, records in self.data.items():
-            if table_name not in self.schemas:
-                schema = set()
-                for record in records.values():
-                    schema.update(record.keys())
-                self.schemas[table_name] = tuple(schema)
-    
     async def fetch(self, table, query):
         results = []
 
@@ -91,35 +91,41 @@ class EfficientDictQuery:
             if field not in record:
                 raise ValueError(f"Missing required field '{field}' in record for table '{table}'.")
 
+        for field in record:
+            if field not in schema:
+                raise ValueError(f"Field '{field}' is not allowed in schema for table '{table}'.")
+
     async def create(self, table, schema):
         if table in self.data:
             raise ValueError(f"Table '{table}' already exists.")
 
-        self.schemas[table] = schema
+        schema = set(schema)
+        schema.update(["_id", "_m_id"])  # Ensure "_id" and "_m_id" are in the schema
+        self.schemas[table] = tuple(schema)
 
         sample_record = {field: "test" for field in schema}
         sample_record['_id'] = "sample1928"
+        sample_record['_m_id'] = "sample_m_id"
 
         self.data[table] = {"sample1928": sample_record}
         await self._update_index_for_record(table, sample_record, "sample1928", operation='add')
 
     async def _generate_random_id(self):
         return ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-                               
+
     async def insert(self, table, record, **kwargs):
+        if table not in self.data:
+            raise ValueError(f"Invalid table name '{table}'. Table does not exist.")
+
         _m_id = kwargs.get('_m_id')
         if not _m_id:
             raise ValueError("Record must contain '_m_id' as a keyword argument.")
-
-        if table not in self.data:
-            raise ValueError(f"Invalid table name '{table}'. Table does not exist.")
-            
-        if '_id' not in record:
-            record['_id'] = await self._generate_random_id()
-        
-        _id = str(record['_id'])
         record['_m_id'] = _m_id
 
+        if '_id' not in record:
+            record['_id'] = await self._generate_random_id()
+
+        _id = str(record['_id'])
         await self._validate_record(table, record)
 
         if _id in self.data[table]:
@@ -132,10 +138,10 @@ class EfficientDictQuery:
         _id = str(_id)
         if _id not in self.data[table]:
             raise ValueError(f"Record with _id '{_id}' does not exist in table '{table}'.")
-        
+
         old_record = self.data[table][_id]
         await self._update_index_for_record(table, old_record, _id, operation='remove')
-        
+
         self.data[table][_id].update(update_fields)
         await self._update_index_for_record(table, self.data[table][_id], _id, operation='add')
 
@@ -157,6 +163,4 @@ class EfficientDictQuery:
             del self.data[table][record_id]
 
     async def fetch_all(self):
-        print("\n------------\n", self.schemas, "\n-----------\n")
         return self.data
-                               
