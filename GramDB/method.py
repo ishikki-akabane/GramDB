@@ -30,12 +30,12 @@ async def insert_func(session, base_url, token, data):
     payload = {
         "data": str(data)
     }
-    response = await session.post(url, headers=headers, json=payload)
-    if response.status == 200:
-        result = await response.json()
-        return True, result
-    else:
-        return False, response.status
+    async with session.post(url, headers=headers, json=payload) as response:
+        if response.status == 200:
+            result = await response.json()
+            return True, result
+        else:
+            return False, response.status
 
 
 async def delete_func(session, base_url, token, data_id):
