@@ -140,7 +140,9 @@ class EfficientDictQuery:
         if not records_to_update:
             raise ValueError(f"No records found matching query: {query}")
 
+        print(records_to_update)
         for record_id, old_record in records_to_update:
+            print(record_id, "\n", old_record)
             combined_record = {**old_record, **update_fields}
             await self._validate_record(table, combined_record)
             await self._update_index_for_record(table, old_record, record_id, operation='remove')
@@ -160,11 +162,12 @@ class EfficientDictQuery:
         if not records_to_delete:
             raise ValueError(f"No records found matching query: {query}")
 
-        for record_id in records_to_delete:
-            record = self.data[table][record_id]
-            print("record:", record)
-            await self._update_index_for_record(table, record, record_id, operation='remove')
-            del self.data[table][record_id]
+        record_id = records_to_delete[0]
+        record = self.data[table][record_id]
+        _m_id = record["_m_id"]
+        await self._update_index_for_record(table, record, record_id, operation='remove')
+        del self.data[table][record_id]
+        return _m_id
 
     async def delete_table(self, table):
         if table not in self.data:
