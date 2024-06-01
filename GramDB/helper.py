@@ -91,14 +91,21 @@ class EfficientDictQuery:
             if field not in record:
                 raise ValueError(f"Missing required field '{field}' in record for table '{table}'.")
 
+        for field in record:
+            if field not in schema:
+                raise ValueError(f"Field '{field}' is not allowed in schema for table '{table}'.")
+
     async def create(self, table, schema):
         if table in self.data:
             raise ValueError(f"Table '{table}' already exists.")
 
-        self.schemas[table] = schema
+        schema = set(schema)
+        schema.update(["_id", "_m_id"])
+        self.schemas[table] = tuple(schema)
 
         sample_record = {field: "test" for field in schema}
         sample_record['_id'] = "sample1928"
+        sample_record['_m_id'] = "999"
 
         self.data[table] = {"sample1928": sample_record}
         await self._update_index_for_record(table, sample_record, "sample1928", operation='add')
@@ -116,7 +123,7 @@ class EfficientDictQuery:
             
         if '_id' not in record:
             record['_id'] = await self._generate_random_id()
-        
+
         _id = str(record['_id'])
         record['_m_id'] = _m_id
 
