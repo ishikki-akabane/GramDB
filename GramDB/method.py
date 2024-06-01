@@ -1,5 +1,6 @@
 # methods
 import requests
+import json
 
 
 async def fetch_func(session, base_url, token, data_id):
@@ -25,8 +26,9 @@ async def insert_func(session, base_url, token, data):
         "Content-Type": "application/json",
         "Authorization": token
     }
+    data = json.dumps(data)
     payload = {
-        "data": data
+        "data": str(data)
     }
     response = await session.post(url, headers=headers, json=payload)
     if response.status == 200:
