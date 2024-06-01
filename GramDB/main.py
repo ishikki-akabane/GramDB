@@ -51,7 +51,13 @@ class GramDB:
 
 
     async def create(self, table_name: str, schema):
-        await self.db.create(table_name, schema, _m_id="69")
+        sample_record = {field: "test" for field in schema}
+        sample_record['_id'] = "sample1928"
+        result, mdata = await insert_func(self.session, self.url, self.token, str(sample_data))
+        if result:
+            _m_id = mdata["data_id"]
+            sample_record['_m_id'] = _m_id
+            await self.db.create(table_name, schema, sample_data, _m_id)
         
     async def fetch(self, table_name: str, query: dict):
         return await self.db.fetch(table_name, query)
