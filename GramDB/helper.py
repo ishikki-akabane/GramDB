@@ -163,6 +163,16 @@ class EfficientDictQuery:
             await self._update_index_for_record(table, record, record_id, operation='remove')
             del self.data[table][record_id]
 
+    async def delete_table(self, table):
+        if table not in self.data:
+            raise ValueError(f"Table '{table}' does not exist.")
+
+        for record_id, record in self.data[table].items():
+            await self._update_index_for_record(table, record, record_id, operation='remove')
+
+        del self.data[table]
+        del self.schemas[table]
+
     async def fetch_all(self):
         print("\n------------\n", self.schemas, "\n-----------\n")
         return self.data
