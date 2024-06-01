@@ -86,7 +86,14 @@ class GramDB:
     async def delete_table(self, table_name: str):
         await self.db.delete_table(table_name)
 
+    async def close_func(self):
+        await self.session.close()
+        
     def close(self):
-        asyncio.run(self.session.close())
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            loop.create_task(self.close_func())
+        else:
+            asyncio.run(self.close_func())
   
 
