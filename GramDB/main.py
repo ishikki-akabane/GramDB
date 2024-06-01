@@ -50,7 +50,7 @@ class GramDB:
         self.db = EfficientDictQuery(self.CACHE_DATA)
 
 
-    async def create(self, table_name: str, schema):
+    async def create(self, table_name: str, schema: tuple):
         sample_record = {field: "test" for field in schema}
         sample_record['_id'] = "sample1928"
         result, mdata = await insert_func(self.session, self.url, self.token, str(sample_data))
