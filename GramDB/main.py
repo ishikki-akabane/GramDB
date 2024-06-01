@@ -85,10 +85,10 @@ class GramDB:
         await self.db.insert(table_name, record, _m_id=_m_id)
 
     async def delete(self, table_name: str, query: dict):
-        await self.db.delete(table_name, query)
+        _m_id = await self.db.delete(table_name, query)
 
     async def update(self, table_name: str, query: dict, update_query: dict):
-        await self.db.update(table_name, query, update_query)
+        _m_id = await self.db.update(table_name, query, update_query)
 
     async def delete_table(self, table_name: str):
         await self.db.delete_table(table_name)
