@@ -75,7 +75,14 @@ class GramDB:
         return await self.db.fetch_all()
 
     async def insert(self, table_name: str, record: dict):
-        await self.db.insert(table_name, record, _m_id="69")
+        if '_id' not in record:
+            record['_id'] = await self.db._generate_random_id()
+
+        result, mdata = await insert_func(self.session, self.url, self.token, record)
+        if result:
+            _m_id = mdata["data_id"]
+            record['_m_id'] = _m_id
+        await self.db.insert(table_name, record, _m_id=_m_id)
 
     async def delete(self, table_name: str, query: dict):
         await self.db.delete(table_name, query)
