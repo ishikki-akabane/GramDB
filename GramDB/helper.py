@@ -135,16 +135,25 @@ class EfficientDictQuery:
         self.data[table][_id] = record
         await self._update_index_for_record(table, record, _id, operation='add')
 
-    async def update(self, table, _id, update_fields):
-        _id = str(_id)
-        if _id not in self.data[table]:
-            raise ValueError(f"Record with _id '{_id}' does not exist in table '{table}'.")
-        
-        old_record = self.data[table][_id]
-        await self._update_index_for_record(table, old_record, _id, operation='remove')
-        
-        self.data[table][_id].update(update_fields)
-        await self._update_index_for_record(table, self.data[table][_id], _id, operation='add')
+    async def update(self, table, query, update_fields):
+        if table not in self.data:
+            raise ValueError(f"Table '{table}' does not exist.")
+
+        records_to_update = [
+            (record_id, record) for record_id, record in self.data[table].items()
+            if all(record.get(key) == value for key, value in query.items())
+        ]
+
+        if not records_to_update:
+            raise ValueError(f"No records found matching query: {query}")
+
+        for record_id, old_record in records_to_update:
+            combined_record = {**old_record, **update_fields}
+            await self._validate_record(table, combined_record)
+            await self._update_index_for_record(table, old_record, record_id, operation='remove')
+
+            self.data[table][record_id].update(update_fields)
+            await self._update_index_for_record(table, self.data[table][record_id], record_id, operation='add')
 
     async def delete(self, table, query):
         if table not in self.data:
@@ -174,6 +183,5 @@ class EfficientDictQuery:
         del self.schemas[table]
 
     async def fetch_all(self):
-        print("\n------------\n", self.schemas, "\n-----------\n")
         return self.data
 
