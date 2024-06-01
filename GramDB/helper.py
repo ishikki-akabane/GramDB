@@ -117,9 +117,6 @@ class EfficientDictQuery:
         if table not in self.data:
             raise ValueError(f"Invalid table name '{table}'. Table does not exist.")
             
-        if '_id' not in record:
-            record['_id'] = await self._generate_random_id()
-
         _id = str(record['_id'])
         record['_m_id'] = _m_id
 
