@@ -95,17 +95,13 @@ class EfficientDictQuery:
             if field not in schema:
                 raise ValueError(f"Field '{field}' is not allowed in schema for table '{table}'.")
 
-    async def create(self, table, schema, _m_id):
+    async def create(self, table, schema, sample_record, _m_id):
         if table in self.data:
             raise ValueError(f"Table '{table}' already exists.")
 
         schema = set(schema)
         schema.update(["_id", "_m_id"])
         self.schemas[table] = tuple(schema)
-
-        sample_record = {field: "test" for field in schema}
-        sample_record['_id'] = "sample1928"
-        sample_record['_m_id'] = _m_id
 
         self.data[table] = {"sample1928": sample_record}
         await self._update_index_for_record(table, sample_record, "sample1928", operation='add')
