@@ -8,10 +8,20 @@ import asyncio
 class GramDB:
     def __init__(self, db_url: str):
         self.db_url = db_url
-        self.session = aiohttp.ClientSession()
-        self.authenticate()
+        self.session = None
+        self.token = None
+        self.url = None
+        self.CACHE_TABLE = None
+        self.CACHE_DATA = None
+        self.db = None
+        asyncio.run(self.initialize())
 
-    def authenticate(self):
+    async def initialize(self):
+        async with aiohttp.ClientSession() as session:
+            self.session = session
+            await self.authenticate()
+
+    async def authenticate(self):
         response = requests.get(self.db_url)
         if response.status_code == 400:
             raise ValueError("Authentication failed: Invalid credentials or URL.")
@@ -22,9 +32,9 @@ class GramDB:
         self.auth = response.json()
         self.token = self.auth['client_id']
         self.url = self.auth['url']
-        self.import_cache()
+        await self.import_cache()
 
-    def import_cache(self):
+    async def import_cache(self):
         result, data = extract_func(self.url, self.token)
         if result:
             self.CACHE_TABLE = data
