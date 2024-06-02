@@ -1,3 +1,5 @@
+# lmao
+
 import requests
 import aiohttp
 from GramDB.method import *
