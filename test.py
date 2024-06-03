@@ -38,8 +38,8 @@ sample_efficitiantdb = {
 async def aa():
   db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
   
-  bbbbb = await db.update("test_table", {'username': "ishikki"}, {'username': "ishikki_akabane"})
-  print(bbbbb)
+  #bbbbb = await db.update("test_table", {'username': "ishikki"}, {'username': "ishikki_akabane"})
+  #print(bbbbb)
   print("hmm")
   d = await db.fetch_all()
   for m, n in d.items():
