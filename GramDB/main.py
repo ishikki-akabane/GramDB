@@ -91,6 +91,7 @@ class GramDB:
         return
 
     async def background_update(self, table_name, update_query, _m_id):
+        await asyncio.sleep(8)
         record = await self.db.fetch(table_name, update_query)
         print("test record: ", record[0])
         result, mdata = await update_func(self.session, self.url, self.token, _m_id, record[0])
