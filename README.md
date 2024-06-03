@@ -7,7 +7,7 @@
 - `CACHE_TABLE`: Dictionary containing table names as keys and a list of record IDs (primary keys) as values. (e.g., {"test_table": ["123", "456"]})
 - `CACHE_DATA`: Dictionary containing all records with their primary key (`_id`) as keys and the record data as values. (e.g., {"123": {"name": "John", "age": 30}, "456": {"name": "Jane", "city": "New York"}})
 - `db`: Instance of `EfficientDictQuery` class which holds the actual in-memory data structure for efficient querying.
-- 
+
 
 - ### EfficientDictQuery Class:
 - `data`: Dictionary containing tables as keys and dictionaries of records as values. Each record dictionary has its primary key (`_id`) as a key and the record data as the value. (Similar to `CACHE_DATA` but potentially more organized)
@@ -32,6 +32,8 @@
 - ### EfficientDictQuery Class:
 - Provides methods for querying, inserting, updating, and deleting data efficiently using the internal data structures (`data`, `indexes`, and `schemas`).
 Maintains indexes to enable faster searches based on field values.
+
+
 
 ### Data format:
 ```
