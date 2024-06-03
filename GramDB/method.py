@@ -56,6 +56,7 @@ async def delete_func(session, base_url, token, data_id):
 
 
 async def update_func(session, base_url, token, data_id, data):
+    data = json.dumps(data)
     url = base_url + "/update"
     headers = {
         "Content-Type": "application/json",
