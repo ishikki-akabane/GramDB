@@ -90,10 +90,14 @@ class GramDB:
         _m_id = await self.db.delete(table_name, query)
         return
 
-    async def update(self, table_name: str, query: dict, update_query: dict):
-        _m_id = await self.db.update(table_name, query, update_query)
+    async def background_update(self, table_name, update_query, _m_id):
         record = await self.db.fetch(table_name, update_query)
         result, mdata = await update_func(self.session, self.url, self.token, _m_id, record[0])
+        print("file inserted")
+        
+    async def update(self, table_name: str, query: dict, update_query: dict):
+        _m_id = await self.db.update(table_name, query, update_query)
+        asyncio.create_task(self.background_update(self, table_name, update_query, _m_id))
         return
 
     async def delete_table(self, table_name: str):
