@@ -3,16 +3,29 @@
 
 ## Data Structure:
 
-### GramDB Class:
+- ### GramDB Class:
 - `CACHE_TABLE`: Dictionary containing table names as keys and a list of record IDs (primary keys) as values. (e.g., {"test_table": ["123", "456"]})
-- `CACHE_DATA`: Dictionary containing all records with their primary key (_id) as keys and the record data as values. (e.g., {"123": {"name": "John", "age": 30}, "456": {"name": "Jane", "city": "New York"}})
-- `db`: Instance of EfficientDictQuery class which holds the actual in-memory data structure for efficient querying.
+- `CACHE_DATA`: Dictionary containing all records with their primary key (`_id`) as keys and the record data as values. (e.g., {"123": {"name": "John", "age": 30}, "456": {"name": "Jane", "city": "New York"}})
+- `db`: Instance of `EfficientDictQuery` class which holds the actual in-memory data structure for efficient querying.
 
 
-### EfficientDictQuery Class:
-- `data`: Dictionary containing tables as keys and dictionaries of records as values. Each record dictionary has its primary key (_id) as a key and the record data as the value. (Similar to CACHE_DATA but potentially more organized)
+- ### EfficientDictQuery Class:
+- `data`: Dictionary containing tables as keys and dictionaries of records as values. Each record dictionary has its primary key (`_id`) as a key and the record data as the value. (Similar to `CACHE_DATA` but potentially more organized)
 - `indexes`: Dictionary where each key represents a field name in the records, and the value is another dictionary. This inner dictionary maps each unique value of that field to a list of (table_name, record_id) tuples referencing records containing that value.
 - `schemas`: Dictionary containing table names as keys and tuples of field names (schema) as values.
+
+
+## Functionalities:
+- ## GramDB Class:
+- `initialize()`: Initializes the connection with the Telegram database by fetching authentication details and building the internal data structures.
+- `create(table_name, schema)`: Creates a new table with the specified schema (list of field names).
+- `fetch(table_name, query)`: Fetches records from a table based on a query dictionary (key-value pairs matching record fields).
+- `fetch_all()`: Fetches all records from all tables.
+- `insert(table_name, record)`: Inserts a new record into a table. The record must contain a `_id` field.
+- `delete(table_name, query)`: Deletes records from a table based on a query dictionary.
+- `update(table_name, query, update_query)`: Updates records in a table based on a query dictionary and updates the specified fields with the values provided in the `update_query` dictionary.
+- `delete_table(table_name)`: Deletes a table entirely.
+- `close()`: Closes the asynchronous session.
 
 ### Data format:
 ```
