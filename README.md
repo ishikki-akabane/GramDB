@@ -8,7 +8,7 @@
   - ```{"test_table": [123, 456]}```
 
 - `CACHE_DATA`: Dictionary containing all records with their record ID key (`_m_id`) as keys and the record data as values.
-  - ```{"123": {"_id": 72939393939, "name": "John", "age": 30}}```
+  - ```{"123": {"_m_id": "123", "_id": 72939393939, "name": "John", "age": 30}}```
 
 - `db`: Instance of `EfficientDictQuery` class which holds the actual in-memory data structure for efficient querying.
 
