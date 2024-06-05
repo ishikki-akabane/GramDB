@@ -96,7 +96,7 @@ class GramDB:
         await asyncio.sleep(8)
         update_query["_table_"] = table_name
         record = await self.db.fetch(table_name, update_query)
-        print(record)
+        print("-------", record)
         result, mdata = await update_func(self.session, self.url, self.token, _m_id, record[0])
         
     async def update(self, table_name: str, query: dict, update_query: dict):
