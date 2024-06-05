@@ -60,6 +60,11 @@ class GramDB:
             
         self.db = EfficientDictQuery(self.CACHE_DATA)
 
+    async def background_insert(self, table_name, _m_id):
+        result, old_data = extract_func(self.url, self.token)
+        new_data = old_data[table_name]
+        new_data.append(_m_id)
+        result2, response = await git_func(self.session, self.url, self.token, old_data)
 
     async def create(self, table_name: str, schema):
         sample_record = {field: "test" for field in schema}
@@ -69,6 +74,7 @@ class GramDB:
             _m_id = mdata["data_id"]
             sample_record['_m_id'] = _m_id
             await self.db.create(table_name, schema, sample_record, _m_id)
+            
         
     async def fetch(self, table_name: str, query: dict):
         return await self.db.fetch(table_name, query)
