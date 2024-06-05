@@ -9,12 +9,6 @@ class EfficientDictQuery:
         self.schemas = {}
         self.create_all_indexes()
         self.create_all_schemas()
-        print("data:")
-        print(self.data)
-        print("\nIndexes:")
-        print(self.indexes)
-        print("\nSchemas")
-        print(self.schemas)
 
     def _structure_data(self, data):
         structured_data = defaultdict(dict)
