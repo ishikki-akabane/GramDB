@@ -4,8 +4,12 @@
 ## Data Structure:
 
 - ### GramDB Class:
-- `CACHE_TABLE`: Dictionary containing table names as keys and a list of record IDs (primary keys) as values. (e.g., {"test_table": ["123", "456"]})
-- `CACHE_DATA`: Dictionary containing all records with their primary key (`_id`) as keys and the record data as values. (e.g., {"123": {"name": "John", "age": 30}, "456": {"name": "Jane", "city": "New York"}})
+- `CACHE_TABLE`: Dictionary containing table names as keys and a list of record IDs as values.
+  - ```{"test_table": [123, 456]}```
+
+- `CACHE_DATA`: Dictionary containing all records with their record ID key (`_m_id`) as keys and the record data as values.
+  - ```{"123": {"_id": 72939393939, "name": "John", "age": 30}}```
+
 - `db`: Instance of `EfficientDictQuery` class which holds the actual in-memory data structure for efficient querying.
 
 
@@ -35,7 +39,8 @@ Maintains indexes to enable faster searches based on field values.
 
 
 
-### Data format:
+## Data format:
+- ### CACHE_TABLE
 ```
 {
     "_id": 6939393728, # primary key
