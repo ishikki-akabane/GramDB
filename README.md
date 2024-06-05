@@ -5,17 +5,23 @@
 
 - ### GramDB Class:
 - `CACHE_TABLE`: Dictionary containing table names as keys and a list of record IDs as values.
-  - ```{"test_table": [123, 456]}```
+```
+{"test_table": [123, 456]}
+```
 
 - `CACHE_DATA`: Dictionary containing all records with their record ID key (`_m_id`) as keys and the record data as values.
-  - ```{"123": {"_m_id": "123", "_id": 696969696969, "name": "John", "age": 30}}```
+```
+{"123": {"_m_id": "123", "_id": 696969696969, "name": "John", "age": 30}}
+```
 
 - `db`: Instance of `EfficientDictQuery` class which holds the actual in-memory data structure for efficient querying.
 
 
 - ### EfficientDictQuery Class:
 - `data`: Dictionary containing tables as keys and dictionaries of records as values. Each record dictionary has its primary key (`_id`) as a key and the record data as the value. (Similar to `CACHE_DATA` but potentially more organized)
-  - ```{"696969696969": {"_id": "696969696969", "_m_id": "123", "name": "John", "age": 30}}```
+```
+{"696969696969": {"_id": "696969696969", "_m_id": "123", "name": "John", "age": 30}}
+```
 
 - `indexes`: Dictionary where each key represents a field name in the records, and the value is another dictionary. This inner dictionary maps each unique value of that field to a list of (table_name, record_id) tuples referencing records containing that value.
 - `schemas`: Dictionary containing table names as keys and tuples of field names (schema) as values.
