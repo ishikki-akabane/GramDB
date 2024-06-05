@@ -38,6 +38,7 @@ class GramDB:
     def import_cache(self):
         result, data = extract_func(self.url, self.token)
         if result:
+            print(data)
             self.CACHE_TABLE = data
         else:
             raise ValueError("Authentication failed: token expired or outdated!")
