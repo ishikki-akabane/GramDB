@@ -84,7 +84,7 @@ class GramDB:
 
     async def insert(self, table_name: str, record: dict):
         if '_id' not in record:
-            record['_id'] = await self.db._generate_randomid()
+            record['_id'] = await self.db._generate_random_id()
             
         result, mdata = await insert_func(self.session, self.url, self.token, record, table_name)
         if result:
