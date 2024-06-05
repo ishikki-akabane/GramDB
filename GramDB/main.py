@@ -80,7 +80,7 @@ class GramDB:
         result, old_data = extract_func(self.url, self.token)
         new_data = old_data[table_name]
         new_data.append(_m_id)
-        result2, response = await git_func(self.session, self.url, self.token, new_data)
+        result2, response = await git_func(self.session, self.url, self.token, old_data)
 
     async def insert(self, table_name: str, record: dict):
         if '_id' not in record:
