@@ -43,9 +43,9 @@ async def aa():
   print("hmm")
   d = await db.fetch_all()
   for m, n in d.items():
-    print("\n", m)
+    #print("\n", m)
     for o, p in n.items():
-      print(p)
+      #print(p)
   db.close()
     
 asyncio.run(aa())
