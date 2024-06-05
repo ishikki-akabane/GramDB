@@ -33,7 +33,7 @@ async def aa():
   
   bbbbb = await db.insert("bio_table", {'bio': "I'm dog"})
   #print(bbbbb)
-  cc = await db.fetch("bio_table", {'bio': "I'm dog"})
+  cc = await db.update("bio_table", {'bio': "I'm dog"}, {'bio': "I'm horse"})
   print(cc)
   #await db.update("bio_table", {'bio': "I'm dog"}, {'bio': "I'm horse"})
   print("hmm")
