@@ -31,7 +31,7 @@ sample_efficitiantdb = {
 async def aa():
   db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
   
-  bbbbb = await db.insert("bio_table", {"bio": "I'm real"})
+  bbbbb = await db.create("new_table", ("bio", "name"))
  
   d = await db.fetch_all()
   for m, n in d.items():
