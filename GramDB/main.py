@@ -72,6 +72,7 @@ class GramDB:
         if result:
             _m_id = mdata["data_id"]
             sample_record['_m_id'] = _m_id
+            del sample_record["_table_"]
             await self.db.create(table_name, schema, sample_record, _m_id)
             await asyncio.create_task(self.background_create(table_name, _m_id))
             return
