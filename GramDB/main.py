@@ -84,7 +84,8 @@ class GramDB:
         if result:
             _m_id = mdata["data_id"]
             record['_m_id'] = _m_id
-        await self.db.insert(table_name, record, _m_id=_m_id)
+            del record['_table_']
+            await self.db.insert(table_name, record, _m_id=_m_id)
 
     async def delete(self, table_name: str, query: dict):
         _m_id = await self.db.delete(table_name, query)
