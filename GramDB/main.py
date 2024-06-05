@@ -80,13 +80,10 @@ class GramDB:
         if '_id' not in record:
             record['_id'] = await self.db._generate_random_id()
             
-        tg_record = record
-        tg_record["_table_"] = table_name
-        result, mdata = await insert_func(self.session, self.url, self.token, tg_record)
+        result, mdata = await insert_func(self.session, self.url, self.token, record, table_name)
         if result:
             _m_id = mdata["data_id"]
             record['_m_id'] = _m_id
-            print(record)
         await self.db.insert(table_name, record, _m_id=_m_id)
 
     async def delete(self, table_name: str, query: dict):
