@@ -31,17 +31,14 @@ sample_efficitiantdb = {
 async def aa():
   db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
   
-  bbbbb = await db.insert("bio_table", {'bio': "I'm dog"})
-  #print(bbbbb)
-  cc = await db.update("bio_table", {'bio': "I'm dog"}, {'bio': "I'm horse"})
-  print(cc)
-  #await db.update("bio_table", {'bio': "I'm dog"}, {'bio': "I'm horse"})
-  print("hmm")
+  bbbbb = await db.background_insert("bio_table", "57")
+ 
   d = await db.fetch_all()
   for m, n in d.items():
-    print("\n", m)
+    #print("\n", m)
     for o, p in n.items():
-      print(p)
+      #print(p)
+      pass
   db.close()
     
 asyncio.run(aa())
