@@ -20,12 +20,13 @@ async def fetch_func(session, base_url, token, data_id):
         return False, response.status
 
 
-async def insert_func(session, base_url, token, data):
+async def insert_func(session, base_url, token, data, table_name):
     url = base_url + "/insert"
     headers = {
         "Content-Type": "application/json",
         "Authorization": token
     }
+    data["_table_"] = table_name
     data = json.dumps(data)
     payload = {
         "data": str(data)
