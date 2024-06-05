@@ -81,7 +81,6 @@ class GramDB:
         new_data = old_data[table_name]
         new_data.append(_m_id)
         result2, response = await git_func(self.session, self.url, self.token, new_data)
-        print(response)
 
     async def insert(self, table_name: str, record: dict):
         if '_id' not in record:
@@ -93,6 +92,7 @@ class GramDB:
             record['_m_id'] = _m_id
             del record['_table_']
             await self.db.insert(table_name, record, _m_id=_m_id)
+            await asyncio.create_task(self.background_insert(table_name, _m_id))
 
     async def delete(self, table_name: str, query: dict):
         _m_id = await self.db.delete(table_name, query)
