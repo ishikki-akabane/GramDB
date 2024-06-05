@@ -56,8 +56,8 @@ class GramDB:
                 # row = {'_m_id': '21', '_table_': 'test_table', 'id': 1234567891, 'name': "ishikki"},
                 self.CACHE_DATA[row['_m_id']] = row
         else:
-            raise ValueError(f"{all_rows}")        
-        print(self.CACHE_DATA)           
+            raise ValueError(f"{all_rows}")
+            
         self.db = EfficientDictQuery(self.CACHE_DATA)
 
 
