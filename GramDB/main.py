@@ -77,8 +77,11 @@ class GramDB:
         return await self.db.fetch_all()
 
     async def background_insert(self, table_name, _m_id):
-        old_data = extract_func(self.url, self.token)
-        print(old_data)
+        result, old_data = extract_func(self.url, self.token)
+        new_data = old_data[table_name]
+        new_data.append(_m_id)
+        result2, response = await git_func(self.session, self.url, self.token, new_data)
+        print(response)
 
     async def insert(self, table_name: str, record: dict):
         if '_id' not in record:
