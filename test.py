@@ -46,6 +46,7 @@ async def aa():
     #print("\n", m)
     for o, p in n.items():
       #print(p)
+      pass
   db.close()
     
 asyncio.run(aa())
