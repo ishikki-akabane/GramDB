@@ -133,8 +133,9 @@ class GramDB:
             result, old_data = extract_func(self.url, self.token)
             new_data = old_data[table_name]
             print(new_data)
-            new_data.remove(_m_id)
-            result2, response = await git_func(self.session, self.url, self.token, old_data)
+            print(_m_id)
+            #new_data.remove(_m_id)
+            #result2, response = await git_func(self.session, self.url, self.token, old_data)
         except Exception as e:
             raise GramDBError(f"Error in background delete: {e}")
 
