@@ -35,6 +35,8 @@ async def aa():
     try:
       command = input("Enter a command")
       result = eval(command)
+      if asyncio.iscoroutine(result):
+        result = await result
       print(result)
     except Exception as e:
       print(e)
@@ -43,3 +45,4 @@ async def aa():
 asyncio.run(aa())
 
 print("ending...")
+db.fetch("bio_table", {"bio": "I'm cat"})
