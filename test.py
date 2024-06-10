@@ -34,6 +34,8 @@ async def bb_test():
   a = await db.fetch_all()
   print(json.dumps(a, indent=4))    
   print("------------------------")
+  db.close()
+  
   
 async def aa_test():
   db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
