@@ -140,9 +140,7 @@ class EfficientDictQuery:
         if not records_to_update:
             raise ValueError(f"No records found matching query: {query}")
 
-        print(records_to_update)
         record_id, old_record = records_to_update[0]
-        print(record_id, "\n", old_record)
         _m_id = old_record["_m_id"]
         combined_record = {**old_record, **update_fields}
         await self._validate_record(table, combined_record)
