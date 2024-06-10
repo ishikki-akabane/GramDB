@@ -56,8 +56,11 @@ async def delete_func(session, base_url, token, data_id):
         return False, response.status
 
 
-async def update_func(session, base_url, token, data_id, data):
-    data = json.dumps(data)
+async def update_func(session, base_url, token, data_id, data, table_name):
+    dataa = json.dumps(data)
+    dataa["_table_"] = table_name
+    del dataa["_m_id"]
+    
     url = base_url + "/update"
     headers = {
         "Content-Type": "application/json",
@@ -65,7 +68,7 @@ async def update_func(session, base_url, token, data_id, data):
     }
     payload = {
         "data_id": data_id,
-        "data": data
+        "data": dataa
     }
     response = await session.post(url, headers=headers, json=payload)
     if response.status == 200:
