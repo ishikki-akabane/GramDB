@@ -14,27 +14,29 @@ class GramDB:
         self.CACHE_TABLE = None
         self.CACHE_DATA = None
         self.db = None
+        self.initialize()
 
-    async def initialize(self):
+    def initialize(self):
         self.session = aiohttp.ClientSession()
-        await self.authenticate()
+        self.authenticate()
 
-    async def authenticate(self):
+    def authenticate(self):
         try:
-            async with self.session.get(self.db_url) as response:
-                if response.status == 400:
-                    raise ValidationError("Authentication failed: Invalid credentials or URL.")
-                elif response.status != 200:
-                    raise ConnectionError(f"Authentication failed: Unexpected status code {response.status}.")
-                
-                self.auth = await response.json()
-                self.token = self.auth['client_id']
-                self.url = self.auth['url']
-                await self.import_cache()
-        except aiohttp.ClientError as e:
+            response = requests.get(self.db_url)
+            if response.status_code == 400:
+                raise ValueError("Authentication failed: Invalid credentials or URL.")
+            elif response.status_code != 200:
+                raise ValueError(f"Authentication failed: Unexpected status code {response.status_code}")
+                                                                                  
+            self.auth = response.json()
+            self.token = self.auth['client_id']
+            self.url = self.auth['url']
+            self.import_cache()
+        
+        except Exception as e:
             raise ConnectionError(f"Network error during authentication: {e}")
 
-    async def import_cache(self):
+    def import_cache(self):
         try:
             result, data = await extract_func(self.url, self.token)
             if result:
