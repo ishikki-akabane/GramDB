@@ -45,8 +45,13 @@ class GramDB:
                 raise ValidationError("Authentication failed: token expired or outdated!")
             
             self.CACHE_DATA = {}
-            all_ids = [id for table in self.CACHE_TABLE.values() if table != "info_gramdb" for id in table]
-
+            all_ids = []
+            for tablename, table in self.CACHE_TABLE.items():
+                if tablename=="info_gramdb":
+                    pass
+                else:
+                    all_ids = all_ids + table
+                
             result, all_rows = fetchall_func(self.url, self.token, all_ids)
             if result:
                 for row in all_rows["data"]:
