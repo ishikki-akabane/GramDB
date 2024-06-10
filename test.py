@@ -28,31 +28,15 @@ sample_efficitiantdb = {
 }
 
 
-async def aa():
+async def aa_test():
   db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-
-  lines = []
-  while True:
-    line = input()
-    if line == "":
-      break
-    lines.append(line)
-    command = "\n".join(lines)
-            
-    if command.strip() == "end":
-      break     
-        
-    local_vars = {"db": db, "asyncio": asyncio}
-
-    exec(f"async def __user_code__():\n" + "\n".join(f"    {line}" for line in command.split("\n")), local_vars)
-            
-    result = await local_vars["__user_code__"]()
-    if result:
-      print(result)
-    else:
-      print("None")
+  
+  a = await db.fetch_all()
+  print(a)
+    
+  
   db.close()
     
-asyncio.run(aa())
+asyncio.run(aa_test())
 
 print("ending...")
