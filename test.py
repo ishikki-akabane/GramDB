@@ -35,8 +35,7 @@ async def aa():
     try:
       command = input("Enter a command")
       result = eval(command)
-      if asyncio.iscoroutine(result):
-        result = await result
+      print(result)
     except Exception as e:
       print(e)
   db.close()
