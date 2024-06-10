@@ -38,7 +38,7 @@ class GramDB:
 
     def import_cache(self):
         try:
-            result, data = await extract_func(self.url, self.token)
+            result, data = extract_func(self.url, self.token)
             if result:
                 self.CACHE_TABLE = data
             else:
@@ -47,7 +47,7 @@ class GramDB:
             self.CACHE_DATA = {}
             all_ids = [id for table in self.CACHE_TABLE.values() if table != "info_gramdb" for id in table]
 
-            result, all_rows = await fetchall_func(self.url, self.token, all_ids)
+            result, all_rows = fetchall_func(self.url, self.token, all_ids)
             if result:
                 for row in all_rows["data"]:
                     self.CACHE_DATA[row['_m_id']] = row
