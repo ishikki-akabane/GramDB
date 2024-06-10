@@ -30,15 +30,15 @@ sample_efficitiantdb = {
 
 async def aa():
   db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-  
-  bbbbb = await db.create("new_table", ("bio", "name"))
- 
-  d = await db.fetch_all()
-  for m, n in d.items():
-    print("\n", m)
-    for o, p in n.items():
-      print(p)
-      pass
+
+  while True:
+    try:
+      command = input("Enter a command")
+      result = eval(command)
+      if asyncio.iscoroutine(result):
+        result = await result
+    except Exception as e:
+      print(e)
   db.close()
     
 asyncio.run(aa())
