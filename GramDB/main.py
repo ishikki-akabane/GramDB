@@ -106,9 +106,10 @@ class GramDB:
     
     async def background_delete(self, table_name, _m_id):
         result, old_data = extract_func(self.url, self.token)
+        print(old_data)
         new_data = old_data[table_name]
-        new_data.remove(_m_id)
-        result2, response = await git_func(self.session, self.url, self.token, old_data)
+        #new_data.remove(_m_id)
+        #result2, response = await git_func(self.session, self.url, self.token, old_data)
         
     async def delete(self, table_name: str, query: dict):
         _m_id = await self.db.delete(table_name, query)
