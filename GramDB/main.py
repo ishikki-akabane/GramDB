@@ -103,8 +103,16 @@ class GramDB:
             await self.db.insert(table_name, record, _m_id=_m_id)
             await asyncio.create_task(self.background_insert(table_name, _m_id))
 
+    
+    async def background_delete(self, table_name, _m_id):
+        result, old_data = extract_func(self.url, self.token)
+        new_data = old_data[table_name]
+        new_data.remove(_m_id)
+        result2, response = await git_func(self.session, self.url, self.token, old_data)
+        
     async def delete(self, table_name: str, query: dict):
         _m_id = await self.db.delete(table_name, query)
+        await asyncio.create_task(self.background_delete(table_name, _m_id))
         return
 
     async def background_update(self, table_name, update_query, _m_id):
