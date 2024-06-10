@@ -33,12 +33,7 @@ async def aa_test():
   db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
   
   a = await db.fetch_all()
-  print(json.dumps(a, indent=4))
-  """
-  for i, j in a.items():
-    dic = json.dumps(j, indent=4)
-    print(i,"\n", dic, "\n")"""
-    
+  print(json.dumps(a, indent=2))    
   print("------------------------")
   db.close()
     
