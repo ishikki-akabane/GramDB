@@ -109,11 +109,8 @@ class GramDB:
 
     async def background_update(self, table_name, update_query, _m_id):
         await asyncio.sleep(8)
-        records = await self.db.fetch(table_name, update_query)
-        record = records[0]
-        record["_table_"] = table_name
-        del record["_m_id"]
-        result, mdata = await update_func(self.session, self.url, self.token, _m_id, record)
+        records = await self.db.fetch(table_name, update_query)       
+        result, mdata = await update_func(self.session, self.url, self.token, _m_id, records[0], table_name)
         
     async def update(self, table_name: str, query: dict, update_query: dict):
         _m_id = await self.db.update(table_name, query, update_query)
