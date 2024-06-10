@@ -28,7 +28,11 @@ sample_efficitiantdb = {
   }
 }
 
-
+async def bb_test():
+  db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
+  c = await db.insert("eri_data", {"_id": 8292003004, "name": "ishikki", "level": 999})
+  
+  
 async def aa_test():
   db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
   
@@ -63,6 +67,8 @@ async def aa_test():
 
   print(await db.fetch("eri_data",  {"_id": 8292003004}))
   db.close()
-asyncio.run(aa_test())
+
+
+asyncio.run(bb_test())
 
 print("ending...")
