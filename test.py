@@ -2,6 +2,7 @@
 
 from GramDB import GramDB
 import asyncio
+import json
 
 
 CACHE_TABLE = {
@@ -33,7 +34,8 @@ async def aa_test():
   
   a = await db.fetch_all()
   for i, j in a.items():
-    print(i,"\n", j, "\n")
+    dic = json.dumps(j, indent=4)
+    print(i,"\n", dic, "\n")
     
   
   db.close()
