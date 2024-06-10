@@ -1,6 +1,7 @@
 # methods
 import requests
 import json
+import copy
 
 
 async def fetch_func(session, base_url, token, data_id):
@@ -57,9 +58,10 @@ async def delete_func(session, base_url, token, data_id):
 
 
 async def update_func(session, base_url, token, data_id, data, table_name):
-    dataa = json.dumps(data)
+    dataa = copy.deepcopy(data)
     dataa["_table_"] = table_name
     del dataa["_m_id"]
+    dataa = json.dumps(dataa)
     
     url = base_url + "/update"
     headers = {
