@@ -65,7 +65,7 @@ class GramDB:
 
     async def background_create(self, table_name, _m_id):
         try:
-            result, old_data = await extract_func(self.url, self.token)
+            result, old_data = extract_func(self.url, self.token)
             old_data[table_name] = [_m_id]
             result2, response = await git_func(self.session, self.url, self.token, old_data)
         except Exception as e:
@@ -104,7 +104,7 @@ class GramDB:
 
     async def background_insert(self, table_name, _m_id):
         try:
-            result, old_data = await extract_func(self.url, self.token)
+            result, old_data = extract_func(self.url, self.token)
             new_data = old_data[table_name]
             new_data.append(_m_id)
             result2, response = await git_func(self.session, self.url, self.token, old_data)
@@ -130,7 +130,7 @@ class GramDB:
 
     async def background_delete(self, table_name, _m_id):
         try:
-            result, old_data = await extract_func(self.url, self.token)
+            result, old_data = extract_func(self.url, self.token)
             new_data = old_data[table_name]
             print(new_data)
             new_data.remove(_m_id)
