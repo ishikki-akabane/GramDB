@@ -31,7 +31,6 @@ async def insert_func(session, base_url, token, data, table_name):
     payload = {
         "data": str(dataa)
     }
-    print(dataa)
     async with session.post(url, headers=headers, json=payload) as response:
         if response.status == 200:
             result = await response.json()
