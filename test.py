@@ -44,7 +44,7 @@ async def aa_test():
   print(json.dumps(a, indent=4))    
   print("------------------------")
   
-
+  """
   b = await db.create("ruka_data", ("_id", "name", "level"))
   a = await db.fetch_all()
   print(json.dumps(a, indent=4))    
@@ -66,9 +66,13 @@ async def aa_test():
   a = await db.fetch_all()
   print(json.dumps(a, indent=4))    
   print("------------------------")
-  
+  """
 
-  print(await db.fetch("ruka_data",  {"_id": 9999999999}))
+  g = await db.delete_table("ruka_data")
+  a = await db.fetch_all()
+  print(json.dumps(a, indent=4))    
+  print("------------------------")
+  
   db.close()
 
 
