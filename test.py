@@ -44,31 +44,31 @@ async def aa_test():
   print(json.dumps(a, indent=4))    
   print("------------------------")
   
-  """
-  b = await db.create("ruka_data", ("_id", "name", "level"))
+  
+  b = await db.create("final_test_1", ("_id", "name", "level"))
   a = await db.fetch_all()
   print(json.dumps(a, indent=4))    
   print("------------------------")
   
 
-  c = await db.insert("ruka_data", {"_id": 9999999999, "name": "ishikki", "level": 999})
+  c = await db.insert("final_test_1", {"_id": 9999999999, "name": "ishikki", "level": 999})
   a = await db.fetch_all()
   print(json.dumps(a, indent=4))    
   print("------------------------")
 
 
-  d = await db.update("ruka_data",  {"_id": 9999999999}, {"name": "ishikki_akabane", "level": 9999})
+  d = await db.update("final_test_1",  {"_id": 9999999999}, {"name": "ishikki_akabane", "level": 9999})
   a = await db.fetch_all()
   print(json.dumps(a, indent=4))    
   print("------------------------")
 
-  f = await db.delete("ruka_data",  {"name": "ishikki_akabane"})
+  f = await db.delete("final_test_1",  {"name": "ishikki_akabane"})
   a = await db.fetch_all()
   print(json.dumps(a, indent=4))    
   print("------------------------")
-  """
+  
 
-  g = await db.delete_table("ruka_data")
+  g = await db.delete_table("final_test_1")
   a = await db.fetch_all()
   print(json.dumps(a, indent=4))    
   print("------------------------")
