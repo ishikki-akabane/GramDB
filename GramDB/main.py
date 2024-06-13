@@ -159,9 +159,18 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error updating record: {e}")
 
+    async def background_delete_table(self, table_name):
+        try:
+            result, old_data = extract_func(self.url, self.token)
+            del old_data[table_name]          
+            result2, response = await git_func(self.session, self.url, self.token, old_data)
+        except Exception as e:
+            raise GramDBError(f"Error in background delete table: {e}")
+            
     async def delete_table(self, table_name: str):
         try:
             await self.db.delete_table(table_name)
+            await asyncio.create_task(self.background_delete_table(table_name))
         except Exception as e:
             raise GramDBError(f"Error deleting table {table_name}: {e}")
 
