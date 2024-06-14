@@ -30,7 +30,6 @@ sample_efficitiantdb = {
 
 async def bb_test():
   db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-  d = await db.delete("eri_data",  {"_id": 8292003004})
   a = await db.fetch_all()
   print(json.dumps(a, indent=4))    
   print("------------------------")
