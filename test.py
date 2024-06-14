@@ -75,6 +75,6 @@ async def aa_test():
   db.close()
 
 
-asyncio.run(aa_test())
+asyncio.run(bb_test())
 
 print("ending...")
