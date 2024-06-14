@@ -179,6 +179,8 @@ class EfficientDictQuery:
         del self.data[table]
         del self.schemas[table]
 
-    async def fetch_all(self):
+    async def fetch_all(self, table=None):
+        if table:
+            return self.data[table]
         return self.data
 
