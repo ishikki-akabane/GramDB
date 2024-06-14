@@ -8,17 +8,20 @@ api_hash = 'add59ab14dbbccf3c92c65ca4477f2fa'
 
 token = '6191819669:AAH-BrQM5FiaBSdZBOo8TaXv90GyO1rmljE'
 
-app = Client("bluebot", api_id=api_id, api_hash=api_hash, bot_token=token)
-
-
 db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-#----------------------------------------------
 
 async def initialize_db():
     try:
         await db.create("blue_db", ("_id", "name", "bio"))
     except:
         pass
+        
+asyncio.run(initialize_db())
+
+app = Client("bluebot", api_id=api_id, api_hash=api_hash, bot_token=token)
+
+#----------------------------------------------
+
 
 @app.on_message(filters.command("setbio"))
 async def setbio_message(client, message):
@@ -52,10 +55,6 @@ async def allbio_watcher(client, message):
     await message.reply_text(ftext)
 
 
-async def main():
-    await initialize_db()
-    print("started...")
-    app.run()
-
-if __name__ == "__main__":
-    asyncio.run(main())
+    
+print("started...")
+app.run()
