@@ -1,5 +1,6 @@
 from pyrogram import Client, filters
 from GramDB import GramDB
+import asyncio
 
 
 api_id = 14681826
@@ -13,13 +14,21 @@ app = Client("bluebot", api_id=api_id, api_hash=api_hash, bot_token=token)
 db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
 #----------------------------------------------
 
+async def initialize_db():
+    try:
+        await db.create("blue_db", ("_id", "name", "bio"))
+    except:
+        pass
+
+asyncio.run(initialize_db())
 
 @app.on_message(filters.command("setbio"))
 async def setbio_message(client, message):
     user_id = message.from_user.id
+    name = message.from_user.first_name
     bio_msg = message.text.split(None, 1)[1]
-    response = await save_bio(client, unique_client_id, user_id, bio_msg, "bio_table")
-    await message.reply_text(response)
+    response = await db.insert("blue_db", {"_id": user_id, "name": name, "bio": bio_msg})
+    await message.reply_text("Bio set successfully")
 
 
 @app.on_message(filters.command("bio"))
@@ -36,8 +45,13 @@ async def bio_watcher(client, message):
 async def allbio_watcher(client, message):
     user_id = message.from_user.id
     data_list = await db.fetch_all()
-    bio_list = 
-    await message.reply_text(bio_msg)
+    bio_list = data_list["blue_db"]
+    ftext = "all saved bio:\n"
+    for i, j in bio_list.items():
+        name = j["name"]
+        bioo = j["bio"]
+        ftext += f"\n• {name}: {bioo}"
+    await message.reply_text(ftext)
 
 
 print("started...")
