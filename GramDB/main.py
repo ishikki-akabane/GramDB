@@ -81,7 +81,7 @@ class GramDB:
                 sample_record['_m_id'] = _m_id
                 del sample_record["_table_"]
                 await self.db.create(table_name, schema, sample_record, _m_id)
-                await asyncio.create_task(self.background_create(table_name, _m_id))
+                asyncio.create_task(self.background_create(table_name, _m_id))
             else:
                 raise GramDBError(f"Failed to create record in table {table_name}")
         except Exception as e:
@@ -122,7 +122,7 @@ class GramDB:
                 record['_m_id'] = _m_id
                 del record['_table_']
                 await self.db.insert(table_name, record, _m_id=_m_id)
-                await asyncio.create_task(self.background_insert(table_name, _m_id))
+                asyncio.create_task(self.background_insert(table_name, _m_id))
             else:
                 raise GramDBError(f"Failed to insert record in table {table_name}")
         except Exception as e:
@@ -140,7 +140,7 @@ class GramDB:
     async def delete(self, table_name: str, query: dict):
         try:
             _m_id = await self.db.delete(table_name, query)
-            await asyncio.create_task(self.background_delete(table_name, _m_id))
+            asyncio.create_task(self.background_delete(table_name, _m_id))
         except Exception as e:
             raise GramDBError(f"Error deleting record: {e}")
 
@@ -155,7 +155,7 @@ class GramDB:
     async def update(self, table_name: str, query: dict, update_query: dict):
         try:
             _m_id = await self.db.update(table_name, query, update_query)
-            await asyncio.create_task(self.background_update(table_name, update_query, _m_id))
+            asyncio.create_task(self.background_update(table_name, update_query, _m_id))
         except Exception as e:
             raise GramDBError(f"Error updating record: {e}")
 
@@ -170,7 +170,7 @@ class GramDB:
     async def delete_table(self, table_name: str):
         try:
             await self.db.delete_table(table_name)
-            await asyncio.create_task(self.background_delete_table(table_name))
+            asyncio.create_task(self.background_delete_table(table_name))
         except Exception as e:
             raise GramDBError(f"Error deleting table {table_name}: {e}")
 
