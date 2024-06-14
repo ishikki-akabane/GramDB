@@ -90,8 +90,9 @@ class GramDB:
     async def fetch(self, table_name: str, query: dict):
         try:
             result = await self.db.fetch(table_name, query)
-            if not result:
-                raise NotFoundError(f"Record not found in table {table_name} for query {query}")
+            print(result)
+            #if not result:
+            #    raise NotFoundError(f"Record not found in table {table_name} for query {query}")
             if len(result) == 0:
                 return None
             elif len(result) == 1:
