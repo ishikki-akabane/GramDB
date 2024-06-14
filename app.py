@@ -10,17 +10,14 @@ token = '6191819669:AAH-BrQM5FiaBSdZBOo8TaXv90GyO1rmljE'
 
 db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
 
-async def initialize_db():
-    try:
-        await db.create("blue_db", ("_id", "name", "bio"))
-    except:
-        pass
-        
-asyncio.run(initialize_db())
-
 app = Client("bluebot", api_id=api_id, api_hash=api_hash, bot_token=token)
 
 #----------------------------------------------
+
+try:
+    db.create("blue_db", ("_id", "name", "bio"))
+except:
+    pass
 
 
 @app.on_message(filters.command("setbio"))
