@@ -35,7 +35,8 @@ async def bio_watcher(client, message):
 @app.on_message(filters.command("allbio"))
 async def allbio_watcher(client, message):
     user_id = message.from_user.id
-    bio_msg = await get_bio(unique_client_id, user_id, "bio_table")
+    data_list = await db.fetch_all()
+    bio_list = 
     await message.reply_text(bio_msg)
 
 
