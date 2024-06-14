@@ -20,7 +20,7 @@ async def initialize_db():
     except:
         pass
 
-asyncio.run(initialize_db())
+asyncio.create_task(initialize_db())
 
 @app.on_message(filters.command("setbio"))
 async def setbio_message(client, message):
