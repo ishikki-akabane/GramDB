@@ -24,7 +24,7 @@ async def boot(client, message):
     await message.reply_text("donee")
 
 
-@app.on_message(filters.command("setbio"))
+@app.on_message(filters.command("set"))
 async def setbio_message(client, message):
     user_id = message.from_user.id
     name = message.from_user.first_name
