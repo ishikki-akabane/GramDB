@@ -54,7 +54,6 @@ class GramDB:
                 
             result, all_rows = fetchall_func(self.url, self.token, all_ids)
             if result:
-                print(all_rows["data"])
                 for row in all_rows["data"]:
                     self.CACHE_DATA[row['_m_id']] = row
             else:
