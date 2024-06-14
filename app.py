@@ -27,8 +27,15 @@ async def boot(client, message):
 @app.on_message(filters.command("set"))
 async def setbio_message(client, message):
     user_id = message.from_user.id
-    name = message.from_user.first_name
     bio_msg = message.text.split(None, 1)[1]
+    data = await db.fetch("blue_db", {"_id": user_id})
+    if data:
+        old_bio = data["bio"]
+        await db.update("blue_db", {"_id": user_id}, {"bio": bio_msg})
+        await message.reply_text(f"Your bio changed from {old_bio} to {bio_msg}")
+        return
+        
+    name = message.from_user.first_name
     response = await db.insert("blue_db", {"_id": user_id, "name": name, "bio": bio_msg})
     await message.reply_text("Bio set successfully")
 
@@ -38,7 +45,7 @@ async def bio_watcher(client, message):
     user_id = message.from_user.id
     bio_data = await db.fetch("blue_db", {"_id": user_id})
     if bio_data:
-        bio_msg = bio_data[0]["bio"]
+        bio_msg = bio_data["bio"]
         await message.reply_text(f"Your bio: `{bio_msg}`")
     else:
         await message.reply_text("You haven't set any bio yet!!")
