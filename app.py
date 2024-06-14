@@ -14,10 +14,14 @@ app = Client("bluebot", api_id=api_id, api_hash=api_hash, bot_token=token)
 
 #----------------------------------------------
 
-try:
-    db.create("blue_db", ("_id", "name", "bio"))
-except:
-    pass
+@app.on_message(filters.command("run"))
+async def boot(client, message):
+    try:
+        await db.create("blue_db", ("_id", "name", "bio"))
+    except:
+        pass
+
+    await message.reply_text("donee")
 
 
 @app.on_message(filters.command("setbio"))
