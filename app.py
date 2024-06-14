@@ -20,8 +20,6 @@ async def initialize_db():
     except:
         pass
 
-asyncio.create_task(initialize_db())
-
 @app.on_message(filters.command("setbio"))
 async def setbio_message(client, message):
     user_id = message.from_user.id
@@ -54,5 +52,10 @@ async def allbio_watcher(client, message):
     await message.reply_text(ftext)
 
 
-print("started...")
-app.run()
+async def main():
+    await initialize_db()
+    print("started...")
+    app.run()
+
+if __name__ == "__main__":
+    asyncio.run(main())
