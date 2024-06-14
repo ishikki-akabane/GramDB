@@ -36,8 +36,9 @@ async def setbio_message(client, message):
 @app.on_message(filters.command("bio"))
 async def bio_watcher(client, message):
     user_id = message.from_user.id
-    bio_msg = await db.fetch("blue_db", {"_id": user_id})
-    if bio_msg:
+    bio_data = await db.fetch("blue_db", {"_id": user_id})
+    if bio_data:
+        bio_msg = bio_data[0]["bio"]
         await message.reply_text(f"Your bio: `{bio_msg}`")
     else:
         await message.reply_text("You haven't set any bio yet!!")
