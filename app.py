@@ -3,6 +3,7 @@ from GramDB import GramDB
 import asyncio
 import time
 from pymongo import MongoClient
+import random
 
 
 api_id = 14681826
@@ -24,30 +25,31 @@ app = Client("bluebot", api_id=api_id, api_hash=api_hash, bot_token=token)
 async def testt(client, message):
     f_text = "Speed test ⚡\n"
     await message.reply_text("running speedtest...")
+    idd = random.randint(11111111, 99999999)
     
     start_time1 = time.time()
-    a = mdb.insert_one({"_id": 987654321, "name": "rohan", "bio": "haha"})
+    a = mdb.insert_one({"_id": idd, "name": "rohan", "bio": "haha"})
     end_time1 = time.time()
     start_time2 = time.time()
-    b = await db.insert("blue_db", {"_id": 987654321, "name": "rohan", "bio": "haha"})
+    b = await db.insert("blue_db", {"_id": idd, "name": "rohan", "bio": "haha"})
     end_time2 = time.time()
     f_text += f"\n• Insert\n- {end_time1 - start_time1}\n- {end_time2 - start_time2}\n"
 
 
     start_time3 = time.time()
-    a = mdb.update_one({"_id": 987654321}, {"$set": {"bio": "hahaha"}})
+    a = mdb.update_one({"_id": idd}, {"$set": {"bio": "hahaha"}})
     end_time3 = time.time()
     start_time4 = time.time()
-    b = await db.update("blue_db", {"_id": 987654321}, {"bio": "hahaha"})
+    b = await db.update("blue_db", {"_id": idd}, {"bio": "hahaha"})
     end_time4 = time.time()
     f_text += f"\n• Update\n- {end_time3 - start_time3}\n- {end_time4 - start_time4}\n"
 
 
     start_time5 = time.time()
-    a = mdb.find_one({"_id": 987654321})
+    a = mdb.find_one({"_id": idd)
     end_time5 = time.time()
     start_time6 = time.time()
-    b = await db.fetch("blue_db", {"_id": 987654321})
+    b = await db.fetch("blue_db", {"_id": idd)
     end_time6 = time.time()
     f_text += f"\n• Fetch\n- {end_time5 - start_time5}\n- {end_time6 - start_time6}\n"
 
