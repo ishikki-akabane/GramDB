@@ -1,0 +1,6 @@
+pymongo
+asyncio
+aiohttp
+pyrogram
+requests
+dnspython
