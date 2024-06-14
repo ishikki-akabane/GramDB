@@ -1,6 +1,8 @@
 from pyrogram import Client, filters
 from GramDB import GramDB
 import asyncio
+import time
+from pymongo import MongoClient
 
 
 api_id = 14681826
@@ -10,18 +12,48 @@ token = '6191819669:AAH-BrQM5FiaBSdZBOo8TaXv90GyO1rmljE'
 
 db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
 
+url = "mongodb+srv://botmaker9675208:botmaker9675208@cluster0.sc9mq8b.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+c = MongoClient(url)
+mdb = c["test"]["test"]
+
 app = Client("bluebot", api_id=api_id, api_hash=api_hash, bot_token=token)
 
 #----------------------------------------------
 
-@app.on_message(filters.command("run"))
-async def boot(client, message):
-    try:
-        await db.create("blue_db", ("_id", "name", "bio"))
-    except:
-        pass
+@app.on_message(filters.command("test"))
+async def testt(client, message):
+    f_text = "Speed test ⚡\n"
+    await message.reply_text("running speedtest...")
+    
+    start_time1 = time.time()
+    a = mdb.insert_one({"_id": 987654321, "name": "rohan", "bio": "haha"})
+    end_time1 = time.time()
+    start_time2 = time.time()
+    b = await db.insert("blue_db", {"_id": 987654321, "name": "rohan", "bio": "haha"})
+    end_time2 = time.time()
+    f_text += f"\n• Insert\n- {end_time1 - start_time1}\n- {end_time2 - start_time2}\n"
 
-    await message.reply_text("donee")
+
+    start_time3 = time.time()
+    a = mdb.update_one({"_id": 987654321}, {"$set": {"bio": "hahaha"}})
+    end_time3 = time.time()
+    start_time4 = time.time()
+    b = await db.update("blue_db", {"_id": 987654321}, {"bio": "hahaha"})
+    end_time4 = time.time()
+    f_text += f"\n• Update\n- {end_time3 - start_time3}\n- {end_time4 - start_time4}\n"
+
+
+    start_time5 = time.time()
+    a = mdb.find_one({"_id": 987654321})
+    end_time5 = time.time()
+    start_time6 = time.time()
+    b = await db.fetch("blue_db", {"_id": 987654321})
+    end_time6 = time.time()
+    f_text += f"\n• Fetch\n- {end_time5 - start_time5}\n- {end_time6 - start_time6}\n"
+
+    await message.reply_text(f_text)
+    
+    
 
 
 @app.on_message(filters.command("set"))
