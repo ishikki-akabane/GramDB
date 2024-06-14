@@ -92,7 +92,12 @@ class GramDB:
             result = await self.db.fetch(table_name, query)
             if not result:
                 raise NotFoundError(f"Record not found in table {table_name} for query {query}")
-            return result
+            if len(result) == 0:
+                return None
+            elif len(result) == 1:
+                return result[0]
+            else:
+                return result
         except Exception as e:
             raise GramDBError(f"Error fetching data: {e}")
 
