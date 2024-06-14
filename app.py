@@ -46,10 +46,10 @@ async def testt(client, message):
 
 
     start_time5 = time.time()
-    a = mdb.find_one({"_id": idd)
+    a = mdb.find_one({"_id": idd})
     end_time5 = time.time()
     start_time6 = time.time()
-    b = await db.fetch("blue_db", {"_id": idd)
+    b = await db.fetch("blue_db", {"_id": idd})
     end_time6 = time.time()
     f_text += f"\n• Fetch\n- {end_time5 - start_time5}\n- {end_time6 - start_time6}\n"
 
