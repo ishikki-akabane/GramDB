@@ -6,7 +6,7 @@ with open("README.md", encoding="utf-8") as f:
     readme = f.read()
 setup(
     name='GramDB',
-    author='Code Library',
+    author='ishikki-Akabane',
     author_email='ishikkiakabane@outlook.com',
     version='1.0.0',
     long_description=readme,
