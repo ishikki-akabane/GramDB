@@ -29,6 +29,7 @@ sample_efficitiantdb = {
   }
 }
 
+"""
 async def bb_test():
   db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
   a = await db.fetch_all()
@@ -74,8 +75,32 @@ async def aa_test():
   print("------------------------")
   
   db.close()
+"""
+
+from GramDB import GramDB
+import asyncio
 
 
-asyncio.run(bb_test())
+class DATABASE:
+    def __init__(self, uri):
+        self.client = GramDB(uri)
+        print("DATABASE Online")
+
+    async def create(self, table, query):
+        await self.client.create(table, query)
+
+
+
+db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
+
+async def boot():
+    await db.create("users", ("_id", "upload", "batch"))
+    await db.create("files", ("_id", "message_id"))
+    await db.create("batch", ("_id", "channel_id", "message_id"))
+
+
+asyncio.run(boot())
+
+#asyncio.run(bb_test())
 
 print("ending...")
