@@ -1,13 +1,13 @@
 from setuptools import setup
 
-requirements = ['aiohttp', 'requests', "asyncio"]
+requirements = ['aiohttp', 'requests', 'asyncio']
 readme = ''
 with open("README.md", encoding="utf-8") as f:
     readme = f.read()
 setup(
     name='GramDB',
     author='Code Library',
-    author_email='alphacoders@yahoo.com',
+    author_email='ishikkiakabane@outlook.com',
     version='1.0.0',
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -31,7 +31,6 @@ setup(
     ],
     description='Unlimited Capacity Database For Programming Using Telegram as Database.',
     include_package_data=True,
-    keywords=['telegram', 'db', 'database', 'free', 'storage',
-              'code'],
+    keywords=['telegram', 'db', 'database', 'free', 'storage', 'code'],
     install_requires=requirements
 )
