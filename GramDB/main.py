@@ -75,7 +75,8 @@ class GramDB:
         try:
             sample_record = {field: "test" for field in schema}
             sample_record['_id'] = "sample1928"
-            result, mdata = await insert_func(self.session, self.url, self.token, sample_record, table_name)
+            async with aiohttp.ClientSession() as newsession:
+                result, mdata = await insert_func(newsession, self.url, self.token, sample_record, table_name)
             if result:
                 _m_id = mdata["data_id"]
                 sample_record['_m_id'] = _m_id
