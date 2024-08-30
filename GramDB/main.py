@@ -63,11 +63,11 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error importing cache: {e}")
 
-    async def background_create(self, table_name, _m_id):
+    async def background_create(self, newsession, table_name, _m_id):
         try:
             result, old_data = extract_func(self.url, self.token)
             old_data[table_name] = [_m_id]
-            result2, response = await git_func(self.session, self.url, self.token, old_data)
+            result2, response = await git_func(newsession, self.url, self.token, old_data)
         except Exception as e:
             raise GramDBError(f"Error in background create: {e}")
 
@@ -77,14 +77,14 @@ class GramDB:
             sample_record['_id'] = "sample1928"
             async with aiohttp.ClientSession() as newsession:
                 result, mdata = await insert_func(newsession, self.url, self.token, sample_record, table_name)
-            if result:
-                _m_id = mdata["data_id"]
-                sample_record['_m_id'] = _m_id
-                del sample_record["_table_"]
-                await self.db.create(table_name, schema, sample_record, _m_id)
-                asyncio.create_task(self.background_create(table_name, _m_id))
-            else:
-                raise GramDBError(f"Failed to create record in table {table_name}")
+                if result:
+                    _m_id = mdata["data_id"]
+                    sample_record['_m_id'] = _m_id
+                    del sample_record["_table_"]
+                    await self.db.create(table_name, schema, sample_record, _m_id)
+                    asyncio.create_task(self.background_create(newsession, table_name, _m_id))
+                else:
+                    raise GramDBError(f"Failed to create record in table {table_name}")
         except Exception as e:
             raise GramDBError(f"Error creating record: {e}")
 
