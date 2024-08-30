@@ -13,12 +13,12 @@ async def fetch_func(session, base_url, token, data_id):
     payload = {
         "data_id": data_id
     }
-    response = await session.post(url, headers=headers, json=payload)
-    if response.status == 200:
-        result = await response.json()
-        return True, result
-    else:
-        return False, response.status
+    async with session.post(url, headers=headers, json=payload) as response:
+        if response.status == 200:
+            result = await response.json()
+            return True, result
+        else:
+            return False, response.status
 
 
 async def insert_func(session, base_url, token, data, table_name):
@@ -72,12 +72,12 @@ async def update_func(session, base_url, token, data_id, data, table_name):
         "data_id": data_id,
         "data": dataa
     }
-    response = await session.post(url, headers=headers, json=payload)
-    if response.status == 200:
-        result = await response.json()
-        return True, result
-    else:
-        return False, response.status
+    async with session.post(url, headers=headers, json=payload) as response:
+        if response.status == 200:
+            result = await response.json()
+            return True, result
+        else:
+            return False, response.status
 
 
 async def git_func(session, base_url, token, data):
@@ -89,12 +89,12 @@ async def git_func(session, base_url, token, data):
     payload = {
         "data" : data
     }
-    response = await session.post(url, headers=headers, json=payload)
-    if response.status == 200:
-        result = await response.json()
-        return True, result
-    else:
-        return False, response.status
+    async with session.post(url, headers=headers, json=payload) as response:
+        if response.status == 200:
+            result = await response.json()
+            return True, result
+        else:
+            return False, response.status
 
 
 def extract_func(base_url, token):
