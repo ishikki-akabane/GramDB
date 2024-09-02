@@ -94,8 +94,8 @@ class DATABASE:
 db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
 
 async def boot():
-    #await db.create("userss", ("_id", "upload", "batch"))
-    #await db.create("files", ("_id", "message_id"))
+    await db.create("userss", ("_id", "upload", "batch"))
+    await db.create("files", ("_id", "message_id"))
     await db.create("batchhh", ("_id", "channel_id", "message_id"))
     await asyncio.sleep(10)
 
