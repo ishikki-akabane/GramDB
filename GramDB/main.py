@@ -67,6 +67,7 @@ class GramDB:
         try:
             result, old_data = extract_func(self.url, self.token)
             old_data[table_name] = [_m_id]
+            print("dict", old_data)
             async with aiohttp.ClientSession() as newsession:
                 result2, response = await git_func(newsession, self.url, self.token, old_data)
         except Exception as e:
