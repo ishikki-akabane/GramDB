@@ -113,6 +113,21 @@ def extract_func(base_url, token):
     else:
         print(response.text)
         return False, response.status_code
+
+
+async def async_extract_func(base_url, token):
+    url = base_url + f"/extract?token={token}"
+    headers = {
+        "Content-Type": "application/json",
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        result = response.json()
+        print(result)
+        return True, result
+    else:
+        print(response.text)
+        return False, response.status_code
     
 
 def fetchall_func(base_url, token, data_ids):
