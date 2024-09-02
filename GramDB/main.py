@@ -65,7 +65,7 @@ class GramDB:
 
     async def background_create(self, table_name, _m_id):
         try:
-            result, old_data = extract_func(self.url, self.token)
+            result, old_data = await async_extract_func(self.url, self.token)
             old_data[table_name] = [_m_id]
             print("dict", old_data)
             async with aiohttp.ClientSession() as newsession:
@@ -116,7 +116,7 @@ class GramDB:
 
     async def background_insert(self, table_name, _m_id):
         try:
-            result, old_data = extract_func(self.url, self.token)
+            result, old_data = await async_extract_func(self.url, self.token)
             new_data = old_data[table_name]
             new_data.append(_m_id)
             async with aiohttp.ClientSession() as newsession:
@@ -144,7 +144,7 @@ class GramDB:
 
     async def background_delete(self, table_name, _m_id):
         try:
-            result, old_data = extract_func(self.url, self.token)
+            result, old_data = await async_extract_func(self.url, self.token)
             new_data = old_data[table_name]          
             new_data.remove(int(_m_id))
             async with aiohttp.ClientSession() as newsession:
@@ -177,7 +177,7 @@ class GramDB:
 
     async def background_delete_table(self, table_name):
         try:
-            result, old_data = extract_func(self.url, self.token)
+            result, old_data = await async_extract_func(self.url, self.token)
             del old_data[table_name]
             async with aiohttp.ClientSession() as newsession:
                 result2, response = await git_func(newsession, self.url, self.token, old_data)
