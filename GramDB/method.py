@@ -92,6 +92,7 @@ async def git_func(session, base_url, token, data):
         "data" : data
     }
     async with session.post(url, headers=headers, json=payload) as response:
+        print("git connecting")
         if response.status == 200:
             result = await response.json()
             print(result)
