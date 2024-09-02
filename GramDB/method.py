@@ -82,6 +82,7 @@ async def update_func(session, base_url, token, data_id, data, table_name):
 
 
 async def git_func(session, base_url, token, data):
+    print("git running")
     url = base_url + "/git"
     headers = {
         "Content-Type": "application/json",
