@@ -93,8 +93,10 @@ async def git_func(session, base_url, token, data):
     async with session.post(url, headers=headers, json=payload) as response:
         if response.status == 200:
             result = await response.json()
+            print(result)
             return True, result
         else:
+            print(">>>", response.text)
             return False, response.status
 
 
@@ -106,8 +108,10 @@ def extract_func(base_url, token):
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         result = response.json()
+        print(result)
         return True, result
     else:
+        print(response.text)
         return False, response.status_code
     
 
