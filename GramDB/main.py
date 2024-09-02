@@ -69,7 +69,10 @@ class GramDB:
             old_data[table_name] = [_m_id]
             print("dict", old_data)
             async with aiohttp.ClientSession() as newsession:
+                print("connecting..")
                 result2, response = await git_func(newsession, self.url, self.token, old_data)
+                print("done")
+                print(response)
         except Exception as e:
             raise GramDBError(f"Error in background create: {e}")
 
