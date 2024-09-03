@@ -17,7 +17,7 @@ class GramDB:
         self.initialize()
 
     def initialize(self):
-        self.session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=60))
         self.authenticate()
 
     def authenticate(self):
