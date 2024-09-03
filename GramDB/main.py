@@ -17,7 +17,6 @@ class GramDB:
         self.initialize()
 
     def initialize(self):
-        self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=60))
         self.authenticate()
 
     def authenticate(self):
@@ -189,7 +188,8 @@ class GramDB:
             raise GramDBError(f"Error deleting table {table_name}: {e}")
 
     async def close_func(self):
-        await self.session.close()
+        #await self.session.close()
+        return
         
     def close(self):
         loop = asyncio.get_event_loop()
