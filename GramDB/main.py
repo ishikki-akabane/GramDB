@@ -64,11 +64,8 @@ class GramDB:
 
     async def check_table(self, table_name: str):
         """Check if a table exists."""
-        print(self.CACHE_TABLE)
-        try:
-            return table_name in self.CACHE_TABLE
-        except Exception as e:
-            raise GramDBError(f"Error checking table existence: {e}")
+        bool_result = await self.db.check_table(table_name)
+        return bool_result
 
     async def background_create(self, table_name, _m_id):
         try:
