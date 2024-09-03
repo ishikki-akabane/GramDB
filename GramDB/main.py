@@ -77,6 +77,8 @@ class GramDB:
         try:
             sample_record = {field: "test" for field in schema}
             sample_record['_id'] = "sample1928"
+            if self.session.closed:
+                raise ValueError("Session is closed")
             ## async with aiohttp.ClientSession() as newsession:
             newsession = self.session
             result, mdata = await insert_func(newsession, self.url, self.token, sample_record, table_name)
