@@ -157,7 +157,6 @@ class GramDB:
 
     async def background_update(self, table_name, update_query, _m_id):
         try:
-            await asyncio.sleep(8)
             records = await self.db.fetch(table_name, update_query)
             async with aiohttp.ClientSession() as newsession:
                 result, mdata = await update_func(newsession, self.url, self.token, _m_id, records[0], table_name)
