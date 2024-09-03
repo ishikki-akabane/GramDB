@@ -110,7 +110,7 @@ async def boot():
     create_3_end = time.time()
     execution_3_time_ms = (create_3_end - create_3_time) * 1000
 
-    create_txt = "create:"
+    create_txt = "\n\ncreate:"
     create_txt += f"\n1: {execution_1_time_ms} ms"
     create_txt += f"\n2: {execution_2_time_ms} ms"
     create_txt += f"\n3: {execution_3_time_ms} ms"
@@ -132,33 +132,51 @@ async def boot():
     create_3_end = time.time()
     execution_3_time_ms = (create_3_end - create_3_time) * 1000
 
-    insert_txt = "insert:"
+    insert_txt = "\n\ninsert:"
     insert_txt += f"\n1: {execution_1_time_ms} ms"
     insert_txt += f"\n2: {execution_2_time_ms} ms"
     insert_txt += f"\n3: {execution_3_time_ms} ms"
     print(insert_txt)
 
-    
-    print(update_txt)
-    print(delete_txt)
-    
 
     create_1_time = time.time()
-    await db.fetch("testusers", ("_id", "upload", "batch"))
+    await db.update("testusers", {"_id": 123456} , {"batch": 456})
     create_1_end = time.time()
     execution_1_time_ms = (create_1_end - create_1_time) * 1000
 
     create_2_time = time.time()
-    await db.fetch("testfilesh", ("_id", "message_id"))
+    await db.update("testfilesh", {"_id": 123456} , {"message_id": 456})
     create_2_end = time.time()
     execution_2_time_ms = (create_2_end - create_2_time) * 1000
   
     create_3_time = time.time()
-    await db.fetch("testbatch", ("_id", "channel_id", "message_id"))
+    await db.update("testbatch", {"_id": 123456} , {"channel_id": 456, "message_id": 456})
     create_3_end = time.time()
     execution_3_time_ms = (create_3_end - create_3_time) * 1000
 
-    fetch_txt = "Fetch:"
+    update_txt = "\n\nupdate:"
+    update_txt += f"\n1: {execution_1_time_ms} ms"
+    update_txt += f"\n2: {execution_2_time_ms} ms"
+    update_txt += f"\n3: {execution_3_time_ms} ms"
+    print(update_txt)
+    
+
+    create_1_time = time.time()
+    await db.fetch("testusers", {"_id": 123456})
+    create_1_end = time.time()
+    execution_1_time_ms = (create_1_end - create_1_time) * 1000
+
+    create_2_time = time.time()
+    await db.fetch("testfilesh", {"message_id": 456})
+    create_2_end = time.time()
+    execution_2_time_ms = (create_2_end - create_2_time) * 1000
+  
+    create_3_time = time.time()
+    await db.fetch("testbatch", {"_id": 123456, "channel_id": 456}))
+    create_3_end = time.time()
+    execution_3_time_ms = (create_3_end - create_3_time) * 1000
+
+    fetch_txt = "\n\nFetch:"
     fetch_txt += f"\n1: {execution_1_time_ms} ms"
     fetch_txt += f"\n2: {execution_2_time_ms} ms"
     fetch_txt += f"\n3: {execution_3_time_ms} ms"    
