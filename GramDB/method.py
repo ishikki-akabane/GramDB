@@ -38,7 +38,7 @@ async def insert_func(session, base_url, token, data, table_name):
             return True, result
         else:
             print("Gramdb Error >>>>", response.status, "\n", response.content)
-            return False, response.json()
+            return False, await response.json()
 
 
 async def delete_func(session, base_url, token, data_id):
