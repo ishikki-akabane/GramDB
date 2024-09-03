@@ -95,6 +95,10 @@ class DATABASE:
         await self.client.update(table, query, new_query)
     async def fetch(self, table, query):
         await self.client.fetch(table, query)
+    async def check_table(self, table, query):
+        h = await self.client.check_table(table)
+        return h
+    
 
 
 
@@ -189,6 +193,8 @@ async def boot():
     print(fetch_txt)
     await asyncio.sleep(10)
 
+async def boot2():
+    a = await db.check_table("hahaha")
 
-asyncio.run(boot())
+asyncio.run(boot2())
 print("ending...")
