@@ -76,8 +76,10 @@ async def update_func(session, base_url, token, data_id, data, table_name):
     async with session.post(url, headers=headers, json=payload) as response:
         if response.status == 200:
             result = await response.json()
+            print(result)
             return True, result
         else:
+            print(response.text)
             return False, response.status
 
 
