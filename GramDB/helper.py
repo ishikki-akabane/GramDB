@@ -95,6 +95,14 @@ class EfficientDictQuery:
             if field not in schema:
                 raise ValueError(f"Field '{field}' is not allowed in schema for table '{table}'.")
 
+    async def check_table(self, table):
+        print(self.schemas)
+        print(self.data)
+        if table not in self.schemas:
+            return False
+        else:
+            return True
+    
     async def create(self, table, schema, sample_record, _m_id):
         if table in self.data:
             raise ValueError(f"Table '{table}' already exists.")
