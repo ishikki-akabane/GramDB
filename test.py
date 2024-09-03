@@ -1,8 +1,8 @@
 # yoii - ishikki - test
 
-from GramDB import GramDB
-import asyncio
-import json
+#from GramDB import GramDB
+#import asyncio
+#import json
 
 
 
@@ -79,6 +79,7 @@ async def aa_test():
 
 from GramDB import GramDB
 import asyncio
+import time
 
 
 class DATABASE:
@@ -94,13 +95,75 @@ class DATABASE:
 db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
 
 async def boot():
-    await db.create("users", ("_id", "upload", "batch"))
-    await db.create("filesh", ("_id", "message_id"))
-    await db.create("batch", ("_id", "channel_id", "message_id"))
-    await asyncio.sleep(10)
+    create_1_time = time.time()
+    await db.create("testusers", ("_id", "upload", "batch"))
+    create_1_end = time.time()
+    execution_1_time_ms = (create_1_end - create_1_time) * 1000
+
+    create_2_time = time.time()
+    await db.create("testfilesh", ("_id", "message_id"))
+    create_2_end = time.time()
+    execution_2_time_ms = (create_2_end - create_2_time) * 1000
+  
+    create_3_time = time.time()
+    await db.create("testbatch", ("_id", "channel_id", "message_id"))
+    create_3_end = time.time()
+    execution_3_time_ms = (create_3_end - create_3_time) * 1000
+
+    create_txt = "create:"
+    create_txt += f"\n1: {execution_1_time_ms} ms"
+    create_txt += f"\n2: {execution_2_time_ms} ms"
+    create_txt += f"\n3: {execution_3_time_ms} ms"
+    print(create_txt)
+    
+
+    create_1_time = time.time()
+    await db.insert("testusers", {"_id": 123456, "upload": 123, "batch": 123})
+    create_1_end = time.time()
+    execution_1_time_ms = (create_1_end - create_1_time) * 1000
+
+    create_2_time = time.time()
+    await db.insert("testfilesh", {"_id": 123456, "message_id": 123})
+    create_2_end = time.time()
+    execution_2_time_ms = (create_2_end - create_2_time) * 1000
+  
+    create_3_time = time.time()
+    await db.insert("testbatch", {"_id": 123456, "channel_id": 123, "message_id": 123})
+    create_3_end = time.time()
+    execution_3_time_ms = (create_3_end - create_3_time) * 1000
+
+    insert_txt = "insert:"
+    insert_txt += f"\n1: {execution_1_time_ms} ms"
+    insert_txt += f"\n2: {execution_2_time_ms} ms"
+    insert_txt += f"\n3: {execution_3_time_ms} ms"
+    print(insert_txt)
+
+    
+    print(update_txt)
+    print(delete_txt)
+    
+
+    create_1_time = time.time()
+    await db.fetch("testusers", ("_id", "upload", "batch"))
+    create_1_end = time.time()
+    execution_1_time_ms = (create_1_end - create_1_time) * 1000
+
+    create_2_time = time.time()
+    await db.fetch("testfilesh", ("_id", "message_id"))
+    create_2_end = time.time()
+    execution_2_time_ms = (create_2_end - create_2_time) * 1000
+  
+    create_3_time = time.time()
+    await db.fetch("testbatch", ("_id", "channel_id", "message_id"))
+    create_3_end = time.time()
+    execution_3_time_ms = (create_3_end - create_3_time) * 1000
+
+    fetch_txt = "Fetch:"
+    fetch_txt += f"\n1: {execution_1_time_ms} ms"
+    fetch_txt += f"\n2: {execution_2_time_ms} ms"
+    fetch_txt += f"\n3: {execution_3_time_ms} ms"    
+    print(fetch_txt)
+
 
 asyncio.run(boot())
-
-#asyncio.run(bb_test())
-
 print("ending...")
