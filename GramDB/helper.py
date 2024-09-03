@@ -96,8 +96,6 @@ class EfficientDictQuery:
                 raise ValueError(f"Field '{field}' is not allowed in schema for table '{table}'.")
 
     async def check_table(self, table):
-        print(self.schemas)
-        print(self.data)
         if table not in self.schemas:
             return False
         else:
