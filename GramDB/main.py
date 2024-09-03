@@ -62,6 +62,14 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error importing cache: {e}")
 
+    async def check_table(self, table_name: str):
+        """Check if a table exists."""
+        print(self.CACHE_TABLE)
+        try:
+            return table_name in self.CACHE_TABLE
+        except Exception as e:
+            raise GramDBError(f"Error checking table existence: {e}")
+
     async def background_create(self, table_name, _m_id):
         try:
             result, old_data = await async_extract_func(self.url, self.token)
