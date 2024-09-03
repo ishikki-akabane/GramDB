@@ -187,6 +187,7 @@ async def boot():
     fetch_txt += f"\n2: {execution_2_time_ms} ms"
     fetch_txt += f"\n3: {execution_3_time_ms} ms"    
     print(fetch_txt)
+    await asyncio.sleep(10)
 
 
 asyncio.run(boot())
