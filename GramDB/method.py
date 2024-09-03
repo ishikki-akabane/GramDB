@@ -82,7 +82,6 @@ async def update_func(session, base_url, token, data_id, data, table_name):
 
 
 async def git_func(session, base_url, token, data):
-    print("git running")
     url = base_url + "/git"
     headers = {
         "Content-Type": "application/json",
@@ -92,7 +91,6 @@ async def git_func(session, base_url, token, data):
         "data" : data
     }
     async with session.post(url, headers=headers, json=payload) as response:
-        print("git connecting")
         if response.status == 200:
             result = await response.json()
             print(result)
@@ -110,10 +108,8 @@ def extract_func(base_url, token):
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         result = response.json()
-        print(result)
         return True, result
     else:
-        print(response.text)
         return False, response.status_code
 
 
@@ -125,10 +121,8 @@ async def async_extract_func(base_url, token):
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         result = response.json()
-        print(result)
         return True, result
     else:
-        print(response.text)
         return False, response.status_code
     
 
