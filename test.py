@@ -192,7 +192,7 @@ async def boot():
     fetch_txt += f"\n3: {execution_3_time_ms} ms"    
     print(fetch_txt)
 
-    a = await db.check_table("hahaha")
+    a = await db.check_table("testbatch")
     print(a)
   
     await asyncio.sleep(10)
