@@ -37,7 +37,7 @@ async def insert_func(session, base_url, token, data, table_name):
             result = await response.json()
             return True, result
         else:
-            print("Gramdb Error >>>>", response.text)
+            print("Gramdb Error >>>>", await response.json)
             return False, response.json()
 
 
