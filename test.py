@@ -89,6 +89,12 @@ class DATABASE:
 
     async def create(self, table, query):
         await self.client.create(table, query)
+    async def insert(self, table, query):
+        await self.client.insert(table, query)
+    async def update(self, table, query, new_query):
+        await self.client.update(table, query, new_query)
+    async def fetch(self, table, query):
+        await self.client.fetch(table, query)
 
 
 
