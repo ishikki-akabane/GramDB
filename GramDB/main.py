@@ -67,9 +67,8 @@ class GramDB:
         try:
             result, old_data = await async_extract_func(self.url, self.token)
             old_data[table_name] = [_m_id]
-            ## async with aiohttp.ClientSession() as newsession:
-            newsession = self.session
-            result2, response = await git_func(newsession, self.url, self.token, old_data)
+            async with aiohttp.ClientSession() as newsession:
+                result2, response = await git_func(newsession, self.url, self.token, old_data)
         except Exception as e:
             raise GramDBError(f"Error in background create: {e}")
 
@@ -79,9 +78,8 @@ class GramDB:
             sample_record['_id'] = "sample1928"
             if self.session.closed:
                 raise ValueError("Session is closed")
-            ## async with aiohttp.ClientSession() as newsession:
-            newsession = self.session
-            result, mdata = await insert_func(newsession, self.url, self.token, sample_record, table_name)
+            async with aiohttp.ClientSession() as newsession:
+                result, mdata = await insert_func(newsession, self.url, self.token, sample_record, table_name)
             if result:
                 _m_id = mdata["data_id"]
                 sample_record['_m_id'] = _m_id
