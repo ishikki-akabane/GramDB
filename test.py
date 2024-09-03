@@ -172,7 +172,7 @@ async def boot():
     execution_2_time_ms = (create_2_end - create_2_time) * 1000
   
     create_3_time = time.time()
-    await db.fetch("testbatch", {"_id": 123456, "channel_id": 456}))
+    await db.fetch("testbatch", {"_id": 123456, "channel_id": 456})
     create_3_end = time.time()
     execution_3_time_ms = (create_3_end - create_3_time) * 1000
 
