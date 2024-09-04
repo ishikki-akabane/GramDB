@@ -124,3 +124,34 @@ class GramDBTaskRunner:
         self.thread = None
         self.loop = None
 
+
+
+class GramDBAsync:
+    def __init__(self):
+        self.loop = asyncio.new_event_loop()
+        self.thread = threading.Thread(target=self.run_loop)
+        self.thread.daemon = False
+        self.task_handler = TaskHandler(self.loop)
+
+    def run_loop(self):
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_forever()
+
+    def start(self):
+        self.thread.start()
+
+    def stop(self):
+        self.loop.call_soon_threadsafe(self.loop.stop)
+
+    def wait(self, timeout=5):
+        self.stop()
+        self.thread.join(timeout)
+        if self.thread.is_alive():
+            raise Exception("Timeout waiting for tasks to complete")
+
+class TaskHandler:
+    def __init__(self, loop: asyncio.AbstractEventLoop):
+        self.loop = loop
+
+    def create_task(self, coroutine: Callable[[], Any]):
+        return self.loop.run_in_executor(None, self.loop.run_until_complete, coroutine)
