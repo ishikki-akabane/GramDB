@@ -1,17 +1,25 @@
 from setuptools import setup
+import re
 
-requirements = ['aiohttp', 'requests', 'asyncio']
+with open("requirements.txt", encoding="utf-8") as r:
+    requirements = [i.strip() for i in r]
+    
 readme = ''
 with open("README.md", encoding="utf-8") as f:
     readme = f.read()
+
+with open("pyrogram/__init__.py", encoding="utf-8") as f:
+    version = re.findall(r"__version__ = \"(.+)\"", f.read())[0]
+    
 setup(
     name='GramDB',
     author='ishikki-Akabane',
     author_email='ishikkiakabane@outlook.com',
-    version='1.0.0',
+    version=version,
     long_description=readme,
     long_description_content_type="text/markdown",
     url='https://github.com/ishikki-akabane/GramDB',
+    download_url="https://github.com/ishikki-akabane/GramDB/releases/latest",
     license='GNU General Public License v3.0',
     classifiers=[
         "Framework :: AsyncIO",
