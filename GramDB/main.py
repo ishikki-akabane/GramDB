@@ -65,8 +65,9 @@ class GramDB:
 
     def task_completed(self, task):
         """Callback to remove completed tasks from the list."""
-        print("task cleanup")
-        self.background_tasks.remove(task)
+        if task in self.background_tasks:
+            print(f"Task {task} completed")
+            self.background_tasks.remove(task)
     
     async def check_table(self, table_name: str):
         """Check if a table exists."""
@@ -93,9 +94,10 @@ class GramDB:
                 sample_record['_m_id'] = _m_id
                 del sample_record["_table_"]
                 await self.db.create(table_name, schema, sample_record, _m_id)
+                
                 task = asyncio.create_task(self.background_create(table_name, _m_id))
-                task.add_done_callback(self.task_completed)
                 self.background_tasks.append(task)
+                task.add_done_callback(self.task_completed)
             else:
                 raise GramDBError(f"Failed to create record in table {table_name}\nError: {mdata}")
         except Exception as e:
