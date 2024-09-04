@@ -206,6 +206,7 @@ class GramDB:
     def __del__(self):
         print("destroying tasks...")
         """Ensure all background tasks are completed before exiting."""
+        print(self.background_tasks)
         if self.background_tasks:
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
