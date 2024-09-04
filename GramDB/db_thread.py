@@ -63,32 +63,56 @@ class GramDBTaskRunner:
         self.thread = None
         self.running = False
         self.tasks = []
+        self.shutdown_event = threading.Event()
 
     def _start_loop(self):
         """Run the asyncio event loop in a separate thread."""
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
         self.running = True
-        self.loop.run_forever()
+        while not self.shutdown_event.is_set():
+            self.loop.run_until_complete(self._wait_for_tasks())
+            if not self.shutdown_event.is_set():
+                self.loop.stop()
+                self.loop.run_forever()
+
+        # Perform final cleanup
+        self.loop.run_until_complete(self._shutdown())
+
+    async def _wait_for_tasks(self):
+        """Wait for tasks to complete if there are any pending tasks."""
+        if self.tasks:
+            done, pending = await asyncio.wait(self.tasks, timeout=1.0)
+            for task in done:
+                if task.exception():
+                    print(f"Task encountered an error: {task.exception()}")
+        else:
+            await asyncio.sleep(1.0)
 
     def start(self):
         """Start the thread and event loop."""
         if self.thread is None:
-            self.thread = threading.Thread(target=self._start_loop, name="GramDB")
+            self.thread = threading.Thread(target=self._start_loop, daemon=True)
             self.thread.start()
 
     def create_task(self, coro):
         """Schedule an asynchronous task."""
         if not self.running:
-            raise RuntimeError("GramDB Async runner is not running.")
+            raise RuntimeError("AsyncTaskRunner is not running.")
         task = asyncio.run_coroutine_threadsafe(coro, self.loop)
         self.tasks.append(task)
         return task
 
     async def _shutdown(self):
         """Shut down the event loop and wait for all tasks to complete."""
+        # Await each task to ensure it completes
         for task in self.tasks:
-            await task
+            try:
+                await asyncio.wrap_future(task)
+            except Exception as e:
+                print(f"Task encountered an error: {e}")
+
+        # Stop the loop
         self.loop.stop()
 
     def stop(self):
@@ -96,7 +120,7 @@ class GramDBTaskRunner:
         if not self.running:
             return
 
-        asyncio.run_coroutine_threadsafe(self._shutdown(), self.loop)
+        self.shutdown_event.set()
         self.thread.join()
         self.running = False
         self.thread = None
