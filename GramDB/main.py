@@ -14,6 +14,7 @@ class GramDB:
         self.CACHE_TABLE = None
         self.CACHE_DATA = None
         self.db = None
+        self.background_tasks = []
         self.initialize()
 
     def initialize(self):
@@ -62,6 +63,10 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error importing cache: {e}")
 
+    def task_completed(self, task):
+        """Callback to remove completed tasks from the list."""
+        self.background_tasks.remove(task)
+    
     async def check_table(self, table_name: str):
         """Check if a table exists."""
         bool_result = await self.db.check_table(table_name)
@@ -87,7 +92,9 @@ class GramDB:
                 sample_record['_m_id'] = _m_id
                 del sample_record["_table_"]
                 await self.db.create(table_name, schema, sample_record, _m_id)
-                asyncio.create_task(self.background_create(table_name, _m_id))
+                task = asyncio.create_task(self.background_create(table_name, _m_id))
+                task.add_done_callback(self.task_completed)
+                self.background_tasks.append(task)
             else:
                 raise GramDBError(f"Failed to create record in table {table_name}\nError: {mdata}")
         except Exception as e:
@@ -190,8 +197,20 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error deleting table {table_name}: {e}")
 
+    
+    async def wait_for_background_tasks(self):
+        """Wait for all background tasks to complete."""
+        if self.background_tasks:
+            await asyncio.gather(*self.background_tasks)
+
+    def __del__(self):
+        """Ensure all background tasks are completed before exiting."""
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            loop.run_until_complete(self.wait_for_background_tasks())
+            
     async def close_func(self):
-        #await self.session.close()
+        await self.wait_for_background_tasks()
         return
         
     def close(self):
