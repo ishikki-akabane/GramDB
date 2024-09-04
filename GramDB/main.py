@@ -3,7 +3,7 @@ import aiohttp
 from GramDB.method import *
 from GramDB.helper import EfficientDictQuery
 from GramDB.exception import *
-from GramDB.db_thread import GramDBThread, GramDBTaskRunner
+from GramDB.db_thread import *
 import asyncio
 import threading
 
@@ -16,7 +16,7 @@ class GramDB:
         self.CACHE_TABLE = None
         self.CACHE_DATA = None
         self.db = None
-        self.background_task_handler = GramDBTaskRunner()
+        self.background_task_handler = GramDBAsync()
         self.initialize()
 
     def initialize(self):
@@ -92,6 +92,7 @@ class GramDB:
         return bool_result
 
     async def background_create(self, table_name, _m_id):
+        print("bg starting")
         try:
             result, old_data = await async_extract_func(self.url, self.token)
             old_data[table_name] = [_m_id]
@@ -114,7 +115,7 @@ class GramDB:
                 # Start the background task in a separate thread
                 #threading.Thread(target=self.background_task_handler.start2_background_task, args=(table_name, _m_id)).start()
 
-                self.background_task_handler.create_task(self.background_create(table_name, _m_id))
+                self.background_task_handler.task_handler.create_task(self.background_create(table_name, _m_id))
                 #task = asyncio.create_task(self.background_create(table_name, _m_id))
                 #self.background_tasks.append(task)
                 #task.add_done_callback(self.task_completed)
