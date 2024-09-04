@@ -213,7 +213,7 @@ class GramDB:
             print("Completing pending tasks")
             for task in self.background_tasks:
                 asyncio.gather(task)  # Reschedule the task group
-                await task_group
+                asyncio.run(task_group)
                 print("lmao")
         
             
