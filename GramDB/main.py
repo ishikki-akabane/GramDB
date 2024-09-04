@@ -211,6 +211,10 @@ class GramDB:
         if self.background_tasks:
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
+            for task in self.background_tasks:
+                asyncio.gather(task)  # Reschedule the task group
+                await task_group
+                print("lmao")
         
             
             
