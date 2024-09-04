@@ -201,9 +201,12 @@ class GramDB:
     async def wait_for_background_tasks(self):
         """Wait for all background tasks to complete."""
         if self.background_tasks:
-            await asyncio.gather(*self.background_tasks)
-            print("lmao") 
-            await asyncio.sleep(3.0)
+            for task in self.background_tasks:
+                asyncio.gather(task)
+                print("lmao")
+                asyncio.run(task)
+                print("lmao1")
+                await asyncio.sleep(3.0)
 
     def __del__(self):
         print("destroying tasks...")
