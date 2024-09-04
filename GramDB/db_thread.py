@@ -13,7 +13,8 @@ class GramDBThread:
         self.gram_db = gram_db
         self._stop_event = threading.Event()
         self._thread = threading.Thread(target=self._run)
-        self._thread.daemon = True  # Set as daemon so it stops when main thread stops
+        self._thread.daemon = True  # Set as daemon so it stops when main thread Stop
+        self._tasks = []
 
     def start(self):
         self._thread.start()
@@ -39,5 +40,17 @@ class GramDBThread:
         # Start the background task in a separate thread
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
+        self._tasks.append(task)
         loop.run_until_complete(self.perform_background_task(table_name, _m_id))
         loop.close()
+
+    def start2_background_task(self, table_name, _m_id):
+        loop = asyncio.new_event_loop()
+        task = loop.create_task(self.perform_background_task(table_name, _m_id))
+        self._tasks.append(task)
+        loop.run_until_complete(task)
+        loop.close()
+
+    def wait_for_tasks(self):
+        while self._tasks:
+            time.sleep(0.1)
