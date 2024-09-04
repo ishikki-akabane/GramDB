@@ -70,16 +70,11 @@ class GramDBTaskRunner:
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
         self.running = True
-        while not self.shutdown_event.is_set():
-            self.loop.run_until_complete(self._wait_for_tasks())
-            if not self.shutdown_event.is_set():
-                self.loop.stop()
-                self.loop.run_forever()
-                print("initial end")
-
-        # Perform final cleanup
-        print("ending")
-        self.loop.run_until_complete(self._shutdown())
+        try:
+            self.loop.run_forever()
+        finally:
+            print("loop ending")
+            self.loop.run_until_complete(self._shutdown())
 
     async def _wait_for_tasks(self):
         """Wait for tasks to complete if there are any pending tasks."""
@@ -99,9 +94,9 @@ class GramDBTaskRunner:
 
     def create_task(self, coro):
         """Schedule an asynchronous task."""
-        print("running")
         if not self.running:
             raise RuntimeError("AsyncTaskRunner is not running.")
+        print("Creating task")
         task = asyncio.run_coroutine_threadsafe(coro, self.loop)
         self.tasks.append(task)
         return task
@@ -117,7 +112,7 @@ class GramDBTaskRunner:
 
         # Stop the loop
         self.loop.stop()
-
+        
     def stop(self):
         """Stop the thread and event loop gracefully."""
         if not self.running:
