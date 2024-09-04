@@ -150,6 +150,9 @@ class GramDBAsync:
         if self.thread.is_alive():
             raise Exception("Timeout waiting for tasks to complete")
 
+    #def __exit__(self, exc_type, exc_val, exc_tb):
+    #    self.wait()
+
 class TaskHandler:
     def __init__(self, loop: asyncio.AbstractEventLoop):
         self.loop = loop
