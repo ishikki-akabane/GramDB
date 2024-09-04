@@ -15,6 +15,7 @@ class GramDBThread:
         self._thread = threading.Thread(target=self._run)
         self._thread.daemon = True  # Set as daemon so it stops when main thread Stop
         self._tasks = []
+        
 
     def start(self):
         self._thread.start()
@@ -64,33 +65,30 @@ class GramDBTaskRunner:
         self.running = False
         self.tasks = []
         self.shutdown_event = threading.Event()
+        self.loop_ready_event = threading.Event()
 
     def _start_loop(self):
         """Run the asyncio event loop in a separate thread."""
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
         self.running = True
-        try:
-            self.loop.run_forever()
-        finally:
-            print("loop ending")
-            self.loop.run_until_complete(self._shutdown())
+        self.loop_ready_event.set()  # Signal that the loop is ready
+        self.loop.run_forever()
 
-    async def _wait_for_tasks(self):
-        """Wait for tasks to complete if there are any pending tasks."""
-        if self.tasks:
-            done, pending = await asyncio.wait(self.tasks, timeout=1.0)
-            for task in done:
-                if task.exception():
-                    print(f"Task encountered an error: {task.exception()}")
-        else:
-            await asyncio.sleep(1.0)
+        # Perform final cleanup when the loop is stopped
+        pending = asyncio.all_tasks(self.loop)
+        if pending:
+            self.loop.run_until_complete(asyncio.gather(*pending))
+        self.loop.close()
 
     def start(self):
         """Start the thread and event loop."""
         if self.thread is None:
             self.thread = threading.Thread(target=self._start_loop, daemon=True)
             self.thread.start()
+
+        # Wait until the event loop is ready
+        self.loop_ready_event.wait()
 
     def create_task(self, coro):
         """Schedule an asynchronous task."""
