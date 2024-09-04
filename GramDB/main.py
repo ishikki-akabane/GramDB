@@ -215,7 +215,14 @@ class GramDB:
         if self.background_tasks:
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
-            threading.Thread(target=self.wait_for_background_tasks, args=()).start()
+
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(asyncio.gather(*self.background_tasks))
+            print("lmao1")
+            loop.close()
+        
+            #threading.Thread(target=self.wait_for_background_tasks, args=()).start()
             """
             for task in self.background_tasks:
                 #asyncio.gather(task)  # Reschedule the task group
