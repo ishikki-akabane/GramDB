@@ -95,10 +95,12 @@ class GramDBTaskRunner:
     def create_task(self, coro):
         """Schedule an asynchronous task."""
         if not self.running:
+            print("AsyncTaskRunner is not running.")
             raise RuntimeError("AsyncTaskRunner is not running.")
         print("Creating task")
         task = asyncio.run_coroutine_threadsafe(coro, self.loop)
         self.tasks.append(task)
+        print("end")
         return task
 
     async def _shutdown(self):
