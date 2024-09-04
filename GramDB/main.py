@@ -5,19 +5,21 @@ from GramDB.helper import EfficientDictQuery
 from GramDB.exception import *
 from db_thread import GramDBThread
 import asyncio
+import threading
 
 class GramDB:
     def __init__(self, db_url: str):
         self.db_url = db_url
-        self.db_thread = GramDBThread()
-        self.db_thread.start()
+        self.loop = None
+        self.thread = threading.Thread(target=self._run_event_loop, name="GramDB")
+        self.thread.start()
         self.session = None
         self.token = None
         self.url = None
         self.CACHE_TABLE = None
         self.CACHE_DATA = None
         self.db = None
-        self.background_tasks = ["hm"]
+        self.background_tasks = []
         self.initialize()
 
     def initialize(self):
@@ -65,6 +67,20 @@ class GramDB:
             self.db = EfficientDictQuery(self.CACHE_DATA)
         except Exception as e:
             raise GramDBError(f"Error importing cache: {e}")
+
+    def _run_event_loop(self):
+        """Run an event loop in a separate thread."""
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_forever()
+
+    async def _async_task_wrapper(self, coro):
+        """Wrapper to run a coroutine in the separate thread's event loop."""
+        return await coro
+
+    def run_async_task(self, coro):
+        """Run an async task in the GramDB event loop."""
+        return asyncio.run_coroutine_threadsafe(self._async_task_wrapper(coro), self.loop)
 
     def task_completed(self, task):
         """Callback to remove completed tasks from the list."""
