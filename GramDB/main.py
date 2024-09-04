@@ -14,7 +14,7 @@ class GramDB:
         self.CACHE_TABLE = None
         self.CACHE_DATA = None
         self.db = None
-        self.background_tasks = []
+        self.background_tasks = ["hm"]
         self.initialize()
 
     def initialize(self):
@@ -97,7 +97,7 @@ class GramDB:
                 
                 task = asyncio.create_task(self.background_create(table_name, _m_id))
                 self.background_tasks.append(task)
-                task.add_done_callback(self.task_completed)
+                #task.add_done_callback(self.task_completed)
             else:
                 raise GramDBError(f"Failed to create record in table {table_name}\nError: {mdata}")
         except Exception as e:
@@ -204,9 +204,11 @@ class GramDB:
     async def wait_for_background_tasks(self):
         """Wait for all background tasks to complete."""
         if self.background_tasks:
-            await asyncio.gather(*self.background_tasks)
+            await asyncio.sleep(6)
+            #await asyncio.gather(*self.background_tasks)
 
     def __del__(self):
+        asyncio.sleep(6)
         print("destroying tasks...")
         """Ensure all background tasks are completed before exiting."""
         print(self.background_tasks)
