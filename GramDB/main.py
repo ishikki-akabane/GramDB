@@ -65,6 +65,7 @@ class GramDB:
 
     def task_completed(self, task):
         """Callback to remove completed tasks from the list."""
+        print("task cleanup")
         self.background_tasks.remove(task)
     
     async def check_table(self, table_name: str):
