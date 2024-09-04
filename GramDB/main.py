@@ -3,11 +3,14 @@ import aiohttp
 from GramDB.method import *
 from GramDB.helper import EfficientDictQuery
 from GramDB.exception import *
+from db_thread import GramDBThread
 import asyncio
 
 class GramDB:
     def __init__(self, db_url: str):
         self.db_url = db_url
+        self.db_thread = GramDBThread()
+        self.db_thread.start()
         self.session = None
         self.token = None
         self.url = None
