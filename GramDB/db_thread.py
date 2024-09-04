@@ -54,3 +54,51 @@ class GramDBThread:
     def wait_for_tasks(self):
         while self._tasks:
             time.sleep(0.1)
+
+
+
+class GramDBTaskRunner:
+    def __init__(self):
+        self.loop = None
+        self.thread = None
+        self.running = False
+        self.tasks = []
+
+    def _start_loop(self):
+        """Run the asyncio event loop in a separate thread."""
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
+        self.running = True
+        self.loop.run_forever()
+
+    def start(self):
+        """Start the thread and event loop."""
+        if self.thread is None:
+            self.thread = threading.Thread(target=self._start_loop, name="GramDB")
+            self.thread.start()
+
+    def create_task(self, coro):
+        """Schedule an asynchronous task."""
+        if not self.running:
+            raise RuntimeError("GramDB Async runner is not running.")
+        task = asyncio.run_coroutine_threadsafe(coro, self.loop)
+        self.tasks.append(task)
+        return task
+
+    async def _shutdown(self):
+        """Shut down the event loop and wait for all tasks to complete."""
+        for task in self.tasks:
+            await task
+        self.loop.stop()
+
+    def stop(self):
+        """Stop the thread and event loop gracefully."""
+        if not self.running:
+            return
+
+        asyncio.run_coroutine_threadsafe(self._shutdown(), self.loop)
+        self.thread.join()
+        self.running = False
+        self.thread = None
+        self.loop = None
+
