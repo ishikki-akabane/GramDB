@@ -16,12 +16,10 @@ class GramDB:
         self.CACHE_TABLE = None
         self.CACHE_DATA = None
         self.db = None
-        self.background_task_handler = GramDBAsync()
         self.initialize()
 
     def initialize(self):
         self.authenticate()
-        self.background_task_handler.start()
 
     def authenticate(self):
         try:
@@ -66,25 +64,6 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error importing cache: {e}")
 
-    def _run_event_loop(self):
-        """Run an event loop in a separate thread."""
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
-        self.loop.run_forever()
-
-    async def _async_task_wrapper(self, coro):
-        """Wrapper to run a coroutine in the separate thread's event loop."""
-        return await coro
-
-    def run_async_task(self, coro):
-        """Run an async task in the GramDB event loop."""
-        return asyncio.run_coroutine_threadsafe(self._async_task_wrapper(coro), self.loop)
-
-    def task_completed(self, task):
-        """Callback to remove completed tasks from the list."""
-        if task in self.background_tasks:
-            print(f"Task {task} completed")
-            self.background_tasks.remove(task)
     
     async def check_table(self, table_name: str):
         """Check if a table exists."""
@@ -112,13 +91,9 @@ class GramDB:
                 sample_record['_m_id'] = _m_id
                 del sample_record["_table_"]
                 await self.db.create(table_name, schema, sample_record, _m_id)
-                # Start the background task in a separate thread
-                #threading.Thread(target=self.background_task_handler.start2_background_task, args=(table_name, _m_id)).start()
-
-                self.background_task_handler.task_handler.create_task(self.background_create(table_name, _m_id))
-                #task = asyncio.create_task(self.background_create(table_name, _m_id))
-                #self.background_tasks.append(task)
-                #task.add_done_callback(self.task_completed)
+                
+                task = asyncio.create_task(self.background_create(table_name, _m_id))
+                self.background_tasks.append(task)
             else:
                 raise GramDBError(f"Failed to create record in table {table_name}\nError: {mdata}")
         except Exception as e:
@@ -230,25 +205,15 @@ class GramDB:
 
     def __del__(self):
         print("destroying tasks...")
-        self.background_task_handler.wait()
-        print("done")
- 
         """Ensure all background tasks are completed before exiting."""
-        """
         print(self.background_tasks)
         if self.background_tasks:
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                loop.create_task(self.wait_for_background_tasks())
-            else:
-                asyncio.run(self.wait_for_background_tasks())
-        """
+        
             
             
     async def close_func(self):
-        await self.wait_for_background_tasks()
         return
         
     def close(self):
