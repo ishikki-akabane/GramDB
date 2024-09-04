@@ -1,8 +1,7 @@
 from setuptools import setup
 import re
 
-with open("requirements.txt", encoding="utf-8") as r:
-    requirements = [i.strip() for i in r]
+requirements = ["requests", "aiohttp", "asyncio"]
     
 readme = ''
 with open("README.md", encoding="utf-8") as f:
