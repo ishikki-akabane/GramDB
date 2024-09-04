@@ -3,7 +3,7 @@ import aiohttp
 from GramDB.method import *
 from GramDB.helper import EfficientDictQuery
 from GramDB.exception import *
-from GramDB.db_thread import GramDBThread
+from GramDB.db_thread import GramDBThread, GramDBTaskRunner
 import asyncio
 import threading
 
@@ -16,7 +16,7 @@ class GramDB:
         self.CACHE_TABLE = None
         self.CACHE_DATA = None
         self.db = None
-        self.background_task_handler = GramDBThread(self)
+        self.background_task_handler = GramDBTaskRunner()
         self.initialize()
 
     def initialize(self):
@@ -112,8 +112,9 @@ class GramDB:
                 del sample_record["_table_"]
                 await self.db.create(table_name, schema, sample_record, _m_id)
                 # Start the background task in a separate thread
-                threading.Thread(target=self.background_task_handler.start2_background_task, args=(table_name, _m_id)).start()
-                
+                #threading.Thread(target=self.background_task_handler.start2_background_task, args=(table_name, _m_id)).start()
+
+                self.background_task_handler.create_task(self.background_create(table_name, _m_id))
                 #task = asyncio.create_task(self.background_create(table_name, _m_id))
                 #self.background_tasks.append(task)
                 #task.add_done_callback(self.task_completed)
