@@ -3,6 +3,7 @@ import asyncio
 import time
 import requests
 import aiohttp
+from typing import Callable, Any
 
 from GramDB.method import *
 from GramDB.exception import *
