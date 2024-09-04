@@ -204,6 +204,7 @@ class GramDB:
             await asyncio.gather(*self.background_tasks)
 
     def __del__(self):
+        print("destroying tasks...")
         """Ensure all background tasks are completed before exiting."""
         if self.background_tasks:
             print("Warning: There are background tasks that were not completed")
