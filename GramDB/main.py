@@ -16,6 +16,7 @@ class GramDB:
         self.CACHE_TABLE = None
         self.CACHE_DATA = None
         self.db = None
+        self.background_tasks = []
         self.initialize()
 
     def initialize(self):
