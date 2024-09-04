@@ -10,20 +10,18 @@ import threading
 class GramDB:
     def __init__(self, db_url: str):
         self.db_url = db_url
-        self.loop = None
-        self.thread = threading.Thread(target=self._run_event_loop, name="GramDB")
-        self.thread.start()
         self.session = None
         self.token = None
         self.url = None
         self.CACHE_TABLE = None
         self.CACHE_DATA = None
         self.db = None
-        self.background_tasks = []
+        self.background_task_handler = GramDBThread(self)
         self.initialize()
 
     def initialize(self):
         self.authenticate()
+        self.background_task_handler.start()
 
     def authenticate(self):
         try:
@@ -113,9 +111,11 @@ class GramDB:
                 sample_record['_m_id'] = _m_id
                 del sample_record["_table_"]
                 await self.db.create(table_name, schema, sample_record, _m_id)
+                # Start the background task in a separate thread
+                threading.Thread(target=self.background_task_handler.perform_background_task, args=(table_name, _m_id)).start()
                 
-                task = asyncio.create_task(self.background_create(table_name, _m_id))
-                self.background_tasks.append(task)
+                #task = asyncio.create_task(self.background_create(table_name, _m_id))
+                #self.background_tasks.append(task)
                 #task.add_done_callback(self.task_completed)
             else:
                 raise GramDBError(f"Failed to create record in table {table_name}\nError: {mdata}")
