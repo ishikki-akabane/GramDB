@@ -17,9 +17,11 @@ class GramDB:
         self.CACHE_DATA = None
         self.db = None
         self.background_tasks = []
+        self.loop = asyncio.get_event_loop()
         self.initialize()
 
     def initialize(self):
+        #self.loop.run_until_complete(self.run())
         self.authenticate()
 
     def authenticate(self):
@@ -201,26 +203,27 @@ class GramDB:
     async def wait_for_background_tasks(self):
         """Wait for all background tasks to complete."""
         if self.background_tasks:
-            for task in self.background_tasks:
-                asyncio.gather(task)
-                print("lmao")
-                asyncio.run(task)
-                print("lmao1")
-                await asyncio.sleep(3.0)
+            await asyncio.gather(*self.background_tasks)
+            print("All background tasks completed.")
 
     def __del__(self):
         print("destroying tasks...")
         """Ensure all background tasks are completed before exiting."""
         print(self.background_tasks)
         if self.background_tasks:
+            
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
+            self.loop.run_until_complete(self.wait_for_background_tasks())
+            self.loop.close()
 
+            """
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             loop.run_until_complete(asyncio.gather(*self.background_tasks))
             print("lmao1")
             loop.close()
+            """
         
             #threading.Thread(target=self.wait_for_background_tasks, args=()).start()
             """
