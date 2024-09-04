@@ -112,7 +112,7 @@ class GramDB:
                 del sample_record["_table_"]
                 await self.db.create(table_name, schema, sample_record, _m_id)
                 # Start the background task in a separate thread
-                threading.Thread(target=self.background_task_handler.perform_background_task, args=(table_name, _m_id)).start()
+                threading.Thread(target=self.background_task_handler.start_background_task, args=(table_name, _m_id)).start()
                 
                 #task = asyncio.create_task(self.background_create(table_name, _m_id))
                 #self.background_tasks.append(task)
