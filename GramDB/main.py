@@ -205,9 +205,15 @@ class GramDB:
 
     def __del__(self):
         """Ensure all background tasks are completed before exiting."""
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            loop.run_until_complete(self.wait_for_background_tasks())
+        if self.background_tasks:
+            print("Warning: There are background tasks that were not completed")
+            print("Completing pending tasks")
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                loop.create_task(self.wait_for_background_tasks())
+            else:
+                asyncio.run(self.wait_for_background_tasks())
+            
             
     async def close_func(self):
         await self.wait_for_background_tasks()
