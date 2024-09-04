@@ -28,7 +28,7 @@ class GramDBThread:
 
     async def perform_background_task(self, table_name, _m_id):
         try:
-            result, old_data = async_extract_func(self.gram_db.url, self.gram_db.token)
+            result, old_data = await async_extract_func(self.gram_db.url, self.gram_db.token)
             old_data[table_name] = [_m_id]
             async with aiohttp.ClientSession() as newsession:
                 result2, response = await git_func(newsession, self.gram_db.url, self.gram_db.token, old_data)
