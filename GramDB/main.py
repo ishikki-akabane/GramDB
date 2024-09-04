@@ -230,7 +230,7 @@ class GramDB:
 
     def __del__(self):
         print("destroying tasks...")
-        self.background_task_handler.wait_for_tasks()
+        self.background_task_handler.wait()
         print("done")
  
         """Ensure all background tasks are completed before exiting."""
