@@ -203,7 +203,7 @@ class GramDB:
         if self.background_tasks:
             await asyncio.gather(*self.background_tasks)
             print("lmao") 
-            await asyncio.sleep(6)
+            await asyncio.sleep(3.0)
 
     def __del__(self):
         print("destroying tasks...")
@@ -212,7 +212,7 @@ class GramDB:
         if self.background_tasks:
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
-            threading.Thread(target=self.wait_for_background_tasks, args=(self,)).start()
+            threading.Thread(target=self.wait_for_background_tasks, args=()).start()
             """
             for task in self.background_tasks:
                 #asyncio.gather(task)  # Reschedule the task group
