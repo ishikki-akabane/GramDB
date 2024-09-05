@@ -214,7 +214,12 @@ class GramDB:
         return
         
     def close(self):
-        loop = asyncio.get_event_loop()
+        try:
+            loop = asyncio.get_event_loop()
+        except:
+            asyncio.run(self.close_func())
+            return
+            
         if loop.is_running():
             loop.create_task(self.close_func())
         else:
