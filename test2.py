@@ -20,15 +20,14 @@ class DATABASE:
         Args:
             uri (str): The URI string to connect to the GramDB database.
         """
-        self.async_manager = None # GramDBAsync()
+        self.async_manager = GramDBAsync()
         self.db = GramDB(uri, self.async_manager)
         self.table_schemas = {
             "users": ("_id", "upload", "batch"),
             "files": ("_id", "message_id"),
             "batch": ("_id", "channel_id", "message_id")
         }
-        #self.async_manager.run_async(self.create_table())
-        asyncio.run(self.create_table())
+        self.async_manager.run_async(self.create_table())
         print("DATABASE Online")
 
     async def create_table(self):
