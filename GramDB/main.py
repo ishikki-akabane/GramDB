@@ -223,4 +223,5 @@ class GramDB:
         if loop.is_running():
             loop.create_task(self.close_func())
         else:
-            asyncio.run(self.close_func())
+            asyncio.gather(*self.background_tasks)
+            #asyncio.run(self.close_func())
