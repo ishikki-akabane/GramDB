@@ -17,7 +17,7 @@ class GramDB:
         self.CACHE_DATA = None
         self.db = None
         self.background_tasks = []
-        self.async_manager = async_manager
+        self.async_manager = GramDBAsync()
         self.initialize()
 
     def initialize(self):
