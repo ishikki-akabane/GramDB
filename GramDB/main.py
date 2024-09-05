@@ -216,7 +216,7 @@ class GramDB:
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
             asyncio.set_event_loop(self.loop)
-            self.loop.run_until_complete(wait_for_background_tasks())
+            self.loop.run_until_complete(self.wait_for_background_tasks())
             self.loop.close()
 
             """
