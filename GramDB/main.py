@@ -17,10 +17,12 @@ class GramDB:
         self.CACHE_DATA = None
         self.db = None
         self.background_tasks = []
-        self.loop = asyncio.new_event_loop()
+        self.loop = asyncio.get_event_loop()
+        self.stop_event = asyncio.Event()
         self.initialize()
 
     def initialize(self):
+        self.loop.create_task(self.infinite_loop())
         #self.loop.run_until_complete(self.run())
         self.authenticate()
 
@@ -66,6 +68,15 @@ class GramDB:
             self.db = EfficientDictQuery(self.CACHE_DATA)
         except Exception as e:
             raise GramDBError(f"Error importing cache: {e}")
+
+    
+    async def infinite_loop(self):
+        print("Starting infinite loop...")
+        while not self.stop_event.is_set():
+            # Simulate work
+            print("Looping...")
+            await asyncio.sleep(5)
+        print("Infinite loop stopped.")
 
     
     async def check_table(self, table_name: str):
@@ -215,11 +226,14 @@ class GramDB:
             
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
+            self.stop()
 
+            """
             newloop = asyncio.new_event_loop()
             asyncio.set_event_loop(newloop)
             newloop.run_until_complete(self.wait_for_background_tasks())
             newloop.close()
+            """
 
             """
             loop = asyncio.new_event_loop()
@@ -240,7 +254,12 @@ class GramDB:
                 print("lmao")
             """
                 
-        
+    def stop(self):
+        print("Stopping the loop...")
+        # Set the stop event to signal the loop to stop
+        self.stop_event.set()
+        # Wait for the background task to finish
+        self.loop.run_until_complete(self.wait_for_background_tasks)
             
             
     async def close_func(self):
