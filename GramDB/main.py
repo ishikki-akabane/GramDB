@@ -17,16 +17,9 @@ class GramDB:
         self.CACHE_DATA = None
         self.db = None
         self.background_tasks = []
-
-        self.main_loop = asyncio.get_event_loop()  # Main thread's event loop
-        self.backup_loop = asyncio.new_event_loop()  # Backup event loop in a separate thread
-        self.backup_thread = threading.Thread(target=self.start_backup_loop, daemon=True)
-        
         self.initialize()
 
     def initialize(self):
-        self.backup_thread.start()
-        #self.loop.run_until_complete(self.run())
         self.authenticate()
 
     def authenticate(self):
@@ -73,12 +66,6 @@ class GramDB:
             raise GramDBError(f"Error importing cache: {e}")
 
     
-    def start_backup_loop(self):
-        """Backup loop running in a separate thread."""
-        asyncio.set_event_loop(self.backup_loop)
-        self.backup_loop.run_forever()
-
-    
     async def check_table(self, table_name: str):
         """Check if a table exists."""
         bool_result = await self.db.check_table(table_name)
@@ -106,9 +93,7 @@ class GramDB:
                 del sample_record["_table_"]
                 await self.db.create(table_name, schema, sample_record, _m_id)
                 
-                # task = asyncio.create_task(self.background_create(table_name, _m_id))
-                task = self.main_loop.create_task(self.background_create(table_name, _m_id))
-                self.background_tasks.append(task)
+                task = asyncio.create_task(self.background_create(table_name, _m_id))
             else:
                 raise GramDBError(f"Failed to create record in table {table_name}\nError: {mdata}")
         except Exception as e:
@@ -117,9 +102,6 @@ class GramDB:
     async def fetch(self, table_name: str, query: dict):
         try:
             result = await self.db.fetch(table_name, query)
-            #print(result)
-            #if not result:
-            #    raise NotFoundError(f"Record not found in table {table_name} for query {query}")
             if len(result) == 0:
                 return None
             elif len(result) == 1:
@@ -220,67 +202,14 @@ class GramDB:
             print("All background tasks completed.")
 
     def __del__(self):
-        print("destroying tasks...")
         """Ensure all background tasks are completed before exiting."""
-        print(self.background_tasks)
-        if self.background_tasks:
-            
+        print("destroying tasks...")
+        if self.background_tasks:          
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
-            self.transfer_task_to_backup()
-            self.backup_thread.join()
-
-            """
-            newloop = asyncio.new_event_loop()
-            asyncio.set_event_loop(newloop)
-            newloop.run_until_complete(self.wait_for_background_tasks())
-            newloop.close()
-            """
-
-            """
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(asyncio.gather(*self.background_tasks))
-            print("lmao1")
-            loop.close()
-            """
-        
-            #threading.Thread(target=self.wait_for_background_tasks, args=()).start()
-            """
-            for task in self.background_tasks:
-                #asyncio.gather(task)  # Reschedule the task group
-                #asyncio.run(task_group)
-                task.cancel()  # Cancel any pending tasks
-                while not task.done():
-                    time.sleep(1.0)
-                print("lmao")
-            """
-
-    def transfer_task_to_backup(self):
-        """Transfer any unfinished tasks from the main loop to the backup loop."""
-        if self.background_tasks:
-            print("Transferring unfinished task to backup loop.")
-            # Cancel task in the main loop and restart it in the backup loop
-            #asyncio.run_coroutine_threadsafe(self.background_task.cancel(), self.main_loop)
-            # Recreate the background task in the backup loop
-            #asyncio.run_coroutine_threadsafe(self.background_create(), self.backup_loop)
-                
-    def stop(self):
-        """Stops the event loop gracefully."""
-        print("Stopping loop and waiting for task completion...")
-        """
-        self.background_task.cancel()
-        # Wait for the background task to finish
-        try:
-            self.background_task.result()
-        except asyncio.CancelledError:
-            print("Task cancelled successfully.")
-        """
-        # Stop the event loop
-        self.loop.call_soon_threadsafe(self.loop.stop)
-            
             
     async def close_func(self):
+        await wait_for_background_tasks(self)
         return
         
     def close(self):
