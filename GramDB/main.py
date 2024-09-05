@@ -17,7 +17,7 @@ class GramDB:
         self.CACHE_DATA = None
         self.db = None
         self.background_tasks = []
-        self.async_manager = GramDBAsync()
+        self.async_manager = async_manager
         self.initialize()
 
     def initialize(self):
@@ -206,17 +206,13 @@ class GramDB:
     def __del__(self):
         """Ensure all background tasks are completed before exiting."""
         print("destroying tasks...")
-        if self.background_tasks:          
-            print("Warning: There are background tasks that were not completed")
-            print("Completing pending tasks")
-            self.async_manager.run_async(self.wait_for_background_tasks())
-            self.close_func()
+        self.close_func()
             
     def close_func(self):
         self.async_manager.close()
         
     def close(self):
-        self.async_manager.run_async(self.wait_for_background_tasks())
+        #self.async_manager.run_async(self.wait_for_background_tasks())
         self.close_func()
         """
         try:
