@@ -17,12 +17,14 @@ class GramDB:
         self.CACHE_DATA = None
         self.db = None
         self.background_tasks = []
-        self.loop = asyncio.get_event_loop()
-        self.stop_event = asyncio.Event()
+        
+        self.loop = asyncio.new_event_loop()
+        self.thread = threading.Thread(target=self.start_loop, daemon=True)
+        
         self.initialize()
 
     def initialize(self):
-        self.loop.create_task(self.infinite_loop())
+        self.thread.start()
         #self.loop.run_until_complete(self.run())
         self.authenticate()
 
@@ -70,13 +72,10 @@ class GramDB:
             raise GramDBError(f"Error importing cache: {e}")
 
     
-    async def infinite_loop(self):
-        print("Starting infinite loop...")
-        while not self.stop_event.is_set():
-            # Simulate work
-            print("Looping...")
-            await asyncio.sleep(5)
-        print("Infinite loop stopped.")
+    def start_loop(self):
+        """Starts the event loop in a separate thread."""
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_forever()
 
     
     async def check_table(self, table_name: str):
@@ -106,7 +105,8 @@ class GramDB:
                 del sample_record["_table_"]
                 await self.db.create(table_name, schema, sample_record, _m_id)
                 
-                task = asyncio.create_task(self.background_create(table_name, _m_id))
+                # task = asyncio.create_task(self.background_create(table_name, _m_id))
+                task = asyncio.run_coroutine_threadsafe(self.background_create(table_name, _m_id), self.loop)
                 self.background_tasks.append(task)
             else:
                 raise GramDBError(f"Failed to create record in table {table_name}\nError: {mdata}")
@@ -255,11 +255,18 @@ class GramDB:
             """
                 
     def stop(self):
-        print("Stopping the loop...")
-        # Set the stop event to signal the loop to stop
-        self.stop_event.set()
+        """Stops the event loop gracefully."""
+        print("Stopping loop and waiting for task completion...")
+        """
+        self.background_task.cancel()
         # Wait for the background task to finish
-        self.loop.run_until_complete(self.wait_for_background_tasks)
+        try:
+            self.background_task.result()
+        except asyncio.CancelledError:
+            print("Task cancelled successfully.")
+        """
+        # Stop the event loop
+        self.loop.call_soon_threadsafe(self.loop.stop)
             
             
     async def close_func(self):
