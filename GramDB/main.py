@@ -17,14 +17,15 @@ class GramDB:
         self.CACHE_DATA = None
         self.db = None
         self.background_tasks = []
-        
-        self.loop = asyncio.new_event_loop()
-        self.thread = threading.Thread(target=self.start_loop, daemon=True)
+
+        self.main_loop = asyncio.get_event_loop()  # Main thread's event loop
+        self.backup_loop = asyncio.new_event_loop()  # Backup event loop in a separate thread
+        self.backup_thread = threading.Thread(target=self.start_backup_loop, daemon=True)
         
         self.initialize()
 
     def initialize(self):
-        self.thread.start()
+        self.backup_thread.start()
         #self.loop.run_until_complete(self.run())
         self.authenticate()
 
@@ -72,10 +73,10 @@ class GramDB:
             raise GramDBError(f"Error importing cache: {e}")
 
     
-    def start_loop(self):
-        """Starts the event loop in a separate thread."""
-        asyncio.set_event_loop(self.loop)
-        self.loop.run_forever()
+    def start_backup_loop(self):
+        """Backup loop running in a separate thread."""
+        asyncio.set_event_loop(self.backup_loop)
+        self.backup_loop.run_forever()
 
     
     async def check_table(self, table_name: str):
@@ -106,7 +107,7 @@ class GramDB:
                 await self.db.create(table_name, schema, sample_record, _m_id)
                 
                 # task = asyncio.create_task(self.background_create(table_name, _m_id))
-                task = asyncio.run_coroutine_threadsafe(self.background_create(table_name, _m_id), self.loop)
+                task = self.main_loop.create_task(self.background_create(table_name, _m_id))
                 self.background_tasks.append(task)
             else:
                 raise GramDBError(f"Failed to create record in table {table_name}\nError: {mdata}")
@@ -226,8 +227,8 @@ class GramDB:
             
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
-            self.stop()
-            self.thread.join()
+            self.transfer_task_to_backup()
+            self.backup_thread.join()
 
             """
             newloop = asyncio.new_event_loop()
@@ -254,6 +255,15 @@ class GramDB:
                     time.sleep(1.0)
                 print("lmao")
             """
+
+    def transfer_task_to_backup(self):
+        """Transfer any unfinished tasks from the main loop to the backup loop."""
+        if self.background_tasks:
+            print("Transferring unfinished task to backup loop.")
+            # Cancel task in the main loop and restart it in the backup loop
+            #asyncio.run_coroutine_threadsafe(self.background_task.cancel(), self.main_loop)
+            # Recreate the background task in the backup loop
+            #asyncio.run_coroutine_threadsafe(self.background_create(), self.backup_loop)
                 
     def stop(self):
         """Stops the event loop gracefully."""
