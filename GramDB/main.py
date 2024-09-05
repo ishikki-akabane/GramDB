@@ -212,7 +212,7 @@ class GramDB:
         self.async_manager.close()
         
     def close(self):
-        #self.async_manager.run_async(self.wait_for_background_tasks())
+        self.async_manager.run_async(self.wait_for_background_tasks())
         self.close_func()
         """
         try:
