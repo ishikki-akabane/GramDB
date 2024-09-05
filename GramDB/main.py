@@ -94,6 +94,7 @@ class GramDB:
                 await self.db.create(table_name, schema, sample_record, _m_id)
                 
                 task = asyncio.create_task(self.background_create(table_name, _m_id))
+                self.background_tasks.append(task)
             else:
                 raise GramDBError(f"Failed to create record in table {table_name}\nError: {mdata}")
         except Exception as e:
