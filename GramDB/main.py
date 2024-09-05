@@ -17,7 +17,7 @@ class GramDB:
         self.CACHE_DATA = None
         self.db = None
         self.background_tasks = []
-        self.loop = asyncio.get_event_loop()
+        self.loop = asyncio.new_event_loop()
         self.initialize()
 
     def initialize(self):
@@ -202,6 +202,7 @@ class GramDB:
     
     async def wait_for_background_tasks(self):
         """Wait for all background tasks to complete."""
+        print("working")
         if self.background_tasks:
             await asyncio.gather(*self.background_tasks)
             print("All background tasks completed.")
@@ -214,8 +215,9 @@ class GramDB:
             
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
-            self.loop.run_until_complete(self.wait_for_background_tasks())
-            self.loop.close()
+            asyncio.set_event_loop(self.loop)
+            loop.run_until_complete(wait_for_background_tasks())
+            loop.close()
 
             """
             loop = asyncio.new_event_loop()
