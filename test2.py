@@ -36,6 +36,9 @@ class DATABASE:
             if not await self.db.check_table(table_name):
                 await self.db.create(table_name, schema)
 
+    def close(self):
+        self.db.close()
+
 
 db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
 db.close()
