@@ -30,7 +30,7 @@ class DATABASE:
         }
         self.async_manager.run_async(self.create_table())
         print("DATABASE Online")
-        print(threading.active_count())
+        print(threading.enumerate())
 
     async def create_table(self):
         """
