@@ -209,6 +209,8 @@ class GramDB:
         if self.background_tasks:          
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
+            self.async_manager.run_async(self.wait_for_background_tasks())
+            self.close_func()
             
     def close_func(self):
         self.async_manager.close()
