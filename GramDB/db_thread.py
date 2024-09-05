@@ -4,7 +4,7 @@ import asyncio
 class GramDBAsync:
     def __init__(self):
         self.loop = asyncio.new_event_loop()
-        self.thread = threading.Thread(target=self.run_event_loop)
+        self.thread = threading.Thread(target=self.run_event_loop, name="GramDBAsync")
         self.thread.start()
 
     def run_event_loop(self):
