@@ -8,7 +8,7 @@ import asyncio
 import threading
 
 class GramDB:
-    def __init__(self, db_url: str):
+    def __init__(self, db_url: str, async_manager):
         self.db_url = db_url
         self.session = None
         self.token = None
@@ -17,6 +17,7 @@ class GramDB:
         self.CACHE_DATA = None
         self.db = None
         self.background_tasks = []
+        self.async_manager = async_manager
         self.initialize()
 
     def initialize(self):
@@ -209,11 +210,13 @@ class GramDB:
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
             
-    async def close_func(self):
-        await self.wait_for_background_tasks()
-        return
+    def close_func(self):
+        self.async_manager.close()
         
     def close(self):
+        self.async_manager.run_async(self.wait_for_background_tasks())
+        self.close_func()
+        
         try:
             loop = asyncio.get_event_loop()
         except:
