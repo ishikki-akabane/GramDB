@@ -43,5 +43,5 @@ class DATABASE:
 
 
 db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-db.close()
+#db.close()
 print("lmao")
