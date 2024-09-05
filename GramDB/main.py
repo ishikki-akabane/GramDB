@@ -217,7 +217,8 @@ class GramDB:
         try:
             loop = asyncio.get_event_loop()
         except:
-            asyncio.run(self.close_func())
+            asyncio.gather(*self.background_tasks)
+            #asyncio.run(self.close_func())
             return
             
         if loop.is_running():
