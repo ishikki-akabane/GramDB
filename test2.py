@@ -2,6 +2,7 @@
 from GramDB import GramDB
 from GramDB.db_thread import *
 import asyncio
+import threading
 
 
 class DATABASE:
@@ -29,6 +30,7 @@ class DATABASE:
         }
         self.async_manager.run_async(self.create_table())
         print("DATABASE Online")
+        print(threading.active_count())
 
     async def create_table(self):
         """
