@@ -227,6 +227,7 @@ class GramDB:
             print("Warning: There are background tasks that were not completed")
             print("Completing pending tasks")
             self.stop()
+            self.thread.join()
 
             """
             newloop = asyncio.new_event_loop()
