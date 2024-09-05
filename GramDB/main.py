@@ -216,7 +216,7 @@ class GramDB:
     def close(self):
         self.async_manager.run_async(self.wait_for_background_tasks())
         self.close_func()
-        
+        """
         try:
             loop = asyncio.get_event_loop()
         except:
@@ -227,3 +227,4 @@ class GramDB:
             loop.create_task(self.close_func())
         else:
             asyncio.run(self.close_func())
+        """
