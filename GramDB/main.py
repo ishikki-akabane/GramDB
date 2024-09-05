@@ -210,7 +210,7 @@ class GramDB:
             print("Completing pending tasks")
             
     async def close_func(self):
-        await wait_for_background_tasks(self)
+        await self.wait_for_background_tasks(self)
         return
         
     def close(self):
