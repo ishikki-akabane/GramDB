@@ -1,6 +1,5 @@
 
 from GramDB import GramDB, GramDBAsync
-# from GramDB.asyncio import GramDBAsync
 import asyncio
 import threading
 import logging
@@ -49,9 +48,43 @@ class DATABASE:
             if not await self.db.check_table(table_name):
                 await self.db.create(table_name, schema)
 
+    async def check_user(self, user_id: int):
+        data = await self.db.fetch_one(
+            "users",
+            {
+                "_id": user_id
+            }
+        )
+        if data:
+            return data
+        else:
+            return None
+                
+    async def add_user(self, user_id: int):
+        data = await self.check_user(user_id)
+        if data:
+            return
+        else:
+            try:
+                await self.db.insert(
+                    "users",
+                    {
+                        "_id": user_id,
+                        "uploads": [],
+                        "batch": []
+                    }
+                )
+            except Exception as e:
+                LOGGER.error(f"Error adding user to database: {e}")
+            return
+
     def close(self):
         self.db.close()
 
 
-db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-db.close()
+async def main():
+    db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
+    await db.add_user(1122334455)
+    db.close()
+
+asyncio.run(main())
