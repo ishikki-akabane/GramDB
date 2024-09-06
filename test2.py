@@ -79,7 +79,7 @@ class DATABASE:
             return
 
     async def update(self, table_name, query, update_query):
-        await db.update(table_name, query, update_query)
+        await self.db.update(table_name, query, update_query)
 
     def close(self):
         self.db.close()
