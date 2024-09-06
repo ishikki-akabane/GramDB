@@ -246,9 +246,9 @@ class GramDB:
             
     def close_func(self):
         """Close the asynchronous manager gracefully."""
-        logger.info("Closing GramDBAsync manager..")
         try:
             self.async_manager.close()
+            logger.info("Closing GramDBAsync manager..")
         except RuntimeError:
             return
         
