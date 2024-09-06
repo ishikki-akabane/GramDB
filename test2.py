@@ -78,15 +78,17 @@ class DATABASE:
                 LOGGER.error(f"Error adding user to database: {e}")
             return
 
+    async def update(self, table_name, query, update_query):
+        await db.update(table_name, query, update_query)
+
     def close(self):
         self.db.close()
 
 
 async def main():
     db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-    print("haha")
     await db.add_user(1122334455)
-    print("haha")
+    await db.update("users", {"_id": 1122334455}, {"uploads": "first element"})
     db.close()
 
 asyncio.run(main())
