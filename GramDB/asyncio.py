@@ -1,6 +1,8 @@
 import threading
 import asyncio
 from queue import Queue
+import aiohttp
+from concurrent.futures import Future
 
 class GramDBAsync:
     def __init__(self):
@@ -32,13 +34,6 @@ class GramDBAsync:
         :param coroutine: The coroutine to be executed.
         :return: The created task.
         """
-        task_future = asyncio.Future()
-        self.loop.call_soon_threadsafe(self._create_task, coroutine, task_future)
-        return task_future.result()
-
-    def _create_task(self, coroutine, task_future):
         task = self.loop.create_task(coroutine)
-        task_future.set_result(task)
-        # Ensure the task is added to the queue if needed
-        self.task_queue.put(task)
+        return task
 
