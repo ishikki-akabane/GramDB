@@ -39,4 +39,6 @@ class GramDBAsync:
     def _create_task(self, coroutine, task_future):
         task = self.loop.create_task(coroutine)
         task_future.set_result(task)
+        # Ensure the task is added to the queue if needed
+        self.task_queue.put(task)
 
