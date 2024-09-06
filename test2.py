@@ -34,7 +34,7 @@ class DATABASE:
         self.async_manager = GramDBAsync()
         self.db = GramDB(uri, self.async_manager)
         self.table_schemas = {
-            "users": ("_id", "upload", "batch"),
+            "users": ("_id", "uploads", "batch"),
             "files": ("_id", "message_id"),
             "batch": ("_id", "channel_id", "message_id")
         }
