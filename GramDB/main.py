@@ -88,7 +88,6 @@ class GramDB:
         return await self.db.check_table(table_name)
 
     async def background_create(self, table_name, _m_id):
-        print("bg starting")
         try:
             result, old_data = await async_extract_func(self.url, self.token)
             old_data[table_name] = [_m_id]
@@ -222,18 +221,18 @@ class GramDB:
     
     async def wait_for_background_tasks(self):
         """Wait for all background tasks to complete."""
-        print("working")
         if self.background_tasks:
             await asyncio.gather(*self.background_tasks)
             print("All background tasks completed.")
 
     def __del__(self):
         """Ensure all background tasks are completed before exiting."""
-        print("Closing GramDBAsync manager..")
         self.close_func()
             
     def close_func(self):
         """Close the asynchronous manager gracefully."""
+        if logger.isEnabledFor(logging.INFO):
+            logger.info("Closing GramDBAsync manager..")
         try:
             self.async_manager.close()
         except RuntimeError:
