@@ -137,6 +137,16 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error fetching data: {e}")
 
+    async def fetch_one(self, table_name: str, query: dict):
+        try:
+            result = await self.db.fetch(table_name, query)
+            if len(result) == 0:
+                return None
+            else:
+                return result[0]
+        except Exception as e:
+            raise GramDBError(f"Error fetching data: {e}")
+
     async def fetch_all(self):
         try:
             return await self.db.fetch_all()
