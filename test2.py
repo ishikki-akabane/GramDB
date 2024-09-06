@@ -29,8 +29,6 @@ class DATABASE:
             "batch": ("_id", "channel_id", "message_id")
         }
         self.async_manager.run_async(self.create_table())
-        print("DATABASE Online")
-        print(threading.enumerate())
 
     async def create_table(self):
         """
@@ -46,4 +44,3 @@ class DATABASE:
 
 db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
 db.close()
-print("lmao")
