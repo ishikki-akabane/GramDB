@@ -1,5 +1,6 @@
 import threading
 import asyncio
+from queue import Queue
 
 class GramDBAsync:
     def __init__(self):
@@ -30,6 +31,6 @@ class GramDBAsync:
         :param coroutine: The coroutine to be executed.
         :return: The created task.
         """
-        future = self.loop.call_soon_threadsafe(self.loop, coroutine)
+        future = self.loop.call_soon_threadsafe(coroutine, self.loop)
         return future.result()
 
