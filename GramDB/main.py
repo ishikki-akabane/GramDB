@@ -8,7 +8,22 @@ from GramDB.db_thread import *
 import asyncio
 import threading
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('GramDB')
+logger.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.WARNING)
+
+always_handler = logging.StreamHandler()
+always_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+always_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+logger.addHandler(always_handler)
+
+
 
 class GramDB:
     def __init__(self, db_url: str, async_manager):
@@ -27,6 +42,7 @@ class GramDB:
         self.initialize()
 
     def initialize(self):
+        logger.info("Authenticating GramDB credentials...")
         self.authenticate()
 
     def authenticate(self):
@@ -72,8 +88,7 @@ class GramDB:
                 raise GramDBError(f"Failed to fetch all data: {all_rows}")
                 
             self.db = EfficientDictQuery(self.CACHE_DATA)
-            if logger.isEnabledFor(logging.INFO):
-                logger.info(f"GramDB successfully authenticated and running...")
+            logger.info(f"GramDB successfully authenticated and running...")
                 
         except Exception as e:
             raise GramDBError(f"Error importing cache: {e}")
@@ -231,8 +246,7 @@ class GramDB:
             
     def close_func(self):
         """Close the asynchronous manager gracefully."""
-        if logger.isEnabledFor(logging.INFO):
-            logger.info("Closing GramDBAsync manager..")
+        logger.info("Closing GramDBAsync manager..")
         try:
             self.async_manager.close()
         except RuntimeError:
