@@ -72,6 +72,9 @@ class GramDB:
                 raise GramDBError(f"Failed to fetch all data: {all_rows}")
                 
             self.db = EfficientDictQuery(self.CACHE_DATA)
+            if logger.isEnabledFor(logging.INFO):
+                logger.info(f"GramDB successfully authenticated and running...")
+                
         except Exception as e:
             raise GramDBError(f"Error importing cache: {e}")
 
