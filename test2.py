@@ -1,6 +1,6 @@
 
-from GramDB import GramDB
-from GramDB.asyncio import GramDBAsync
+from GramDB import GramDB, GramDBAsync
+# from GramDB.asyncio import GramDBAsync
 import asyncio
 import threading
 import logging
