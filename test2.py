@@ -5,7 +5,16 @@ import asyncio
 import threading
 import logging
 
-logging.basicConfig(level=logging.WARNING)
+
+FORMAT = "[TEST] %(message)s"
+logging.basicConfig(
+    handlers=[logging.FileHandler("logs.txt"), logging.StreamHandler()],
+    level=logging.INFO,
+    format=FORMAT,
+    datefmt="[%X]",
+)
+
+LOGGER = logging.getLogger('[TEST]')
 
 class DATABASE:
     """
