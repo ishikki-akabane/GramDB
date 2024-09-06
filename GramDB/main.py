@@ -118,7 +118,7 @@ class GramDB:
                 del sample_record["_table_"]
                 await self.db.create(table_name, schema, sample_record, _m_id)
                 
-                task = asyncio.create_task(self.background_create(table_name, _m_id))
+                task = self.async_manager.create_task(self.background_create(table_name, _m_id))
                 self.background_tasks.append(task)
             else:
                 raise GramDBError(f"Failed to create record in table {table_name}\nError: {mdata}")
@@ -175,9 +175,7 @@ class GramDB:
                 record['_m_id'] = _m_id
                 del record['_table_']
                 await self.db.insert(table_name, record, _m_id=_m_id)
-                print("inserting...")
                 task = self.async_manager.create_task(self.background_insert(table_name, _m_id))
-                print("insert done")
                 self.background_tasks.append(task)
             else:
                 raise GramDBError(f"Failed to insert record in table {table_name}")
@@ -197,7 +195,7 @@ class GramDB:
     async def delete(self, table_name: str, query: dict):
         try:
             _m_id = await self.db.delete(table_name, query)
-            task = asyncio.create_task(self.background_delete(table_name, _m_id))
+            task = self.async_manager.create_task(self.background_delete(table_name, _m_id))
             self.background_tasks.append(task)
         except Exception as e:
             raise GramDBError(f"Error deleting record: {e}")
@@ -213,7 +211,7 @@ class GramDB:
     async def update(self, table_name: str, query: dict, update_query: dict):
         try:
             _m_id = await self.db.update(table_name, query, update_query)
-            task = asyncio.create_task(self.background_update(table_name, update_query, _m_id))
+            task = self.async_manager.create_task(self.background_update(table_name, update_query, _m_id))
             self.background_tasks.append(task)
         except Exception as e:
             raise GramDBError(f"Error updating record: {e}")
@@ -230,7 +228,7 @@ class GramDB:
     async def delete_table(self, table_name: str):
         try:
             await self.db.delete_table(table_name)
-            task = asyncio.create_task(self.background_delete_table(table_name))
+            task = self.async_manager.create_task(self.background_delete_table(table_name))
             self.background_tasks.append(task)
         except Exception as e:
             raise GramDBError(f"Error deleting table {table_name}: {e}")
@@ -244,17 +242,18 @@ class GramDB:
 
     def __del__(self):
         """Ensure all background tasks are completed before exiting."""
+        logger.info("Destroying asyncio tasks..")
         self.close_func()
             
     def close_func(self):
         """Close the asynchronous manager gracefully."""
         try:
             self.async_manager.close()
-            logger.info("Closing GramDBAsync manager..")
         except RuntimeError:
             return
         
     def close(self):
         """Run async background tasks and close the async manager."""
         self.async_manager.run_async(self.wait_for_background_tasks())
+        logger.info("Closing GramDBAsync manager..")
         self.close_func()
