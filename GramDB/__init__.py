@@ -1,7 +1,9 @@
-__version__ = "1.0.4"
+__version__ = "1.1.0"
 
 from GramDB.main import GramDB
+from GramDB.asyncio import GramDBAsync
 
 __all__ = [
-    "GramDB"
+    "GramDB",
+    "GramDBAsync"
 ]
