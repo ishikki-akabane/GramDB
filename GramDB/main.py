@@ -4,7 +4,7 @@ import aiohttp
 from GramDB.method import *
 from GramDB.helper import EfficientDictQuery
 from GramDB.exception import *
-from GramDB.db_thread import *
+from GramDB.ayncio import *
 import asyncio
 import threading
 
