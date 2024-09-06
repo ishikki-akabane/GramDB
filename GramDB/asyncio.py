@@ -30,6 +30,6 @@ class GramDBAsync:
         :param coroutine: The coroutine to be executed.
         :return: The created task.
         """
-        future = self.loop.call_soon_threadsafe(self.loop.create_task, coroutine)
+        future = self.loop.call_soon_threadsafe(self.loop, coroutine)
         return future.result()
 
