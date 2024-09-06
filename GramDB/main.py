@@ -256,5 +256,5 @@ class GramDB:
         
     def close(self):
         """Run async background tasks and close the async manager."""
-        self.async_manager.run_async(self.wait_for_background_tasks())
+        #self.async_manager.run_async(self.wait_for_background_tasks())
         self.close_func()
