@@ -3,7 +3,9 @@ from GramDB import GramDB
 from GramDB.db_thread import *
 import asyncio
 import threading
+import logging
 
+logging.basicConfig(level=logging.WARNING)
 
 class DATABASE:
     """
