@@ -175,7 +175,9 @@ class GramDB:
                 record['_m_id'] = _m_id
                 del record['_table_']
                 await self.db.insert(table_name, record, _m_id=_m_id)
-                task = asyncio.create_task(self.background_insert(table_name, _m_id))
+                print("inserting...")
+                task = self.async_manager.run_async(self.background_insert(table_name, _m_id))
+                print("insert done")
                 self.background_tasks.append(task)
             else:
                 raise GramDBError(f"Failed to insert record in table {table_name}")
