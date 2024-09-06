@@ -1,3 +1,4 @@
+import logging
 import requests
 import aiohttp
 from GramDB.method import *
@@ -7,8 +8,13 @@ from GramDB.db_thread import *
 import asyncio
 import threading
 
+logger = logging.getLogger(__name__)
+
 class GramDB:
     def __init__(self, db_url: str, async_manager):
+        """
+        Initialize the GramDB class with the provided database URL and async manager.
+        """
         self.db_url = db_url
         self.session = None
         self.token = None
@@ -24,10 +30,13 @@ class GramDB:
         self.authenticate()
 
     def authenticate(self):
+        """Authenticate with the provided database URL."""
         try:
             response = requests.get(self.db_url)
             if response.status_code == 400:
                 raise ValueError("Authentication failed: Invalid credentials or URL.")
+            elif response.status_code == 500:
+                raise ValueError(f"Authentication failed: Server failed to respond!")
             elif response.status_code != 200:
                 raise ValueError(f"Authentication failed: Unexpected status code {response.status_code}")
                                                                                   
@@ -39,6 +48,7 @@ class GramDB:
             raise ConnectionError(f"Network error during authentication: {e}")
 
     def import_cache(self):
+        """Import cache data after authentication."""
         try:
             result, data = extract_func(self.url, self.token)
             if result:
@@ -67,9 +77,12 @@ class GramDB:
 
     
     async def check_table(self, table_name: str):
-        """Check if a table exists."""
-        bool_result = await self.db.check_table(table_name)
-        return bool_result
+        """
+        Check if a table exists in the database.
+        :param table_name: The name of the table to check.
+        :return: Boolean indicating if the table exists.
+        """
+        return await self.db.check_table(table_name)
 
     async def background_create(self, table_name, _m_id):
         print("bg starting")
@@ -82,6 +95,11 @@ class GramDB:
             raise GramDBError(f"Error in background create: {e}")
 
     async def create(self, table_name: str, schema):
+        """
+        Create a new record in the specified table.
+        :param table_name: The name of the table.
+        :param schema: The schema for the new record.
+        """
         try:
             sample_record = {field: "test" for field in schema}
             sample_record['_id'] = "sample1928"
@@ -212,11 +230,13 @@ class GramDB:
         self.close_func()
             
     def close_func(self):
+        """Close the asynchronous manager gracefully."""
         try:
             self.async_manager.close()
         except RuntimeError:
             return
         
     def close(self):
+        """Run async background tasks and close the async manager."""
         self.async_manager.run_async(self.wait_for_background_tasks())
         self.close_func()
