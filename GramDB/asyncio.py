@@ -5,6 +5,7 @@ from queue import Queue
 class GramDBAsync:
     def __init__(self):
         self.loop = asyncio.new_event_loop()
+        self.task_queue = Queue()
         self.thread = threading.Thread(target=self.run_event_loop, name="GramDBAsync")
         self.thread.start()
 
@@ -31,6 +32,11 @@ class GramDBAsync:
         :param coroutine: The coroutine to be executed.
         :return: The created task.
         """
-        future = self.loop.call_soon_threadsafe(coroutine, self.loop)
-        return future.result()
+        task_future = asyncio.Future()
+        self.loop.call_soon_threadsafe(self._create_task, coroutine, task_future)
+        return task_future.result()
+
+    def _create_task(self, coroutine, task_future):
+        task = self.loop.create_task(coroutine)
+        task_future.set_result(task)
 
