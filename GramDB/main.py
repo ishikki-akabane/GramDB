@@ -200,9 +200,9 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error deleting record: {e}")
 
-    async def background_update(self, table_name, update_query, _m_id):
+    async def background_update(self, table_name, query, _m_id):
         try:
-            records = await self.db.fetch(table_name, update_query)
+            records = await self.db.fetch(table_name, query)
             async with aiohttp.ClientSession() as newsession:
                 result, mdata = await update_func(newsession, self.url, self.token, _m_id, records[0], table_name)
         except Exception as e:
@@ -210,8 +210,9 @@ class GramDB:
 
     async def update(self, table_name: str, query: dict, update_query: dict):
         try:
-            _m_id = await self.db.new_update(table_name, query, update_query)
-            task = self.async_manager.create_task(self.background_update(table_name, update_query, _m_id))
+            # _m_id = await self.db.new_update(table_name, query, update_query)
+            _m_id = await self.db.update(table_name, query, update_query)
+            task = self.async_manager.create_task(self.background_update(table_name, query, _m_id))
             self.background_tasks.append(task)
         except Exception as e:
             raise GramDBError(f"Error updating record: {e}")
