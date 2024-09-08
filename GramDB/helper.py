@@ -2,8 +2,20 @@ from collections import defaultdict
 import random
 import string
 
+
 class EfficientDictQuery:
+    """
+    A class designed to efficiently manage and query data stored in a dictionary-based structure.
+    
+    It supports creating tables, inserting, updating, and deleting records, as well as fetching data based on queries.
+    """
+
     def __init__(self, data):
+        """
+        Initializes the EfficientDictQuery instance with the given data.
+
+        :param data: A dictionary containing the initial data to be structured.
+        """
         self.data = self._structure_data(data)
         self.indexes = defaultdict(lambda: defaultdict(list))
         self.schemas = {}
@@ -11,6 +23,12 @@ class EfficientDictQuery:
         self.create_all_schemas()
 
     def _structure_data(self, data):
+        """
+        Structures the input data into a nested dictionary format suitable for the class.
+
+        :param data: A dictionary containing records with '_table_' and '_id' keys.
+        :return: A nested dictionary where each table is a key and its value is another dictionary of records.
+        """
         structured_data = defaultdict(dict)
         for record in data.values():
             table = record['_table_']
@@ -20,6 +38,11 @@ class EfficientDictQuery:
         return structured_data
 
     def create_all_indexes(self):
+        """
+        Creates indexes for all fields across all tables in the data.
+
+        This method is called during initialization to ensure all fields are indexed.
+        """
         if not self.data:
             return
 
@@ -33,6 +56,11 @@ class EfficientDictQuery:
             self.create_index(field)
 
     def create_index(self, field):
+        """
+        Creates an index for a specific field across all tables.
+
+        :param field: The field for which the index is to be created.
+        """
         index = defaultdict(list)
         for table_name, table in self.data.items():
             for key, item in table.items():
@@ -42,6 +70,14 @@ class EfficientDictQuery:
         self.indexes[field] = index
 
     def _flatten_dict(self, d, parent_key='', sep='.'):
+        """
+        Flattens a nested dictionary into a single-level dictionary.
+
+        :param d: The dictionary to be flattened.
+        :param parent_key: The parent key for nested fields.
+        :param sep: The separator used to join nested keys.
+        :return: A flattened dictionary.
+        """
         items = []
         for k, v in d.items():
             new_key = f"{parent_key}{sep}{k}" if parent_key else k
@@ -55,6 +91,11 @@ class EfficientDictQuery:
         return dict(items)
 
     def create_all_schemas(self):
+        """
+        Creates schemas for all tables in the data.
+
+        This method is called during initialization to ensure all tables have defined schemas.
+        """
         for table_name, records in self.data.items():
             if table_name not in self.schemas:
                 schema = set()
@@ -63,6 +104,13 @@ class EfficientDictQuery:
                 self.schemas[table_name] = tuple(schema)
     
     async def fetch(self, table, query):
+        """
+        Fetches records from a table based on the given query.
+
+        :param table: The name of the table to query.
+        :param query: A dictionary containing the query criteria.
+        :return: A list of records that match the query.
+        """
         results = []
 
         for record_id, record in self.data.get(table, {}).items():
@@ -72,6 +120,14 @@ class EfficientDictQuery:
         return results
 
     async def _update_index_for_record(self, table, record, record_id, operation='add'):
+        """
+        Updates the index for a record in the given table.
+
+        :param table: The name of the table.
+        :param record: The record to update the index for.
+        :param record_id: The ID of the record.
+        :param operation: The operation to perform ('add' or 'remove').
+        """
         flattened_record = self._flatten_dict(record)
         for field, value in flattened_record.items():
             if operation == 'add':
@@ -83,6 +139,13 @@ class EfficientDictQuery:
                         del self.indexes[field][value]
 
     async def _validate_record(self, table, record):
+        """
+        Validates a record against the schema of the given table.
+
+        :param table: The name of the table.
+        :param record: The record to validate.
+        :raises ValueError: If the record does not match the schema.
+        """
         if table not in self.schemas:
             raise ValueError(f"Table '{table}' does not exist.")
 
@@ -96,12 +159,27 @@ class EfficientDictQuery:
                 raise ValueError(f"Field '{field}' is not allowed in schema for table '{table}'.")
 
     async def check_table(self, table):
+        """
+        Checks if a table exists in the data.
+
+        :param table: The name of the table to check.
+        :return: True if the table exists, False otherwise.
+        """
         if table not in self.schemas:
             return False
         else:
             return True
     
     async def create(self, table, schema, sample_record, _m_id):
+        """
+        Creates a new table with the given schema and sample record.
+
+        :param table: The name of the table to create.
+        :param schema: A list of fields in the schema.
+        :param sample_record: A sample record for the table.
+        :param _m_id: The metadata ID for the table.
+        :raises ValueError: If the table already exists.
+        """
         if table in self.data:
             raise ValueError(f"Table '{table}' already exists.")
 
@@ -113,9 +191,22 @@ class EfficientDictQuery:
         await self._update_index_for_record(table, sample_record, "sample1928", operation='add')
 
     async def _generate_random_id(self):
+        """
+        Generates a random ID.
+
+        :return: A random 10-character ID.
+        """
         return ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                                
     async def insert(self, table, record, **kwargs):
+        """
+        Inserts a new record into the given table.
+
+        :param table: The name of the table to insert into.
+        :param record: The record to insert.
+        :param kwargs: Additional keyword arguments, including '_m_id'.
+        :raises ValueError: If the table does not exist or if '_m_id' is missing.
+        """
         _m_id = kwargs.get('_m_id')
         if not _m_id:
             raise ValueError("Record must contain '_m_id' as a keyword argument.")
@@ -134,8 +225,18 @@ class EfficientDictQuery:
         self.data[table][_id] = record
         await self._update_index_for_record(table, record, _id, operation='add')
 
-    # deprecated - supoorts only set
+    # deprecated - supports only set
     async def old_update(self, table, query, update_fields):
+        """
+        **Deprecated**: Updates a record in the given table based on the query.
+
+        **Note**: This method only supports updating a single record and is deprecated in favor of the `update` method.
+
+        :param table: The name of the table to update.
+        :param query: A dictionary containing the query criteria.
+        :param update_fields: A dictionary containing the fields to update.
+        :raises ValueError: If the table does not exist or if no records match the query.
+        """
         if table not in self.data:
             raise ValueError(f"Table '{table}' does not exist.")
 
@@ -157,9 +258,20 @@ class EfficientDictQuery:
         await self._update_index_for_record(table, self.data[table][record_id], record_id, operation='add')
         return _m_id
 
-
-    
     async def update(self, table, query, update_fields):
+        """
+        Updates records in the given table based on the query.
+
+        :param table: The name of the table to update.
+        :param query: A dictionary containing the query criteria.
+        :param update_fields: A dictionary containing update operations.
+            Supported operations are:
+                - `$set`: Set values directly.
+                - `$push`: Append to a list field.
+                - `$pull`: Remove from a list field.
+                - `$inc`: Increment a numeric field.
+        :raises ValueError: If the table does not exist or if no records match the query.
+        """
         if table not in self.data:
             raise ValueError(f"Table '{table}' does not exist.")
 
@@ -203,16 +315,6 @@ class EfficientDictQuery:
                     else:
                         raise ValueError(f"Cannot increment non-numeric field '{key}'")
 
-            # deprecated - conflicts with the table rows
-            """
-            elif operator == "$unset":
-                for key in updates:
-                    if key in new_record:
-                        del new_record[key]  # Remove the field from the record
-                    else:
-                        raise ValueError(f"Field '{key}' does not exist in record")
-            """
-
         await self._validate_record(table, new_record)
 
         await self._update_index_for_record(table, old_record, record_id, operation='remove')
@@ -221,8 +323,14 @@ class EfficientDictQuery:
 
         return _m_id, _id
     
-    
     async def delete(self, table, query):
+        """
+        Deletes records from the given table based on the query.
+
+        :param table: The name of the table to delete from.
+        :param query: A dictionary containing the query criteria.
+        :raises ValueError: If the table does not exist or if no records match the query.
+        """
         if table not in self.data:
             raise ValueError(f"Table '{table}' does not exist.")
 
@@ -242,6 +350,12 @@ class EfficientDictQuery:
         return _m_id
 
     async def delete_table(self, table):
+        """
+        Deletes the entire table and its associated schema.
+
+        :param table: The name of the table to delete.
+        :raises ValueError: If the table does not exist.
+        """
         if table not in self.data:
             raise ValueError(f"Table '{table}' does not exist.")
 
@@ -252,6 +366,12 @@ class EfficientDictQuery:
         del self.schemas[table]
 
     async def fetch_all(self, table=None):
+        """
+        Fetches all records from the given table or all tables if no table is specified.
+
+        :param table: The name of the table to fetch records from. If None, fetches records from all tables.
+        :return: A dictionary containing the records.
+        """
         if table:
             return self.data[table]
         return self.data
