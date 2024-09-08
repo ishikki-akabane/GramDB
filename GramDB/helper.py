@@ -134,7 +134,8 @@ class EfficientDictQuery:
         self.data[table][_id] = record
         await self._update_index_for_record(table, record, _id, operation='add')
 
-    async def update(self, table, query, update_fields):
+    # deprecated - supoorts only set
+    async def old_update(self, table, query, update_fields):
         if table not in self.data:
             raise ValueError(f"Table '{table}' does not exist.")
 
@@ -158,7 +159,7 @@ class EfficientDictQuery:
 
 
     
-    async def new_update(self, table, query, update_fields):
+    async def update(self, table, query, update_fields):
         if table not in self.data:
             raise ValueError(f"Table '{table}' does not exist.")
 
@@ -170,11 +171,10 @@ class EfficientDictQuery:
         if not records_to_update:
             raise ValueError(f"No records found matching query: {query}")
 
-        record_id, old_record = records_to_update[0]  # You are assuming one record here
+        record_id, old_record = records_to_update[0]
         _m_id = old_record["_m_id"]
         _id = old_record["_id"]
 
-        # Apply the update operations based on the special fields like $set, $push
         new_record = old_record.copy()
 
         for operator, updates in update_fields.items():
@@ -189,19 +189,37 @@ class EfficientDictQuery:
                     else:
                         raise ValueError(f"Cannot push to non-list field '{key}'")
 
-            # You can add more operators like $inc, $pull, etc., if needed
+            elif operator == "$pull":
+                for key, value in updates.items():
+                    if key in new_record and isinstance(new_record[key], list):
+                        new_record[key] = [item for item in new_record[key] if item != value]  # Remove matching value
+                    else:
+                        raise ValueError(f"Cannot pull from non-list field '{key}'")
 
-        # Validate the updated record
+            elif operator == "$inc":
+                for key, value in updates.items():
+                    if key in new_record and isinstance(new_record[key], (int, float)):
+                        new_record[key] += value  # Increment the value
+                    else:
+                        raise ValueError(f"Cannot increment non-numeric field '{key}'")
+
+            # deprecated - conflicts with the table rows
+            """
+            elif operator == "$unset":
+                for key in updates:
+                    if key in new_record:
+                        del new_record[key]  # Remove the field from the record
+                    else:
+                        raise ValueError(f"Field '{key}' does not exist in record")
+            """"        
+
         await self._validate_record(table, new_record)
 
-        # Update indexes by removing the old record and adding the new one
         await self._update_index_for_record(table, old_record, record_id, operation='remove')
         self.data[table][record_id] = new_record
         await self._update_index_for_record(table, self.data[table][record_id], record_id, operation='add')
 
         return _m_id, _id
-
-
     
     
     async def delete(self, table, query):
