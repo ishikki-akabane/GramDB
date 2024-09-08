@@ -157,50 +157,49 @@ class EfficientDictQuery:
         return _m_id
 
 
-
     
     async def new_update(self, table, query, update_fields):
-    if table not in self.data:
-        raise ValueError(f"Table '{table}' does not exist.")
+        if table not in self.data:
+            raise ValueError(f"Table '{table}' does not exist.")
 
-    records_to_update = [
-        (record_id, record) for record_id, record in self.data[table].items()
-        if all(record.get(key) == value for key, value in query.items())
-    ]
+        records_to_update = [
+            (record_id, record) for record_id, record in self.data[table].items()
+            if all(record.get(key) == value for key, value in query.items())
+        ]
 
-    if not records_to_update:
-        raise ValueError(f"No records found matching query: {query}")
+        if not records_to_update:
+            raise ValueError(f"No records found matching query: {query}")
 
-    record_id, old_record = records_to_update[0]  # You are assuming one record here
-    _m_id = old_record["_m_id"]
-    _id = old_record["_id"]
+        record_id, old_record = records_to_update[0]  # You are assuming one record here
+        _m_id = old_record["_m_id"]
+        _id = old_record["_id"]
 
-    # Apply the update operations based on the special fields like $set, $push
-    new_record = old_record.copy()
+        # Apply the update operations based on the special fields like $set, $push
+        new_record = old_record.copy()
 
-    for operator, updates in update_fields.items():
-        if operator == "$set":
-            # Set values directly
-            new_record.update(updates)
+        for operator, updates in update_fields.items():
+            if operator == "$set":
+                # Set values directly
+                new_record.update(updates)
 
-        elif operator == "$push":
-            for key, value in updates.items():
-                if key in new_record and isinstance(new_record[key], list):
-                    new_record[key].append(value)  # Append to the list
-                else:
-                    raise ValueError(f"Cannot push to non-list field '{key}'")
+            elif operator == "$push":
+                for key, value in updates.items():
+                    if key in new_record and isinstance(new_record[key], list):
+                        new_record[key].append(value)  # Append to the list
+                    else:
+                        raise ValueError(f"Cannot push to non-list field '{key}'")
 
-        # You can add more operators like $inc, $pull, etc., if needed
+            # You can add more operators like $inc, $pull, etc., if needed
 
-    # Validate the updated record
-    await self._validate_record(table, new_record)
+        # Validate the updated record
+        await self._validate_record(table, new_record)
 
-    # Update indexes by removing the old record and adding the new one
-    await self._update_index_for_record(table, old_record, record_id, operation='remove')
-    self.data[table][record_id] = new_record
-    await self._update_index_for_record(table, self.data[table][record_id], record_id, operation='add')
+        # Update indexes by removing the old record and adding the new one
+        await self._update_index_for_record(table, old_record, record_id, operation='remove')
+        self.data[table][record_id] = new_record
+        await self._update_index_for_record(table, self.data[table][record_id], record_id, operation='add')
 
-    return _m_id, _id
+        return _m_id, _id
 
 
     
