@@ -211,7 +211,7 @@ class EfficientDictQuery:
                         del new_record[key]  # Remove the field from the record
                     else:
                         raise ValueError(f"Field '{key}' does not exist in record")
-            """"        
+            """
 
         await self._validate_record(table, new_record)
 
