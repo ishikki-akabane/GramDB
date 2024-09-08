@@ -1,4 +1,65 @@
-# GramDB
+# GramDB: Infinite Database Storage via Telegram
+=====================================================
+
+## Introduction
+GramDB is a unique library that leverages Telegram as a database, offering infinite storage capabilities. It provides a robust and efficient way to manage data, making it an ideal solution for applications requiring flexible and scalable data storage.
+
+## Features
+- **Infinite Storage**: Utilize Telegram's messaging capabilities to store data without traditional storage limitations.
+- **Real-time Data Access**: Fetch, insert, update, and delete data in real-time.
+- **Asynchronous Operations**: Support for asynchronous operations to ensure non-blocking and efficient data management.
+- **Schema Management**: Define and manage schemas for tables to ensure data consistency.
+- **Background Tasks**: Handle background tasks for creating, updating, and deleting data seamlessly.
+
+## Installation
+To use GramDB, you need to install the library and its dependencies. You can do this via pip:
+
+```bash
+pip install gramdb
+```
+
+## Getting Started
+1. **Authentication**: Authenticate with your Telegram database URL.
+2. **Initialize**: Initialize the GramDB instance with the authenticated URL and an asynchronous manager.
+3. **Data Operations**: Perform CRUD (Create, Read, Update, Delete) operations on your data.
+
+## Example Usage
+### Authentication and Initialization
+```python
+from gramdb import GramDB
+from gramdb.asyncio import AsyncManager
+
+# Replace with your actual database URL
+db_url = "https://your-telegram-db-url.com"
+
+# Initialize the asynchronous manager
+async_manager = AsyncManager()
+
+# Initialize GramDB
+gramdb = GramDB(db_url, async_manager)
+```
+### Creating a Table
+```python
+# Define the schema for the new table
+schema = ["name", "age", "email"]
+    
+# Create the table
+await gramdb.create("users", schema)
+```
+
+### Inserting Data
+```python
+async def main():
+# Define the record to insert
+record = {
+    "name": "John Doe",
+    "age": 30,
+    "email": "john.doe@example.com"
+}
+    
+# Insert the record
+await gramdb.insert("users", record)
+```
 
 
 ## Data Structure:
