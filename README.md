@@ -95,6 +95,36 @@ query = {
 await gramdb.delete("users", query)
 ```
 
+## Methods
+### Authentication and Initialization
+- `__init__(db_url, async_manager)`: Initialize the GramDB instance with the provided database URL and asynchronous manager.
+- `authenticate()`: Authenticate with the provided database URL.
+### Data Operations
+- `create(table_name, schema)`: Create a new table with the given schema.
+- `insert(table_name, record)`: Insert a new record into the specified table.
+- `fetch(table_name, query)`: Fetch records from the specified table based on the given query.
+- `fetch_one(table_name, query)`: Fetch one record from the specified table based on the given query.
+- `fetch_all()`: Fetch all records from all tables.
+- `update(table_name, query, update_query)`: Update records in the specified table based on the given query and update criteria.
+- `delete(table_name, query)`: Delete records from the specified table based on the given query.
+### Background Tasks
+- `background_create(table_name, _m_id)`: Create a new table in the background.
+- `background_insert(table_name, _m_id)`: Insert a new record in the background.
+- `background_update(table_name, query, _m_id)`: Update records in the background.
+- `background_delete(table_name, _m_id)`: Delete a record in the background.
+- `background_delete_table(table_name)`: Delete a table in the background.
+### Utility Methods
+- `wait_for_background_tasks()`: Wait for all background tasks to complete.
+- `close()`: Run async background tasks and close the async manager.
+
+## API Documentation
+For detailed API documentation, please refer to the API Documentation.
+## Contributing
+Contributions are welcome If you find any issues or have suggestions, please open an issue or submit a pull request.
+## License
+GramDB is licensed under the MIT License.
+
+
 
 
 
