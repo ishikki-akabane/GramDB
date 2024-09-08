@@ -46,10 +46,8 @@ schema = ["name", "age", "email"]
 # Create the table
 await gramdb.create("users", schema)
 ```
-
 ### Inserting Data
 ```python
-async def main():
 # Define the record to insert
 record = {
     "name": "John Doe",
@@ -60,6 +58,45 @@ record = {
 # Insert the record
 await gramdb.insert("users", record)
 ```
+### Fetching Data
+```python
+# Define the query criteria
+query = {
+    "name": "John Doe"
+}
+    
+# Fetch the data
+result = await gramdb.fetch("users", query)
+print(result)
+```
+### Updating Data
+```python
+# Define the query criteria and update fields
+query = {
+    "name": "John Doe"
+}
+update_fields = {
+    "$set": {
+        "age": 31
+    }
+}
+    
+# Update the data
+await gramdb.update("users", query, update_fields)
+```
+### Deleting Data
+```python
+# Define the query criteria
+query = {
+    "name": "John Doe"
+}
+    
+# Delete the data
+await gramdb.delete("users", query)
+```
+
+
+
 
 
 ## Data Structure:
