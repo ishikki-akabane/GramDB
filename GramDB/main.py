@@ -126,7 +126,7 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error in background create: {e}")
 
-    async def create(self, table_name: str, schema):
+    async def create_one(self, table_name: str, schema):
         """
         Create a new table with the given schema.
 
@@ -152,27 +152,25 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error creating record: {e}")
 
-    async def fetch(self, table_name: str, query: dict):
+    async def find(self, table_name: str, query: dict):
         """
         Fetch records from the specified table based on the given query.
 
         :param table_name: The name of the table to query.
         :param query: A dictionary containing the query criteria.
-        :return: The fetched records.
+        :return: The fetched records List
         :raises GramDBError: If there is an error fetching data.
         """
         try:
             result = await self.db.fetch(table_name, query)
             if len(result) == 0:
-                return None
-            elif len(result) == 1:
-                return result[0]
+                return []
             else:
                 return result
         except Exception as e:
             raise GramDBError(f"Error fetching data: {e}")
 
-    async def fetch_one(self, table_name: str, query: dict):
+    async def find_one(self, table_name: str, query: dict):
         """
         Fetch one record from the specified table based on the given query.
 
@@ -190,7 +188,7 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error fetching data: {e}")
 
-    async def fetch_all(self):
+    async def find_all(self):
         """
         Fetch all records from all tables.
 
@@ -219,7 +217,7 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error in background insert: {e}")
 
-    async def insert(self, table_name: str, record: dict):
+    async def insert_one(self, table_name: str, record: dict):
         """
         Insert a new record into the specified table.
 
@@ -237,7 +235,7 @@ class GramDB:
                 _m_id = mdata["data_id"]
                 record['_m_id'] = _m_id
                 del record['_table_']
-                await self.db.insert(table_name, record, _m_id=_m_id)
+                await self.db.insert_one(table_name, record, _m_id=_m_id)
                 task = self.async_manager.create_task(self.background_insert(table_name, _m_id))
                 self.background_tasks.append(task)
             else:
@@ -262,7 +260,7 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error in background delete: {e}")
 
-    async def delete(self, table_name: str, query: dict):
+    async def delete_one(self, table_name: str, query: dict):
         """
         Delete records from the specified table based on the given query.
 
@@ -271,7 +269,7 @@ class GramDB:
         :raises GramDBError: If there is an error deleting the record.
         """
         try:
-            _m_id = await self.db.delete(table_name, query)
+            _m_id = await self.db.delete_one(table_name, query)
             task = self.async_manager.create_task(self.background_delete(table_name, _m_id))
             self.background_tasks.append(task)
         except Exception as e:
@@ -294,7 +292,7 @@ class GramDB:
         except Exception as e:
             raise GramDBError(f"Error in background update: {e}")
 
-    async def update(self, table_name: str, query: dict, update_query: dict):
+    async def update_one(self, table_name: str, query: dict, update_query: dict):
         """
         Update records in the specified table based on the given query and update criteria.
 
@@ -304,9 +302,8 @@ class GramDB:
         :raises GramDBError: If there is an error updating the record.
         """
         try:
-            _m_id, _id = await self.db.update(table_name, query, update_query)
+            _m_id, _id = await self.db.update_one(table_name, query, update_query)
             new_query = {"_id": _id}
-            #_m_id = await self.db.update(table_name, query, update_query)
             task = self.async_manager.create_task(self.background_update(table_name, new_query, _m_id))
             self.background_tasks.append(task)
         except Exception as e:
