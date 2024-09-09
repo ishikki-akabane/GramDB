@@ -26,8 +26,7 @@ pip install gramdb
 ## Example Usage
 ### Authentication and Initialization
 ```python
-from gramdb import GramDB
-from gramdb.asyncio import AsyncManager
+from gramdb import GramDB, AsyncManager 
 
 # Replace with your actual database URL
 db_url = "https://your-telegram-db-url.com"
