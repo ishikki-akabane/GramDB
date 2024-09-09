@@ -122,6 +122,6 @@ For detailed API documentation, please refer to the API Documentation.
 ## Contributing
 Contributions are welcome If you find any issues or have suggestions, please open an issue or submit a pull request.
 ## License
-GramDB is licensed under the MIT License.
+GramDB is licensed under the GPU License.
 
 
