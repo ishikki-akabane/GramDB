@@ -198,7 +198,7 @@ class EfficientDictQuery:
         """
         return ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                                
-    async def insert(self, table, record, **kwargs):
+    async def insert_one(self, table, record, **kwargs):
         """
         Inserts a new record into the given table.
 
@@ -258,7 +258,7 @@ class EfficientDictQuery:
         await self._update_index_for_record(table, self.data[table][record_id], record_id, operation='add')
         return _m_id
 
-    async def update(self, table, query, update_fields):
+    async def update_one(self, table, query, update_fields):
         """
         Updates records in the given table based on the query.
 
@@ -323,7 +323,7 @@ class EfficientDictQuery:
 
         return _m_id, _id
     
-    async def delete(self, table, query):
+    async def delete_one(self, table, query):
         """
         Deletes records from the given table based on the query.
 
