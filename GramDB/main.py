@@ -17,7 +17,6 @@ class GramDB:
     """
     The main class for interacting with GramDB, providing methods for authentication, data manipulation, and background tasks.
     """
-
     def __init__(self, db_url: str, async_manager):
         """
         Initialize the GramDB class with the provided database URL and async manager.
