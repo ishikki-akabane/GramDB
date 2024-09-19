@@ -43,7 +43,7 @@ gramdb = GramDB(db_url, async_manager)
 schema = ["name", "age", "email"]
     
 # Create the table
-await gramdb.create("users", schema)
+await gramdb.create_one("users", schema)
 ```
 ### Inserting Data
 ```python
@@ -55,7 +55,7 @@ record = {
 }
     
 # Insert the record
-await gramdb.insert("users", record)
+await gramdb.insert_one("users", record)
 ```
 ### Fetching Data
 ```python
@@ -65,7 +65,7 @@ query = {
 }
     
 # Fetch the data
-result = await gramdb.fetch("users", query)
+result = await gramdb.find_one("users", query)
 print(result)
 ```
 ### Updating Data
@@ -81,7 +81,7 @@ update_fields = {
 }
     
 # Update the data
-await gramdb.update("users", query, update_fields)
+await gramdb.update_one("users", query, update_fields)
 ```
 ### Deleting Data
 ```python
@@ -91,7 +91,7 @@ query = {
 }
     
 # Delete the data
-await gramdb.delete("users", query)
+await gramdb.delete_one("users", query)
 ```
 
 ## Methods
@@ -99,13 +99,13 @@ await gramdb.delete("users", query)
 - `__init__(db_url, async_manager)`: Initialize the GramDB instance with the provided database URL and asynchronous manager.
 - `authenticate()`: Authenticate with the provided database URL.
 ### Data Operations
-- `create(table_name, schema)`: Create a new table with the given schema.
-- `insert(table_name, record)`: Insert a new record into the specified table.
-- `fetch(table_name, query)`: Fetch records from the specified table based on the given query.
-- `fetch_one(table_name, query)`: Fetch one record from the specified table based on the given query.
+- `create_one(table_name, schema)`: Create a new table with the given schema.
+- `insert_one(table_name, record)`: Insert a new record into the specified table.
+- `find(table_name, query)`: Fetch records from the specified table based on the given query.
+- `find_one(table_name, query)`: Fetch one record from the specified table based on the given query.
 - `fetch_all()`: Fetch all records from all tables.
-- `update(table_name, query, update_query)`: Update records in the specified table based on the given query and update criteria.
-- `delete(table_name, query)`: Delete records from the specified table based on the given query.
+- `update_one(table_name, query, update_query)`: Update records in the specified table based on the given query and update criteria.
+- `delete_one(table_name, query)`: Delete records from the specified table based on the given query.
 ### Background Tasks
 - `background_create(table_name, _m_id)`: Create a new table in the background.
 - `background_insert(table_name, _m_id)`: Insert a new record in the background.
