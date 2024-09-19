@@ -44,10 +44,15 @@ async def insert_func(session, base_url, token, data, table_name):
         "Authorization": token
     }
     data["_table_"] = table_name
-    print(data)
     try:
         payload = {"data": json.dumps(data)}
     except:
+        for key, value in data.items():
+            try:
+                json.dumps(value)
+            except:
+                return False, f"Wrong data type used for key {key}: {value}\nConvert it into string before inserting"
+            
         return False, "wrong data format for json"
         
     async with session.post(url, headers=headers, json=payload) as response:
