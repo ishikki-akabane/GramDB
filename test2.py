@@ -36,7 +36,8 @@ class DATABASE:
         self.table_schemas = {
             "users": ("_id", "uploads", "batch"),
             "files": ("_id", "message_id"),
-            "batch": ("_id", "channel_id", "message_id")
+            "batch": ("_id", "channel_id", "message_id"),
+            "debug": ("chat_id", "func_name", "file_path", "error_line", "error_e")
         }
         self.async_manager.run_async(self.create_table())
 
@@ -78,8 +79,31 @@ class DATABASE:
                 LOGGER.error(f"Error adding user to database: {e}")
             return
 
-    async def update(self, table_name, query, update_query):
-        await self.db.update(table_name, query, update_query)
+    async def add_error(
+        self,
+        chat_id: str,
+        func_name: str,
+        file_path: str,
+        error_line: str,
+        error_e: str
+    ):
+        print("hola")
+        current_time = datetime.now()
+        str_date = current_time.strftime("%d %B, %Y %H:%M:%S")
+        try:
+            await self.db.insert_one(
+                "debug",
+                {
+                    "chat_id": chat_id,
+                    "func_name": func_name,
+                    "file_path": file_path,
+                    "error_line": error_line,
+                    "error_e": error_e
+                }
+            )
+        except Exception as e:
+            LOGGER.error(f"Error adding debug info to database: {e}")
+        return
 
     def close(self):
         self.db.close()
@@ -87,8 +111,7 @@ class DATABASE:
 
 async def main():
     db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-    await db.add_user(2233445511)
-    await db.update("users", {"_id": 2233445511}, {"$inc": {"uploads": -2}})
+    await db.add_error(628292929, "lmao", "lmao", "lmao", "lmao")
     db.close()
 
 asyncio.run(main())
