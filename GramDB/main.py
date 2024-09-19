@@ -224,7 +224,6 @@ class GramDB:
         :param record: The record to insert.
         :raises GramDBError: If there is an error inserting the record.
         """
-        print("starting")
         try:
             if '_id' not in record:
                 record['_id'] = await self.db._generate_random_id()
