@@ -227,24 +227,17 @@ class GramDB:
         try:
             if '_id' not in record:
                 record['_id'] = await self.db._generate_random_id()
-
-            print("stage 1")
+                
             async with aiohttp.ClientSession() as newsession:
-                print("stage 2")
                 result, mdata = await insert_func(newsession, self.url, self.token, record, table_name)
-                print(result, mdata)
-            print("stage 3")
             if result:
                 _m_id = mdata["data_id"]
                 record['_m_id'] = _m_id
                 del record['_table_']
-                print("stage 4 - 1")
                 await self.db.insert_one(table_name, record, _m_id=_m_id)
                 task = self.async_manager.create_task(self.background_insert(table_name, _m_id))
                 self.background_tasks.append(task)
-                print("stage 5 - 1")
             else:
-                print("stage 4 - 2")
                 raise GramDBError(f"Failed to insert record in table {table_name}")
         except Exception as e:
             raise GramDBError(f"Error inserting record: {e}")
