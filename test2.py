@@ -112,7 +112,7 @@ class DATABASE:
 
 async def main():
     db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-    await db.add_error(628292929, "lmao", "lmao", "lmao", "lmao")
+    await db.add_error(628292929, "start_cmd", "/root/RuKa-Bot/RUKA/modules/start.py", 5, "Message.reply_text() got an unexpected keyword argument 'haha'")
     db.close()
 
 asyncio.run(main())
