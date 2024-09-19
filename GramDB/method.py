@@ -46,10 +46,14 @@ async def insert_func(session, base_url, token, data, table_name):
     data["_table_"] = table_name
     payload = {"data": json.dumps(data)}
     async with session.post(url, headers=headers, json=payload) as response:
+        try:
+            jdata = await response.json()
+        except:
+            jdata = response.text
         if response.status == 201:
-            return True, await response.json()
+            return True, jdata
         else:
-            return False, await response.json()
+            return False, jdata
 
 async def delete_func(session, base_url, token, data_id):
     """
