@@ -238,7 +238,7 @@ class GramDB:
                 task = self.async_manager.create_task(self.background_insert(table_name, _m_id))
                 self.background_tasks.append(task)
             else:
-                raise GramDBError(f"Failed to insert record in table {table_name}")
+                raise GramDBError(f"Failed to insert record in table {table_name}\n{mdata}")
         except Exception as e:
             raise GramDBError(f"Error inserting record: {e}")
 
