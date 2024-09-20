@@ -339,6 +339,8 @@ class GramDB:
         
         if pending_tasks:
             logger.info(f"Waiting for {len(pending_tasks)} pending tasks...")           
+            pending_tasks = [asyncio.ensure_future(task) for task in pending_tasks]
+            
             await asyncio.gather(*[asyncio.shield(task) for task in pending_tasks])
             logger.info("All background tasks completed.")
         else:
