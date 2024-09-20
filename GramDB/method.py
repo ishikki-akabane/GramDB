@@ -114,6 +114,35 @@ async def update_func(session, base_url, token, data_id, data, table_name):
         else:
             return False, response.status
 
+
+async def bg_insert_func(session, base_url, token, table_name, _m_id):
+    url = f"{base_url}/bg_insert"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": token
+    }
+    payload = {f"data.{table_name}": _m_id}
+    async with session.post(url, headers=headers, json=payload) as response:
+        if response.status == 200:
+            return True, await response.json()
+        else:
+            return False, response.status
+
+
+async def bg_delete_func(session, base_url, token, table_name, _m_id):
+    url = f"{base_url}/bg_delete"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": token
+    }
+    payload = {f"data.{table_name}": _m_id}
+    async with session.post(url, headers=headers, json=payload) as response:
+        if response.status == 200:
+            return True, await response.json()
+        else:
+            return False, response.status
+
+
 async def git_func(session, base_url, token, data):
     """
     Perform a Git operation on the server.
