@@ -2,7 +2,6 @@
 from datetime import datetime
 from GramDB import GramDB, GramDBAsync
 import asyncio
-import threading
 import logging
 
 
@@ -35,10 +34,7 @@ class DATABASE:
         self.async_manager = GramDBAsync()
         self.db = GramDB(uri, self.async_manager)
         self.table_schemas = {
-            "users": ("_id", "uploads", "batch"),
-            "files": ("_id", "message_id"),
-            "batch": ("_id", "channel_id", "message_id"),
-            "debug": ("chat_id", "func_name", "file_path", "error_line", "error_e")
+            "users_tab": ("_id", "name")
         }
         self.async_manager.run_async(self.create_table())
 
@@ -52,7 +48,7 @@ class DATABASE:
 
     async def check_user(self, user_id: int):
         data = await self.db.fetch_one(
-            "users",
+            "users_tab",
             {
                 "_id": user_id
             }
@@ -69,42 +65,15 @@ class DATABASE:
         else:
             try:
                 await self.db.insert(
-                    "users",
+                    "users_tab",
                     {
                         "_id": user_id,
-                        "uploads": [],
-                        "batch": []
+                        "name": "ishikki"
                     }
                 )
             except Exception as e:
                 LOGGER.error(f"Error adding user to database: {e}")
             return
-
-    async def add_error(
-        self,
-        chat_id: str,
-        func_name: str,
-        file_path: str,
-        error_line: str,
-        error_e: str
-    ):
-        print("hola")
-        current_time = datetime.now()
-        str_date = current_time.strftime("%d %B, %Y %H:%M:%S")
-        try:
-            await self.db.insert_one(
-                "debug",
-                {
-                    "chat_id": chat_id,
-                    "func_name": func_name,
-                    "file_path": file_path,
-                    "error_line": error_line,
-                    "error_e": error_e
-                }
-            )
-        except Exception as e:
-            LOGGER.error(f"Error adding debug info to database: {e}")
-        return
 
     def close(self):
         self.db.close()
@@ -112,7 +81,9 @@ class DATABASE:
 
 async def main():
     db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-    await db.add_error(628292929, "start_cmd", "/root/RuKa-Bot/RUKA/modules/start.py", 5, "Message.reply_text() got an unexpected keyword argument 'haha'")
+    await db.add_user(628292929)
+    print("done")
+    await asyncio.sleep(100)
     db.close()
 
 asyncio.run(main())
