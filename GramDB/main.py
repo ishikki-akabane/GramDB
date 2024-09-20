@@ -335,11 +335,12 @@ class GramDB:
 
         This method ensures that all asynchronous tasks are finished before proceeding.
         """
-        pending_tasks = [task for task in self.background_tasks if not task.done() and asyncio.isfuture(task)]
-
+        pending_tasks = [task for task in self.background_tasks if not task.done()]
+        
         if pending_tasks:
+            logger.info(f"Waiting for {len(pending_tasks)} pending tasks...")           
             await asyncio.gather(*[asyncio.shield(task) for task in pending_tasks])
-            print("All background tasks completed.")
+            logger.info("All background tasks completed.")
         else:
             print("No pending background tasks.")
         """
