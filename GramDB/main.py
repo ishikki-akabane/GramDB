@@ -338,7 +338,7 @@ class GramDB:
         pending_tasks = [task for task in self.background_tasks if not task.done() and asyncio.isfuture(task)]
 
         if pending_tasks:
-            await asyncio.gather(*pending_tasks)
+            await asyncio.gather(*[asyncio.shield(task) for task in pending_tasks])
             print("All background tasks completed.")
         else:
             print("No pending background tasks.")
