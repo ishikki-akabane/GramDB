@@ -115,6 +115,19 @@ async def update_func(session, base_url, token, data_id, data, table_name):
             return False, response.status
 
 
+async def bg_create_func(session, base_url, token, table_name, _m_id):
+    url = f"{base_url}/bg_create"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": token
+    }
+    payload = {f"data.{table_name}": [_m_id]}
+    async with session.post(url, headers=headers, json=payload) as response:
+        if response.status == 200:
+            return True, await response.json()
+        else:
+            return False, response.status
+
 async def bg_insert_func(session, base_url, token, table_name, _m_id):
     url = f"{base_url}/bg_insert"
     headers = {
@@ -127,7 +140,6 @@ async def bg_insert_func(session, base_url, token, table_name, _m_id):
             return True, await response.json()
         else:
             return False, response.status
-
 
 async def bg_delete_func(session, base_url, token, table_name, _m_id):
     url = f"{base_url}/bg_delete"
@@ -142,18 +154,31 @@ async def bg_delete_func(session, base_url, token, table_name, _m_id):
         else:
             return False, response.status
 
+async def bg_delete_table_func(session, base_url, token, table_name):
+    url = f"{base_url}/bg_delete_table"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": token
+    }
+    payload = {f"data.{table_name}": ""}
+    async with session.post(url, headers=headers, json=payload) as response:
+        if response.status == 200:
+            return True, await response.json()
+        else:
+            return False, response.status
 
-async def git_func(session, base_url, token, data):
+# Deprecated 
+async def getdata_func(session, base_url, token, data):
     """
-    Perform a Git operation on the server.
+    Perform a GetData operation on the server.
 
     :param session: The aiohttp session object.
     :param base_url: The base URL of the server.
     :param token: The authorization token.
-    :param data: The data for the Git operation.
+    :param data: The data for the operation.
     :return: A tuple containing a boolean indicating success and the response data.
     """
-    url = f"{base_url}/git"
+    url = f"{base_url}/getdata"
     headers = {
         "Content-Type": "application/json",
         "Authorization": token
