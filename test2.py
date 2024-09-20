@@ -81,7 +81,7 @@ class DATABASE:
 
 async def main():
     db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-    await db.add_user(72929299)
+    await db.add_user(729278929)
     print("done")
     await asyncio.sleep(10)
     db.close()
