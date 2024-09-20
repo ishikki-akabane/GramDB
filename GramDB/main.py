@@ -212,7 +212,7 @@ class GramDB:
             new_data = old_data[table_name]
             new_data.append(_m_id)
             async with aiohttp.ClientSession() as newsession:
-                result2, response = await git_func(newsession, self.url, self.token, old_data)
+                result2, response = await bg_insert_func(newsession, self.url, self.token, table_name, _m_id)
         except Exception as e:
             raise GramDBError(f"Error in background insert: {e}")
 
