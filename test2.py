@@ -44,10 +44,10 @@ class DATABASE:
         """
         for table_name, schema in self.table_schemas.items():
             if not await self.db.check_table(table_name):
-                await self.db.create(table_name, schema)
+                await self.db.create_one(table_name, schema)
 
     async def check_user(self, user_id: int):
-        data = await self.db.fetch_one(
+        data = await self.db.find_one(
             "users_tab",
             {
                 "_id": user_id
@@ -64,7 +64,7 @@ class DATABASE:
             return
         else:
             try:
-                await self.db.insert(
+                await self.db.insert_one(
                     "users_tab",
                     {
                         "_id": user_id,
