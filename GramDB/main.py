@@ -7,6 +7,8 @@ from GramDB.exception import *
 from GramDB.asyncio import *
 import asyncio
 import threading
+from concurrent.futures import Future
+
 
 logger = logging.getLogger('GramDB')
 logger.setLevel(logging.DEBUG)
@@ -339,12 +341,32 @@ class GramDB:
         
         if pending_tasks:
             logger.info(f"Waiting for {len(pending_tasks)} pending tasks...")           
-            pending_tasks = [asyncio.ensure_future(task) for task in pending_tasks]
-            
-            await asyncio.gather(*[asyncio.shield(task) for task in pending_tasks])
+            async_tasks = []
+            sync_tasks = []
+            for task in pending_tasks:
+                if isinstance(task, asyncio.Future) or asyncio.iscoroutine(task):
+                    # aaync task
+                    async_tasks.append(task)
+                    
+                elif isinstance(task, Future):
+                    # Sync task
+                    sync_tasks.append(task)
+                else:
+                    # If it's not a recognized type
+                    logger.warning(f"Unknown task type: {type(task)}")
+                    continue
+
+            # Wait for async tasks to finish
+            if async_tasks:
+                await asyncio.gather(*[asyncio.shield(asyncio.ensure_future(task)) for task in async_tasks])
+
+            # Wait for sync tasks to finish
+            for task in sync_tasks:
+                task.result()  # This will block until the synchronous task finishes
+
             logger.info("All background tasks completed.")
         else:
-            print("No pending background tasks.")
+            logger.info("No pending background tasks.")
         """
         if self.background_tasks:
             await asyncio.gather(*self.background_tasks)
