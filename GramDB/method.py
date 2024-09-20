@@ -121,7 +121,7 @@ async def bg_create_func(session, base_url, token, table_name, _m_id):
         "Content-Type": "application/json",
         "Authorization": token
     }
-    payload = {f"data.{table_name}": [_m_id]}
+    payload = {"data": {f"data.{table_name}": [_m_id]}}
     async with session.post(url, headers=headers, json=payload) as response:
         if response.status == 200:
             return True, await response.json()
@@ -134,7 +134,7 @@ async def bg_insert_func(session, base_url, token, table_name, _m_id):
         "Content-Type": "application/json",
         "Authorization": token
     }
-    payload = {f"data.{table_name}": _m_id}
+    payload = {"data": {f"data.{table_name}": _m_id}}
     async with session.post(url, headers=headers, json=payload) as response:
         if response.status == 200:
             return True, await response.json()
@@ -147,7 +147,7 @@ async def bg_delete_func(session, base_url, token, table_name, _m_id):
         "Content-Type": "application/json",
         "Authorization": token
     }
-    payload = {f"data.{table_name}": _m_id}
+    payload = {"data": {f"data.{table_name}": _m_id}}
     async with session.post(url, headers=headers, json=payload) as response:
         if response.status == 200:
             return True, await response.json()
@@ -160,7 +160,7 @@ async def bg_delete_table_func(session, base_url, token, table_name):
         "Content-Type": "application/json",
         "Authorization": token
     }
-    payload = {f"data.{table_name}": ""}
+    payload = {"data": {f"data.{table_name}": ""}}
     async with session.post(url, headers=headers, json=payload) as response:
         if response.status == 200:
             return True, await response.json()
