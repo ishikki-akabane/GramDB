@@ -23,9 +23,12 @@ class GramDBAsync:
         self.thread.join()
 
     def run_async(self, coroutine):
+        """
+        Run a coroutine in the event loop and return its result.
+        """
         return asyncio.run_coroutine_threadsafe(coroutine, self.loop).result()
 
-    def create_task(self, coroutine):
+    def _create_task(self, coroutine):
         """
         Create a task to run the given coroutine.
         
@@ -36,4 +39,19 @@ class GramDBAsync:
         """
         task = self.loop.create_task(coroutine)
         return task
+
+
+
+            
+    def create_task(self, coroutine):
+        """
+        Schedule a coroutine to run in the background without blocking.
+        """
+        return asyncio.run_coroutine_threadsafe(self._async_create_task(coroutine), self.loop)
+        
+    async def _async_create_task(self, coroutine):
+        """
+        Internal helper function to create the asyncio task.
+        """
+        return self.loop.create_task(coroutine)
 
