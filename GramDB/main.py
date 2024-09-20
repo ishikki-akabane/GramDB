@@ -118,10 +118,8 @@ class GramDB:
         :raises GramDBError: If there is an error in the background create operation.
         """
         try:
-            result, old_data = await async_extract_func(self.url, self.token)
-            old_data[table_name] = [_m_id]
             async with aiohttp.ClientSession() as newsession:
-                result2, response = await git_func(newsession, self.url, self.token, old_data)
+                result2, response = await bg_create_func(newsession, self.url, self.token, table_name, _m_id)
         except Exception as e:
             raise GramDBError(f"Error in background create: {e}")
 
@@ -208,9 +206,6 @@ class GramDB:
         :raises GramDBError: If there is an error in the background insert operation.
         """
         try:
-            result, old_data = await async_extract_func(self.url, self.token)
-            new_data = old_data[table_name]
-            new_data.append(_m_id)
             async with aiohttp.ClientSession() as newsession:
                 result2, response = await bg_insert_func(newsession, self.url, self.token, table_name, _m_id)
         except Exception as e:
@@ -251,11 +246,8 @@ class GramDB:
         :raises GramDBError: If there is an error in the background delete operation.
         """
         try:
-            result, old_data = await async_extract_func(self.url, self.token)
-            new_data = old_data[table_name]          
-            new_data.remove(int(_m_id))
             async with aiohttp.ClientSession() as newsession:
-                result2, response = await git_func(newsession, self.url, self.token, old_data)
+                result2, response = await bg_delete_func(newsession, self.url, self.token, table_name, _m_id)
         except Exception as e:
             raise GramDBError(f"Error in background delete: {e}")
 
@@ -285,7 +277,6 @@ class GramDB:
         """
         try:
             records = await self.db.fetch(table_name, query)
-            print(records)
             async with aiohttp.ClientSession() as newsession:
                 result, mdata = await update_func(newsession, self.url, self.token, _m_id, records[0], table_name)
         except Exception as e:
@@ -316,10 +307,8 @@ class GramDB:
         :raises GramDBError: If there is an error in the background delete table operation.
         """
         try:
-            result, old_data = await async_extract_func(self.url, self.token)
-            del old_data[table_name]
             async with aiohttp.ClientSession() as newsession:
-                result2, response = await git_func(newsession, self.url, self.token, old_data)
+                result2, response = await bg_delete_table_func(newsession, self.url, self.token, table_name)
         except Exception as e:
             raise GramDBError(f"Error in background delete table: {e}")
             
