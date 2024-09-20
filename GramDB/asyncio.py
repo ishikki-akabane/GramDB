@@ -30,6 +30,8 @@ class GramDBAsync:
 
     def _create_task(self, coroutine):
         """
+        NOTICE: DEPRECATED CAUSE OF COMPATIBILITY ISSUES
+        
         Create a task to run the given coroutine.
         
         This method is similar to asyncio.create_task but works within the context of this class.
@@ -39,9 +41,6 @@ class GramDBAsync:
         """
         task = self.loop.create_task(coroutine)
         return task
-
-
-
             
     def create_task(self, coroutine):
         """
