@@ -338,7 +338,7 @@ class GramDB:
         This method ensures that all asynchronous tasks are finished before proceeding.
         """
         pending_tasks = [task for task in self.background_tasks if not task.done()]
-
+        """
         if pending_tasks:
             logger.info(f"Waiting for {len(pending_tasks)} pending tasks...")
             for task in pending_tasks:
@@ -353,6 +353,7 @@ class GramDB:
             logger.info("All background tasks completed.")
         else:
             logger.info("No pending background tasks.")
+        """
         
         """
         if self.background_tasks:
