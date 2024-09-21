@@ -42,7 +42,7 @@ class GramDBAsync:
         #task = asyncio.run_coroutine_threadsafe(self._create_task_in_loop(coroutine), self.loop)
         #return task.result()
 
-    async def _create_task_in_loop(self, coroutine):
+    def _create_task_in_loop(self, coroutine):
         """
         Create and schedule a coroutine in the running event loop.
         This helper ensures the task is created and runs inside the event loop.
