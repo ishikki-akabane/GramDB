@@ -27,7 +27,8 @@ class GramDBAsync:
         """
         Schedule a coroutine to run on the GramDBAsync thread.
         """
-        return self.loop.run_coroutine_threadsafe(coroutine, self.loop).result()
+        future = asyncio.run_coroutine_threadsafe(coroutine, self.loop)
+        return future.result()
 
     def create_task(self, coroutine):
         """
