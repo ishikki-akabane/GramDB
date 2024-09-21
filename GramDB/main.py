@@ -341,13 +341,8 @@ class GramDB:
         
         if pending_tasks:
             logger.info(f"Waiting for {len(pending_tasks)} pending tasks...")
-            for taskk in pending_tasks:
-                logger.info("3 sec sleep for task completion")
-                await asyncio.sleep(3)
-
+            await asyncio.gather(*pending_tasks)
             logger.info("All background tasks completed.")
-        else:
-            logger.info("No pending background tasks.")
         """
         if self.background_tasks:
             await asyncio.gather(*self.background_tasks)
