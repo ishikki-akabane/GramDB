@@ -160,7 +160,8 @@ async def bg_delete_table_func(session, base_url, token, table_name):
         "Content-Type": "application/json",
         "Authorization": token
     }
-    payload = {"data": {f"data.{table_name}": ""}}
+    payload = {"data": {f"data.{table_name}": 1}}
+    print("deleting")
     async with session.post(url, headers=headers, json=payload) as response:
         if response.status == 200:
             return True, await response.json()
