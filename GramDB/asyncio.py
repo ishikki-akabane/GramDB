@@ -51,8 +51,6 @@ class GramDBAsync:
         :return: The created task.
         """
         self.loop.call_soon_threadsafe(self._create_task_in_loop, coroutine)
-        #task = asyncio.run_coroutine_threadsafe(self._create_task_in_loop(coroutine), self.loop)
-        #return task.result()
 
     def _create_task_in_loop(self, coroutine):
         """
@@ -61,4 +59,9 @@ class GramDBAsync:
         """
         task = self.loop.create_task(coroutine)
         self.background_tasks.append(task)
+
+    async def wait_for_background_tasks(self):
+        """Wait for all background tasks to complete."""
+        if self.background_tasks:
+            await asyncio.gather(*self.background_tasks)
         
