@@ -345,7 +345,7 @@ class GramDB:
                 logger.info("3 sec sleep for task completion")
                 await asyncio.sleep(3)
 
-           logger.info("All background tasks completed.")
+            logger.info("All background tasks completed.")
         else:
             logger.info("No pending background tasks.")
         """
