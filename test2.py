@@ -87,6 +87,7 @@ async def main():
     await db.add_user(99999992)
     await db.delete_table("users_tab")
     print("done")
+    await asyncio.sleep(5)
     db.close()
 
 asyncio.run(main())
