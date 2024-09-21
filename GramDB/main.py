@@ -341,11 +341,15 @@ class GramDB:
         
         if pending_tasks:
             logger.info(f"Waiting for {len(pending_tasks)} pending tasks...")
-            for taskk in pending_tasks:
-                logger.info("5 sec sleep for wait")
-                await asyncio.sleep(5)
-
-            logger.info("All background tasks completed.")
+            try:
+                # Wait for all tasks to complete with a 5-second timeout
+                await asyncio.wait_for(
+                    asyncio.gather(*pending_tasks), 
+                    timeout=5
+                )
+                logger.info("All background tasks completed within the 5-second window.")
+            except asyncio.TimeoutError:
+                logger.warning("Some background tasks did not complete within 5 seconds.")
         else:
             logger.info("No pending background tasks.")
         """
