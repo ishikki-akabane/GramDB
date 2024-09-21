@@ -83,14 +83,14 @@ class GramDBAsync:
             self.loop.call_soon_threadsafe(self.loop.stop)
             self.thread.join()
             self.running = False
-            logger.info("GramDBAsync loop stopped and thread joined.")
+            print("GramDBAsync loop stopped and thread joined.")
 
     async def wait_for_background_tasks(self):
         """Wait for all pending background tasks to complete."""
         pending_tasks = [t for t in self.background_tasks if not t.done()]
         
         if pending_tasks:
-            logger.info(f"Waiting for {len(pending_tasks)} pending tasks to complete.")
+            print(f"Waiting for {len(pending_tasks)} pending tasks to complete.")
             await asyncio.gather(*pending_tasks)
-            logger.info("All background tasks completed.")
+            print("All background tasks completed.")
 
