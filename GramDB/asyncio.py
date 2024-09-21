@@ -77,7 +77,7 @@ class GramDBAsync:
     def close(self):
         """Close the event loop and stop the thread gracefully."""
         if self.loop and self.running:
-            logger.info("Waiting for all pending tasks to complete before closing.")
+            print("Waiting for all pending tasks to complete before closing.")
             # Wait for background tasks to complete before closing
             self.run_async(self.wait_for_background_tasks())
             self.loop.call_soon_threadsafe(self.loop.stop)
