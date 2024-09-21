@@ -64,6 +64,8 @@ class GramDBAsync:
 
     async def wait_for_background_tasks(self):
         """Wait for all background tasks to complete."""
-        if self.background_tasks:
-            await asyncio.gather(*self.background_tasks)
+        
+        # if self.background_tasks:
+        #    await asyncio.gather(*self.background_tasks)
+        return
         
