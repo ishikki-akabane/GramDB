@@ -25,9 +25,20 @@ class GramDBAsync:
 
     def run_async(self, coroutine):
         """
-        Schedule a coroutine to run on the GramDBAsync thread.
+        Run a coroutine in the GramDBAsync thread and block until it completes.
+        
+        This method behaves like asyncio.run().
+        
+        :param coroutine: The coroutine to run.
+        :return: The result of the coroutine.
         """
+        if not asyncio.iscoroutine(coroutine):
+            raise ValueError("The provided argument must be a coroutine.")
+
+        # Schedule the coroutine and block until it's done
         future = asyncio.run_coroutine_threadsafe(coroutine, self.loop)
+        
+        # Wait for the result
         return future.result()
 
     def create_task(self, coroutine):
