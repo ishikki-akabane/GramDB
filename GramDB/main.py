@@ -340,29 +340,10 @@ class GramDB:
         pending_tasks = [task for task in self.background_tasks if not task.done()]
         
         if pending_tasks:
-            logger.info(f"Waiting for {len(pending_tasks)} pending tasks...")           
-            async_tasks = []
-            sync_tasks = []
-            for task in pending_tasks:
-                if isinstance(task, asyncio.Future) or asyncio.iscoroutine(task):
-                    # aaync task
-                    async_tasks.append(task)
-                    
-                elif isinstance(task, Future):
-                    # Sync task
-                    sync_tasks.append(task)
-                else:
-                    # If it's not a recognized type
-                    logger.warning(f"Unknown task type: {type(task)}")
-                    continue
-
-            # Wait for async tasks to finish
-            if async_tasks:
-                await asyncio.gather(*[asyncio.shield(asyncio.ensure_future(task)) for task in async_tasks])
-
-            # Wait for sync tasks to finish
-            for task in sync_tasks:
-                task.result()  # This will block until the synchronous task finishes
+            logger.info(f"Waiting for {len(pending_tasks)} pending tasks...")
+            for taskk in pending_tasks:
+                logger.info("5 sec sleep for wait")
+                await asyncio.sleep(5)
 
             logger.info("All background tasks completed.")
         else:
