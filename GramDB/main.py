@@ -342,7 +342,6 @@ class GramDB:
         """
         if self.background_tasks:
             await asyncio.gather(*self.background_tasks)
-            print("All background tasks completed.")
 
     def __del__(self):
         """
@@ -351,7 +350,7 @@ class GramDB:
         This destructor method ensures that all asynchronous tasks are finished when the instance is destroyed.
         """
         logger.info("Destroying asyncio tasks..")
-        #self.close_func()
+        self.close_func()
             
     def close_func(self):
         """
