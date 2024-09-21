@@ -38,8 +38,10 @@ class GramDBAsync:
         :param coroutine: The coroutine to be executed.
         :return: The created task.
         """
-        task = asyncio.run_coroutine_threadsafe(self._create_task_in_loop(coroutine), self.loop)
-        return task.result()
+        self.loop.call_soon_threadsafe(self._create_task_in_loop, coroutine)
+        
+        #task = asyncio.run_coroutine_threadsafe(self._create_task_in_loop(coroutine), self.loop)
+        #return task.result()
 
     async def _create_task_in_loop(self, coroutine):
         """
@@ -48,5 +50,4 @@ class GramDBAsync:
         """
         task = self.loop.create_task(coroutine)
         self.background_tasks.append(task)
-        return task
         
