@@ -368,7 +368,7 @@ class GramDB:
 
         This method runs the `wait_for_background_tasks` method and then closes the asynchronous manager.
         """
-        self.async_manager.run_async(self.async_manager.wait_for_background_tasks())
+        asyncio.run(self.async_manager.wait_for_background_tasks())
         logger.info("Closing GramDBAsync manager..")
         self.close_func()
 
