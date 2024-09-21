@@ -75,6 +75,9 @@ class DATABASE:
                 LOGGER.error(f"Error adding user to database: {e}")
             return
 
+    async def delete_table(self, table_name):
+        await self.db.delete_table(table_name)
+
     def close(self):
         self.db.close()
 
@@ -82,6 +85,7 @@ class DATABASE:
 async def main():
     db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
     await db.add_user(99999992)
+    await db.delete_table("users_tab")
     print("done")
     db.close()
 
