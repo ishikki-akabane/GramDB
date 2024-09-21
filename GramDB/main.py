@@ -333,13 +333,12 @@ class GramDB:
     
     async def wait_for_background_tasksss(self):
         """
+        NOTIC: DEPRECATED
         Wait for all background tasks to complete.
 
         This method ensures that all asynchronous tasks are finished before proceeding.
         """
-        """
-        pending_tasks = [task for task in self.background_tasks if not task.done()]
-        """
+        # pending_tasks = [task for task in self.background_tasks if not task.done()]
         if self.background_tasks:
             await asyncio.gather(*self.background_tasks)
 
