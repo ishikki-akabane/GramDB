@@ -11,7 +11,7 @@ class GramDBAsync:
         #self.stop_event = threading.Event()
         self.thread = threading.Thread(target=self._run_async_loop, name="GramDBAsync", daemon=False)
         self.thread.start()
-        self.running = False
+        self.running = True
         
         # self.task_queue = Queue()
         # self.thread = threading.Thread(target=self.run_event_loop, name="GramDBAsync")
