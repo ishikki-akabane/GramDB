@@ -79,7 +79,7 @@ class DATABASE:
         await self.db.delete_table(table_name)
 
     async def fetch_table(self, table_name):
-        await self.db.find(table_name, {})
+        return await self.db.find(table_name, {})
 
     def close(self):
         self.db.close()
