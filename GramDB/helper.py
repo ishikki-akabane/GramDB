@@ -114,6 +114,9 @@ class EfficientDictQuery:
         results = []
 
         for record_id, record in self.data.get(table, {}).items():
+            print(record_id)
+            #if record.get('_id') == 'sample1928':
+            #    continue
             if all(record.get(key) == value for key, value in query.items()):
                 results.append(record)
 
