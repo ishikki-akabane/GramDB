@@ -207,11 +207,9 @@ class GramDB:
         :param _m_id: The metadata ID for the new record.
         :raises GramDBError: If there is an error in the background insert operation.
         """
-        print("bg starting")
         try:
             async with aiohttp.ClientSession() as newsession:
                 result2, response = await bg_insert_func(newsession, self.url, self.token, table_name, _m_id)
-                print("bg ended")
         except Exception as e:
             raise GramDBError(f"Error in background insert: {e}")
 
