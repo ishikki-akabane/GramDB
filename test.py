@@ -31,7 +31,7 @@ sample_efficitiantdb = {
 
 """
 async def bb_test():
-  db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
+  db = GramDB("https://blue-api.vercel.app/database?client=gayyy@69696969.gramdb")
   a = await db.fetch_all()
   print(json.dumps(a, indent=4))    
   print("------------------------")
@@ -39,7 +39,7 @@ async def bb_test():
   
   
 async def aa_test():
-  db = GramDB("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
+  db = GramDB("https://blue-api.vercel.app/database?client=gayyy@69696969.gramdb")
   
   a = await db.fetch_all()
   print(json.dumps(a, indent=4))    
@@ -102,7 +102,7 @@ class DATABASE:
 
 
 
-db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
+db = DATABASE("https://blue-api.vercel.app/database?client=gayyy@69696969.gramdb")
 
 async def boot():
     create_1_time = time.time()
