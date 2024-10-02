@@ -34,7 +34,7 @@ class DATABASE:
         self.async_manager = GramDBAsync()
         self.db = GramDB(uri, self.async_manager)
         self.table_schemas = {
-            "welcome": ("_id", "mode", "template_id")
+            "users_tab": ("_id", "name")
         }
         self.async_manager.run_async(self.create_table())
 
@@ -86,13 +86,13 @@ class DATABASE:
 
 
 async def main():
-    db = DATABASE("https://blue-api.vercel.app/database?client=ishikki@xyz242.gramdb")
-    #await db.add_user(99999992)
+    db = DATABASE("https://blue-api.vercel.app/database?client=gayyy@69696969.gramdb")
+    await db.add_user(99999992)
     #print("done")
     #await db.delete_table("users_tab")
     #print("done")
     #await asyncio.sleep(5)
-    aa = await db.fetch_table("welcome")
+    ##aa = await db.fetch_table("welcome")
     print(aa)
     db.close()
 
