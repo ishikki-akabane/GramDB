@@ -5,6 +5,10 @@ import logging
 from io import BytesIO
 from typing import Any
 
+from GramDB.utils.pyrogram_logging import configure_pyrogram_logging
+
+configure_pyrogram_logging()
+
 from pyrogram import Client
 from pyrogram.types import Message
 

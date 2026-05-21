@@ -4,6 +4,10 @@ import hashlib
 import time
 from typing import Any
 
+from GramDB.utils.pyrogram_logging import configure_pyrogram_logging
+
+configure_pyrogram_logging()
+
 from pyrogram import Client
 
 from GramDB.telegram.page_codec import decode_page, encode_page

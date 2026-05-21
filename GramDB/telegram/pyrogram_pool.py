@@ -8,6 +8,10 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import TypeVar
 
+from GramDB.utils.pyrogram_logging import configure_pyrogram_logging
+
+configure_pyrogram_logging()
+
 from pyrogram import Client
 from pyrogram.enums import ChatMemberStatus
 
