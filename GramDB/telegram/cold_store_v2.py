@@ -76,7 +76,13 @@ class TelegramColdStoreV2:
 
     async def _edit_text(self, message_id: int, text: str) -> None:
         async def work(c: Client) -> None:
-            await c.edit_message_text(self.channel_id, int(message_id), text)
+            try:
+                await c.edit_message_text(self.channel_id, int(message_id), text)
+            except Exception as e:
+                msg = str(e)
+                if "MESSAGE_NOT_MODIFIED" in msg or "message was not modified" in msg:
+                    return
+                raise
 
         await self.pool.execute_primary(work)
 

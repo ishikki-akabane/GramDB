@@ -29,7 +29,7 @@ async def create(self, table: str, schema, sample_record: dict, _m_id: str) -> N
     self.schemas[table] = tuple(schema_set)
 
     sample = dict(sample_record)
-    sample.setdefault("_id", "sample1928")
+    sample.setdefault("_id", "sample1728")
     sample["_id"] = str(sample["_id"])
     sample["_m_id"] = _m_id
 

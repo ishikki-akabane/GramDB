@@ -301,7 +301,7 @@ class GramDB:
         async with self._write_lock:
             eng = self._require_engine()
             sample_record: dict[str, Any] = {field: "gramdb" for field in schema}
-            sample_record["_id"] = "sample1928"
+            sample_record["_id"] = "sample1728"
             row_uuid = str(uuid.uuid4())
             sample_record["_m_id"] = row_uuid
             await eng.create(table_name, schema, dict(sample_record), row_uuid)
