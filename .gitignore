@@ -170,5 +170,6 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+*.session
 logs.txt
 journal.json
