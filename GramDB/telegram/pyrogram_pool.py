@@ -64,7 +64,7 @@ class PyrogramWorkerPool:
                 await client.start()
                 self._clients.append(client)
                 self._cooldown_until.append(0.0)
-                logger.info("Started Pyrogram worker %s (session dir %s)", i, session)
+                logger.info("Started worker %s (session dir %s)", i, session)
             self._started = True
 
     async def stop(self) -> None:

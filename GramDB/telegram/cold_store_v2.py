@@ -308,8 +308,10 @@ class TelegramColdStoreV2:
         root = await self.read_root()
         compaction_every = int(root.get("compaction_every") or 50)
 
-        for op in ops:
+        drop_seen = False
+        for op in list(ops):
             if op.get("kind") == "table_drop":
+                drop_seen = True
                 async with self._root_lock:
                     root = await self.read_root()
                     tables = root.get("tables") or {}
@@ -323,7 +325,13 @@ class TelegramColdStoreV2:
                         del tables[table]
                         root["tables"] = tables
                         await self.write_root(root)
+                break
+
+        if drop_seen:
+            remaining = [op for op in ops if op.get("kind") != "table_drop"]
+            if not remaining:
                 return
+            ops = remaining
 
         schema_hint: list[str] = []
         for op in ops:

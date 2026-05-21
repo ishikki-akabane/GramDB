@@ -152,21 +152,30 @@ class PersistenceManager:
     async def _table_worker(self, table: str, q: asyncio.Queue[SyncOp]) -> None:
         async with self._sem:
             try:
+                carry: SyncOp | None = None
                 while not self._stop_evt.is_set():
                     await self._can_run.wait()
-                    op = await q.get()
+                    if carry is not None:
+                        op = carry
+                        carry = None
+                    else:
+                        op = await q.get()
                     batch = [op]
 
-                    t_deadline = time.perf_counter() + (self._batch_window_ms / 1000.0)
-                    while True:
-                        remaining = t_deadline - time.perf_counter()
-                        if remaining <= 0:
-                            break
-                        try:
-                            nxt = await asyncio.wait_for(q.get(), timeout=remaining)
-                        except asyncio.TimeoutError:
-                            break
-                        batch.append(nxt)
+                    if op.kind != "table_drop":
+                        t_deadline = time.perf_counter() + (self._batch_window_ms / 1000.0)
+                        while True:
+                            remaining = t_deadline - time.perf_counter()
+                            if remaining <= 0:
+                                break
+                            try:
+                                nxt = await asyncio.wait_for(q.get(), timeout=remaining)
+                            except asyncio.TimeoutError:
+                                break
+                            if nxt.kind == "table_drop":
+                                carry = nxt
+                                break
+                            batch.append(nxt)
 
                     while True:
                         try:
