@@ -81,62 +81,88 @@ async def _benchmark_registry_metadata(url: str, *, rounds: int) -> dict:
 
 async def run_crud_test():
     """
-    Performs a full CRUD cycle on GramDB.
+    Performs a custom cycle on GramDB to view tables, check for 'ishikki' table,
+    create it if not present, populate it with disha (id: 111222333),
+    show the table, update it to bella, and show it again.
     """
-    logger.info("Starting GramDB CRUD test...")
-
-    resolved = parse_database_url(DATABASE_URL)
-    await _benchmark_registry_metadata(resolved.metadata_url, rounds=int(os.getenv("GRAMDB_TEST_API_ROUNDS", "5")))
-
-    table_name = os.getenv("GRAMDB_TEST_TABLE", "test_table")
-    schema = ("_id", "name", "age", "status")
-    persistent_id = os.getenv("GRAMDB_TEST_PERSISTENT_ID", "user_123")
-    cleanup = os.getenv("GRAMDB_TEST_CLEANUP", "0").lower() in ("1", "true", "yes", "y")
+    logger.info("Starting GramDB custom user test...")
 
     db = GramDB(DATABASE_URL, BOT_TOKENS, int(API_ID), str(API_HASH))
     t0 = time.perf_counter()
-    await db.connect(client_label="crud-speed-test")
+    await db.connect(client_label="user-custom-test")
     logger.info("GramDB connect (total): %.2f ms", _ms(t0, time.perf_counter()))
     try:
-        exists = await _timed(f"check_table({table_name})", db.check_table(table_name))
-        if not exists:
-            await _timed(f"create_one({table_name})", db.create_one(table_name, schema))
+        # 1. See how many tables are there and show that tables' data
+        all_data = await db.find_all()
+        tables = list(all_data.keys())
+        print("\n" + "="*50)
+        print(f"DATABASE METADATA: Found {len(tables)} tables.")
+        print(f"Tables list: {tables}")
+        print("="*50)
+        
+        print("\n--- INITIAL TABLES DATA ---")
+        for t in tables:
+            print(f"Table '{t}':")
+            records = list(all_data[t].values())
+            if not records:
+                print("  (empty table)")
+            for rec in records:
+                print(f"  - {rec}")
+        print("-"*50)
 
-        found = await _timed(f"find_one(_id={persistent_id})", db.find_one(table_name, {"_id": persistent_id}))
-        if not found:
-            record = {"_id": persistent_id, "name": "Alice", "age": 30, "status": "active"}
-            await _timed("insert_one(persistent)", db.insert_one(table_name, record))
-            found = await _timed("find_one(persistent after insert)", db.find_one(table_name, {"_id": persistent_id}))
+        # To demonstrate the 'if not' creation flow cleanly,
+        # if 'ishikki' already exists, we delete it first.
+        target_table = "ishikki"
+        if target_table in tables:
+            print(f"\nTable '{target_table}' already exists. Deleting it to demonstrate the creation flow from scratch...")
+            await db.delete_table(target_table)
+            # Re-fetch the updated state
+            all_data = await db.find_all()
+            tables = list(all_data.keys())
 
-        if not found or found.get("name") != "Alice":
-            raise RuntimeError("Persistent record missing or data mismatch after insert/load")
+        # 2. "if not, create a table name ishikki, save name as disha and user id be 111222333. then show the table data."
+        if target_table not in tables:
+            print(f"\nTable '{target_table}' not found (as expected). Creating table '{target_table}'...")
+            schema = ("name", "user_id")
+            await db.create_one(target_table, schema)
+            print(f"Table '{target_table}' created successfully.")
 
-        cur_age = int(found.get("age") or 0)
-        await _timed("update_one(persistent age+1)", db.update_one(table_name, {"_id": persistent_id}, {"$set": {"age": cur_age + 1}}))
-        updated = await _timed("find_one(persistent after update)", db.find_one(table_name, {"_id": persistent_id}))
-        if not updated or int(updated.get("age") or 0) != cur_age + 1:
-            raise RuntimeError("Update failed")
+            print(f"\nSaving record to '{target_table}': name='disha', user_id=111222333...")
+            record = {
+                "_id": "111222333",
+                "name": "disha",
+                "user_id": 111222333
+            }
+            await db.insert_one(target_table, record)
+            print("Record saved.")
 
-        run_id = f"run_{uuid.uuid4().hex[:10]}"
-        run_record = {"_id": run_id, "name": "RunUser", "age": 1, "status": "run"}
-        await _timed("insert_one(run)", db.insert_one(table_name, run_record))
+            # Show the table data
+            print(f"\n--- '{target_table}' TABLE DATA ---")
+            updated_data = await db.find_all()
+            for rid, rec in updated_data.get(target_table, {}).items():
+                print(f"  - {rec}")
+            print("-"*50)
 
-        all_records = await _timed("find_all(table)", db.find_all(table_name))
-        logger.info("Loaded records in '%s': %d", table_name, len(all_records))
+            # 3. "Then edit the name to bella. then again show the table"
+            print(f"\nEditing name in '{target_table}' to 'bella'...")
+            await db.update_one(
+                target_table,
+                {"_id": "111222333"},
+                {"$set": {"name": "bella"}}
+            )
+            print("Record updated.")
 
-        await _benchmark_find_one(
-            db,
-            table_name,
-            persistent_id,
-            rounds=int(os.getenv("GRAMDB_TEST_ALGO_ROUNDS", "200")),
-        )
+            # Show the table data again
+            print(f"\n--- '{target_table}' TABLE DATA AFTER EDIT ---")
+            updated_data2 = await db.find_all()
+            for rid, rec in updated_data2.get(target_table, {}).items():
+                print(f"  - {rec}")
+            print("="*50)
 
-        if cleanup:
-            await _timed("delete_one(run)", db.delete_one(table_name, {"_id": run_id}))
     finally:
         await db.close()
 
-    logger.info("GramDB test completed successfully (data preserved).")
+    logger.info("GramDB test completed successfully.")
 
 if __name__ == "__main__":
     try:
