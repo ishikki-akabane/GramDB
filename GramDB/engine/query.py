@@ -1,86 +1,78 @@
+"""
+GramDB in-memory query engine.
+
+This module defines :class:`EfficientDictQuery`, an in-memory table store used by
+the public :class:`GramDB.client.GramDB` API. To keep this file small, most
+public CRUD methods are implemented in separate modules under
+``GramDB.engine.methods`` and attached to the class at
+import time.
+"""
+
+from __future__ import annotations
+
 from collections import defaultdict
+from copy import deepcopy
 import random
 import string
 
 
 class EfficientDictQuery:
     """
-    A class designed to efficiently manage and query data stored in a dictionary-based structure.
-    
-    It supports creating tables, inserting, updating, and deleting records, as well as fetching data based on queries.
+    Dictionary-backed query engine.
+
+    Data Model
+    ----------
+    data:
+        ``self.data[table_name][record_id] -> record``
+    schemas:
+        ``self.schemas[table_name] -> tuple[field, ...]``
+    indexes:
+        ``self.indexes[field_name][field_value] -> list[(table_name, record_id)]``
     """
 
-    def __init__(self, data):
+    def __init__(self, data: dict):
         """
-        Initializes the EfficientDictQuery instance with the given data.
+        Initialize the engine with a hydrated GramDB dataset.
 
-        :param data: A dictionary containing the initial data to be structured.
+        Parameters
+        ----------
+        data:
+            Mapping of ``_m_id`` to Telegram-backed rows. Each row must include
+            ``_table_`` and ``_id``.
         """
         self.data = self._structure_data(data)
         self.indexes = defaultdict(lambda: defaultdict(list))
-        self.schemas = {}
+        self.schemas: dict[str, tuple[str, ...]] = {}
         self.create_all_indexes()
         self.create_all_schemas()
 
-    def _structure_data(self, data):
+    def _structure_data(self, data: dict) -> defaultdict:
         """
-        Structures the input data into a nested dictionary format suitable for the class.
+        Convert hydrated rows into a table-oriented structure.
 
-        :param data: A dictionary containing records with '_table_' and '_id' keys.
-        :return: A nested dictionary where each table is a key and its value is another dictionary of records.
+        The hydrated shape is ``{_m_id: row}``. The internal shape becomes:
+        ``{table_name: {record_id: row_without__table_}}``.
         """
-        structured_data = defaultdict(dict)
+        structured_data: defaultdict[str, dict] = defaultdict(dict)
         for record in data.values():
-            table = record['_table_']
-            primary_key = record['_id']
-            structured_record = {k: v for k, v in record.items() if k not in ['_table_']}
+            table = record["_table_"]
+            primary_key = record["_id"]
+            structured_record = {k: v for k, v in record.items() if k != "_table_"}
             structured_data[table][str(primary_key)] = structured_record
         return structured_data
 
-    def create_all_indexes(self):
+    def _flatten_dict(self, d: dict, parent_key: str = "", sep: str = ".") -> dict:
         """
-        Creates indexes for all fields across all tables in the data.
+        Flatten nested dict/list structures into dot-path keys.
 
-        This method is called during initialization to ensure all fields are indexed.
+        Examples
+        --------
+        ``{"a": {"b": 1}}`` becomes ``{"a.b": 1}``.
+        ``{"tags": ["x", "y"]}`` becomes ``{"tags.0": "x", "tags.1": "y"}``.
         """
-        if not self.data:
-            return
-
-        fields = set()
-        for table in self.data.values():
-            for item in table.values():
-                flattened_item = self._flatten_dict(item)
-                fields.update(flattened_item.keys())
-        
-        for field in fields:
-            self.create_index(field)
-
-    def create_index(self, field):
-        """
-        Creates an index for a specific field across all tables.
-
-        :param field: The field for which the index is to be created.
-        """
-        index = defaultdict(list)
-        for table_name, table in self.data.items():
-            for key, item in table.items():
-                flattened_item = self._flatten_dict(item)
-                if field in flattened_item:
-                    index[flattened_item[field]].append((table_name, key))
-        self.indexes[field] = index
-
-    def _flatten_dict(self, d, parent_key='', sep='.'):
-        """
-        Flattens a nested dictionary into a single-level dictionary.
-
-        :param d: The dictionary to be flattened.
-        :param parent_key: The parent key for nested fields.
-        :param sep: The separator used to join nested keys.
-        :return: A flattened dictionary.
-        """
-        items = []
+        items: list[tuple[str, object]] = []
         for k, v in d.items():
-            new_key = f"{parent_key}{sep}{k}" if parent_key else k
+            new_key = f"{parent_key}{sep}{k}" if parent_key else str(k)
             if isinstance(v, dict):
                 items.extend(self._flatten_dict(v, new_key, sep=sep).items())
             elif isinstance(v, list):
@@ -89,32 +81,26 @@ class EfficientDictQuery:
             else:
                 items.append((new_key, v))
         return dict(items)
-
-    def create_all_schemas(self):
-        """
-        Creates schemas for all tables in the data.
-
-        This method is called during initialization to ensure all tables have defined schemas.
-        """
-        for table_name, records in self.data.items():
-            if table_name not in self.schemas:
-                schema = set()
-                for record in records.values():
-                    schema.update(record.keys())
-                self.schemas[table_name] = tuple(schema)
     
     def _apply_update_operators(self, record: dict, update_fields: dict) -> dict:
         """
-        Apply MongoDB-style update operators to a record copy.
+        Apply MongoDB-style update operators.
+
+        Supported Operators
+        -------------------
+        $set, $unset, $inc, $mul, $push, $pull, $addToSet, $rename
+
+        Notes
+        -----
+        This method operates on a deep copy of the input record to avoid mutating
+        the original during update planning.
         """
-        new_record = record.copy()
+        new_record = deepcopy(record)
         for operator, updates in update_fields.items():
             if operator == "$set":
-                # Set values directly
                 new_record.update(updates)
 
             elif operator == "$unset":
-                # unSet values directly
                 if isinstance(updates, dict):
                     for key in updates:
                         new_record.pop(key, None)
@@ -127,45 +113,42 @@ class EfficientDictQuery:
             elif operator == "$inc":
                 for key, value in updates.items():
                     if key in new_record and isinstance(new_record[key], (int, float)):
-                        new_record[key] += value  # Increment the value
+                        new_record[key] += value
                     else:
                         raise ValueError(f"Cannot increment non-numeric field '{key}'")
 
             elif operator == "$mul":
-                # multiplies value
                 for key, value in updates.items():
                     if key in new_record and isinstance(new_record[key], (int, float)):
-                        new_record[key] *= value  # multiplies the value
+                        new_record[key] *= value
                     else:
                         raise ValueError(f"Cannot increment non-numeric field '{key}'")
 
             elif operator == "$push":
                 for key, value in updates.items():
                     if key in new_record and isinstance(new_record[key], list):
-                        new_record[key].append(value)  # Append to the list
+                        new_record[key].append(value)
                     else:
                         raise ValueError(f"Cannot push to non-list field '{key}'")
 
             elif operator == "$pull":
                 for key, value in updates.items():
                     if key in new_record and isinstance(new_record[key], list):
-                        new_record[key] = [item for item in new_record[key] if item != value]  # Remove matching value
+                        new_record[key] = [item for item in new_record[key] if item != value]
                     else:
                         raise ValueError(f"Cannot pull from non-list field '{key}'")
 
             elif operator == "$addToSet":
-                # only push if value doesnt exist
                 for key, value in updates.items():
                     if key in new_record and isinstance(new_record[key], list):
                         if value not in new_record[key]:
-                            new_record[key].append(value)  # Append to the list
+                            new_record[key].append(value)
                         else:
                             raise ValueError(f"unable to push value already existed '{key}'")
                     else:
                         raise ValueError(f"Cannot push to non-list field '{key}'")
                         
             elif operator == "$rename":
-                # rename a key
                 for key, value in updates.items():
                     if key in new_record:
                         new_record[value] = new_record.pop(f"{key}")
@@ -175,10 +158,16 @@ class EfficientDictQuery:
                 raise ValueError(f"Unknown update operator: '{operator}'")
         return new_record
     
-    def _match_query(self, record, query):
-        for key, value in query.items():
+    def _match_query(self, record: dict, query: dict) -> bool:
+        """
+        Check whether a record matches a query filter.
 
-            # Logical operators
+        Supported Query Operators
+        -------------------------
+        Logical: ``$or``, ``$and``, ``$nor``
+        Comparisons: ``$gt``, ``$gte``, ``$lt``, ``$lte``, ``$ne``, ``$in``, ``$nin``
+        """
+        for key, value in query.items():
             if key == "$or":
                 if not any(self._match_query(record, q) for q in value):
                     return False
@@ -193,8 +182,6 @@ class EfficientDictQuery:
                 if any(self._match_query(record, q) for q in value):
                     return False
                 continue
-
-            # Normal field
             record_value = record.get(key)
 
             if isinstance(value, dict):
@@ -221,30 +208,20 @@ class EfficientDictQuery:
 
         return True
     
-    async def fetch(self, table, query):
-        """
-        Fetches records from a table based on the given query.
-
-        :param table: The name of the table to query.
-        :param query: A dictionary containing the query criteria.
-        :return: A list of records that match the query.
-        """
-        results = []
-
-        for record_id, record in self.data.get(table, {}).items():
-            if self._match_query(record, query):
-                results.append(record)
-
-        return results
-
     async def _update_index_for_record(self, table, record, record_id, operation='add'):
         """
-        Updates the index for a record in the given table.
+        Update indexes after a record insertion, update, or delete.
 
-        :param table: The name of the table.
-        :param record: The record to update the index for.
-        :param record_id: The ID of the record.
-        :param operation: The operation to perform ('add' or 'remove').
+        Parameters
+        ----------
+        table:
+            Table name.
+        record:
+            Record payload (unflattened).
+        record_id:
+            Record primary key.
+        operation:
+            ``"add"`` or ``"remove"``.
         """
         flattened_record = self._flatten_dict(record)
         for field, value in flattened_record.items():
@@ -256,13 +233,12 @@ class EfficientDictQuery:
                     if not self.indexes[field][value]:
                         del self.indexes[field][value]
 
-    async def _validate_record(self, table, record):
+    async def _validate_record(self, table: str, record: dict) -> None:
         """
-        Validates a record against the schema of the given table.
+        Validate a record against the table schema.
 
-        :param table: The name of the table.
-        :param record: The record to validate.
-        :raises ValueError: If the record does not match the schema.
+        A record must contain all schema fields and must not introduce unknown
+        fields.
         """
         if table not in self.schemas:
             raise ValueError(f"Table '{table}' does not exist.")
@@ -276,263 +252,50 @@ class EfficientDictQuery:
             if field not in schema:
                 raise ValueError(f"Field '{field}' is not allowed in schema for table '{table}'.")
 
-    async def check_table(self, table):
-        """
-        Checks if a table exists in the data.
-
-        :param table: The name of the table to check.
-        :return: True if the table exists, False otherwise.
-        """
-        if table not in self.schemas:
-            return False
-        else:
-            return True
-    
-    async def create(self, table, schema, sample_record, _m_id):
-        """
-        Creates a new table with the given schema and sample record.
-
-        :param table: The name of the table to create.
-        :param schema: A list of fields in the schema.
-        :param sample_record: A sample record for the table.
-        :param _m_id: The metadata ID for the table.
-        :raises ValueError: If the table already exists.
-        """
-        if table in self.data:
-            raise ValueError(f"Table '{table}' already exists.")
-
-        schema = set(schema)
-        schema.update(["_id", "_m_id"])
-        self.schemas[table] = tuple(schema)
-
-        self.data[table] = {"sample1928": sample_record}
-        await self._update_index_for_record(table, sample_record, "sample1928", operation='add')
-
     async def _generate_random_id(self):
         """
         Generates a random ID.
 
-        :return: A random 10-character ID.
+        :return: A random 20-character ID.
         """
         return ''.join(random.choices(string.ascii_letters + string.digits, k=20))
 
-    async def insert_one(self, table, record, **kwargs):
-        """
-        Inserts a new record into the given table.
-
-        :param table: The name of the table to insert into.
-        :param record: The record to insert.
-        :param kwargs: Additional keyword arguments, including '_m_id'.
-        :raises ValueError: If the table does not exist or if '_m_id' is missing.
-        """
-        _m_id = kwargs.get('_m_id')
-        if not _m_id:
-            raise ValueError("Record must contain '_m_id' as a keyword argument.")
-
-        if table not in self.data:
-            raise ValueError(f"Invalid table name '{table}'. Table does not exist.")
-            
-        _id = str(record['_id'])
-        record['_m_id'] = _m_id
-
-        await self._validate_record(table, record)
-
-        if _id in self.data[table]:
-            raise ValueError(f"Record with _id '{_id}' already exists in table '{table}'.")
-
-        self.data[table][_id] = record
-        await self._update_index_for_record(table, record, _id, operation='add')
-    
-    async def insert_many(self, table, records, **kwargs):
-        """
-        Inserts multiple records into the given table.
-
-        :param table: The name of the table.
-        :param records: A list of records (dicts).
-        :param kwargs: Must include '_m_id'.
-        :return: List of inserted IDs.
-        """
-
-        _m_id = kwargs.get('_m_id')
-        if not _m_id:
-            raise ValueError("insert_many requires '_m_id'")
-
-        if table not in self.data:
-            raise ValueError(f"Table '{table}' does not exist.")
-        
-        inserted_ids, errors = [], []
-        
-        for record in records:
-            try:
-                # auto-generate _id if missing
-                if '_id' not in record:
-                    record['_id'] = await self._generate_random_id()
-                    
-                await self.insert_one(table, record, _m_id=_m_id)
-                inserted_ids.append(record['_id'])
-                
-            except Exception as e:
-                errors.append({"record": record, "error": str(e)})
-        return {
-            "inserted_ids": inserted_ids,
-            "errors": errors
-        }
-
     async def old_update(self, *args, **kwargs):
+        """
+        Backwards-compatibility stub for older GramDB update APIs.
+
+        Use :meth:`update_one` with update operators such as ``{"$set": {...}}``.
+        """
         raise NotImplementedError("old_update() removed — use update_one() with {'$set': {...}}")
 
-    async def update_one(self, table, query, update_fields):
-        """
-        Updates records in the given table based on the query.
 
-        :param table: The name of the table to update.
-        :param query: A dictionary containing the query criteria.
-        :param update_fields: A dictionary containing update operations.
-            Supported operations are:
-                - `$set`: Set values directly.
-                - `$push`: Append to a list field.
-                - `$pull`: Remove from a list field.
-                - `$inc`: Increment a numeric field.
-        :raises ValueError: If the table does not exist or if no records match the query.
-        """
-        if table not in self.data:
-            raise ValueError(f"Table '{table}' does not exist.")
+from .methods.check_table import check_table as _check_table
+from .methods.create import create as _create
+from .methods.create_all_indexes import create_all_indexes as _create_all_indexes
+from .methods.create_all_schemas import create_all_schemas as _create_all_schemas
+from .methods.create_index import create_index as _create_index
+from .methods.delete_many import delete_many as _delete_many
+from .methods.delete_one import delete_one as _delete_one
+from .methods.delete_table import delete_table as _delete_table
+from .methods.fetch import fetch as _fetch
+from .methods.fetch_all import fetch_all as _fetch_all
+from .methods.insert_many import insert_many as _insert_many
+from .methods.insert_one import insert_one as _insert_one
+from .methods.update_many import update_many as _update_many
+from .methods.update_one import update_one as _update_one
 
-        records_to_update = [
-            (record_id, record) for record_id, record in self.data[table].items()
-            if all(record.get(key) == value for key, value in query.items())
-        ]
-
-        if not records_to_update:
-            raise ValueError(f"No records found matching query: {query}")
-
-        record_id, old_record = records_to_update[0]
-        _m_id = old_record["_m_id"]
-        _id = old_record["_id"]
-
-        new_record = self._apply_update_operators(old_record, update_fields)
-
-        await self._validate_record(table, new_record)
-
-        await self._update_index_for_record(table, old_record, record_id, operation='remove')
-        self.data[table][record_id] = new_record
-        await self._update_index_for_record(table, self.data[table][record_id], record_id, operation='add')
-
-        return _m_id, _id
-    
-    async def update_many(self, table, query, update_fields):
-        """
-        Updates multiple records in the given table based on the query.
-        Returns number of updated records.
-        """
-
-        if table not in self.data:
-            raise ValueError(f"Table '{table}' does not exist.")
-
-        records_to_update = [
-            (record_id, record)
-            for record_id, record in self.data[table].items()
-            if self._match_query(record, query)
-        ]
-
-        if not records_to_update:
-            raise ValueError(f"No records found matching query: {query}")
-
-        count = 0
-
-        for record_id, old_record in records_to_update:
-            new_record = self._apply_update_operators(old_record, update_fields)
-
-            await self._validate_record(table, new_record)
-
-            await self._update_index_for_record(table, old_record, record_id, 'remove')
-            self.data[table][record_id] = new_record
-            await self._update_index_for_record(table, new_record, record_id, 'add')
-
-            count += 1
-
-        return count
-    
-    async def delete_one(self, table, query):
-        """
-        Deletes records from the given table based on the query.
-
-        :param table: The name of the table to delete from.
-        :param query: A dictionary containing the query criteria.
-        :raises ValueError: If the table does not exist or if no records match the query.
-        """
-        if table not in self.data:
-            raise ValueError(f"Table '{table}' does not exist.")
-
-        records_to_delete = [
-            record_id for record_id, record in self.data[table].items()
-            if self._match_query(record, query)
-        ]
-
-        if not records_to_delete:
-            raise ValueError(f"No records found matching query: {query}")
-
-        record_id = records_to_delete[0]
-        record = self.data[table][record_id]
-        _m_id = record["_m_id"]
-        await self._update_index_for_record(table, record, record_id, operation='remove')
-        del self.data[table][record_id]
-        return _m_id
-    
-    async def delete_many(self, table, query):
-        """
-        Deletes multiple records from the given table based on the query.
-
-        :param table: The name of the table to delete from.
-        :param query: A dictionary containing the query criteria.
-        :return: Number of deleted records.
-        """
-        if table not in self.data:
-            raise ValueError(f"Table '{table}' does not exist.")
-        
-        records_to_delete = [
-            record_id for record_id, record in self.data[table].items()
-            if self._match_query(record, query)
-        ]
-        if not records_to_delete:
-            raise ValueError(f"No records found matching query: {query}")
-        count = 0
-        for record_id in records_to_delete:
-            record = self.data[table][record_id]
-
-            # remove from index
-            await self._update_index_for_record(table, record, record_id, operation='remove')
-
-            # delete from data
-            del self.data[table][record_id]
-            count += 1
-
-        return count
-
-    async def delete_table(self, table):
-        """
-        Deletes the entire table and its associated schema.
-
-        :param table: The name of the table to delete.
-        :raises ValueError: If the table does not exist.
-        """
-        if table not in self.data:
-            raise ValueError(f"Table '{table}' does not exist.")
-
-        for record_id, record in self.data[table].items():
-            await self._update_index_for_record(table, record, record_id, operation='remove')
-
-        del self.data[table]
-        del self.schemas[table]
-
-    async def fetch_all(self, table=None):
-        """
-        Fetches all records from the given table or all tables if no table is specified.
-
-        :param table: The name of the table to fetch records from. If None, fetches records from all tables.
-        :return: A dictionary containing the records.
-        """
-        if table:
-            return self.data[table]
-        return self.data
+EfficientDictQuery.check_table = _check_table
+EfficientDictQuery.create = _create
+EfficientDictQuery.create_all_indexes = _create_all_indexes
+EfficientDictQuery.create_all_schemas = _create_all_schemas
+EfficientDictQuery.create_index = _create_index
+EfficientDictQuery.delete_many = _delete_many
+EfficientDictQuery.delete_one = _delete_one
+EfficientDictQuery.delete_table = _delete_table
+EfficientDictQuery.fetch = _fetch
+EfficientDictQuery.fetch_all = _fetch_all
+EfficientDictQuery.insert_many = _insert_many
+EfficientDictQuery.insert_one = _insert_one
+EfficientDictQuery.update_many = _update_many
+EfficientDictQuery.update_one = _update_one
 
