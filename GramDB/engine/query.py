@@ -357,6 +357,9 @@ class EfficientDictQuery:
         if not _m_id:
             raise ValueError("insert_many requires '_m_id'")
 
+        if table not in self.data:
+            raise ValueError(f"Table '{table}' does not exist.")
+        
         inserted_ids, errors = [], []
         
         for record in records:
