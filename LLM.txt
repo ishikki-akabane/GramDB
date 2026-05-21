@@ -1,0 +1,130 @@
+GramDB (LLM Guide)
+
+What it is
+- GramDB is an async Python NoSQL database client that uses a private Telegram channel as durable storage.
+- Reads and queries run from an in-memory “hot cache”. Writes are queued, journaled (WAL), then synced to Telegram.
+- A Registry API provides database metadata and enforces a single-writer lease (session) to prevent index corruption.
+
+Architecture (mental model)
+- Your app (GramDB client) <-> Registry API (metadata + session lease) <-> Telegram channel (cold storage)
+- You do not talk to Telegram directly; GramDB does it using a rotating pool of Telegram bots (to reduce flood-waits).
+
+Key concepts
+- Database URL: points to the Registry metadata endpoint and must include a client key, e.g. http://host/api/v1?client=my_app
+- Table: a named collection of records with a strict schema
+- Record: a dict with user fields plus reserved fields:
+  - _id: primary key (string); auto-generated if you don’t set it on insert
+  - _m_id: internal row UUID (managed by GramDB; don’t set it)
+  - _table_: stored only in Telegram rows (internal)
+- Schema: the allowed field set for a table. Inserts/updates must match schema exactly (unknown fields are rejected).
+
+Install
+- From PyPI: pip install gramdb
+- From source:
+  - pip install -r requirements.txt
+  - pip install -e .
+
+Prerequisites / setup checklist
+- Registry API URL for your database (you typically obtain this from your GramDB deployment/provider)
+- Telegram API credentials: api_id and api_hash from https://my.telegram.org
+- Telegram bot tokens (recommended to get 2 or more) from @BotFather
+- A private Telegram channel used for storage, with all bots added as admins (GramDB will verify admin rights)
+
+Connect / lifecycle (recommended pattern)
+- Always use an async context manager so the session is released and pending writes are flushed:
+
+  import asyncio
+  from GramDB import GramDB
+
+  async def main():
+      db = GramDB(
+          "http://host/api/v1?client=my_app",
+          ["bot_token_1", "bot_token_2"],
+          api_id=12345,
+          api_hash="...",
+      )
+      async with db:
+          ...
+
+  asyncio.run(main())
+
+- Alternative:
+  - await db.connect(client_label="service-a")
+  - await db.wait_for_background_tasks()  (optional explicit flush)
+  - await db.close()
+
+Public API (methods your code should use)
+
+1) Tables
+- await db.check_table(table_name) -> bool
+- await db.create_one(table_name, schema_fields)
+  - schema_fields is a list/tuple of allowed user fields (GramDB also adds _id and _m_id automatically)
+- await db.delete_table(table_name)
+
+2) Insert
+- await db.insert_one(table_name, record_dict)
+  - If record_dict has no _id, GramDB creates one.
+  - record_dict must include every schema field (unknown or missing fields raise an error).
+
+3) Read
+- await db.find(table_name, query_dict) -> list[dict]
+- await db.find_one(table_name, query_dict) -> dict | None
+- await db.find_all(table_name_or_None) -> all rows for a table, or all tables if None
+
+4) Update
+- await db.update_one(table_name, query_dict, update_query)
+  - Updates the first matching record.
+  - Update operators (MongoDB-style):
+    - $set: {"field": value, ...}
+    - $unset: {"field": 1} or ["field1","field2"] or "field"
+    - $inc, $mul: numeric fields only
+    - $push, $pull, $addToSet: list fields only
+    - $rename: {"old": "new"}
+  - Updates are schema-validated: you cannot add new fields that aren’t in the table schema.
+
+5) Delete
+- await db.delete_one(table_name, query_dict)
+
+Legacy aliases (same behavior)
+- db.create == create_one
+- db.insert == insert_one
+- db.fetch == find
+- db.update == update_one
+- db.delete == delete_one
+
+Query language (filters)
+- Equality: {"name": "Alice"}
+- Comparisons: {"age": {"$gt": 18}}, {"age": {"$lte": 30}}
+- Set membership: {"role": {"$in": ["admin","mod"]}}
+- Not equal / not in: {"status": {"$ne": "deleted"}}, {"tag": {"$nin": ["spam"]}}
+- Logic:
+  - {"$or": [{"role": "admin"}, {"role": "mod"}]}
+  - {"$and": [{"active": True}, {"age": {"$gte": 18}}]}
+  - {"$nor": [{"role": "banned"}, {"status": "locked"}]}
+Notes:
+- Queries match top-level fields (no dot-path querying for nested objects).
+
+Operational management (how to run GramDB safely)
+- Single writer: the Registry lease is designed to prevent two writers from running at once. Run one active writer per database.
+- Always close cleanly: GramDB batches writes; call db.close() (or use async with) to flush queued writes.
+- Flush explicitly when needed: await db.wait_for_background_tasks() before shutdown or after critical writes.
+- WAL (crash safety):
+  - GramDB writes a local journal file and replays it on next connect.
+  - Configure location with GRAMDB_WAL_PATH (default: ./journal.json in the current working directory).
+- Flood-wait mitigation: use 2+ bot tokens and make all bots channel admins.
+- Locked databases: if Telegram returns auth/permission errors, the client may lock the database via the Registry. Fix bot/channel permissions, then unlock via your Registry tooling.
+
+Recommended module design patterns (for your users)
+- Treat each table as a module boundary (e.g., users, orders, audit_events).
+- Define a stable schema up front; schema is strict. For schema changes, plan a migration (new table or export + recreate + reinsert).
+- Use _id as the stable business key (e.g., user_id, order_id) to make updates and deletes predictable.
+
+Minimal end-to-end example
+
+async with GramDB(DB_URL, BOT_TOKENS, api_id=API_ID, api_hash=API_HASH) as db:
+    if not await db.check_table("users"):
+        await db.create_one("users", ["name", "age"])
+    await db.insert_one("users", {"_id": "u_1", "name": "Alice", "age": 25})
+    rows = await db.find("users", {"age": {"$gte": 18}})
+    await db.update_one("users", {"_id": "u_1"}, {"$inc": {"age": 1}})
+    await db.delete_one("users", {"_id": "u_1"})
